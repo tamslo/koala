@@ -14,14 +14,25 @@ export const fetchContext = () => {
 
 export const run = experiment => {
   return dispatch => {
-    dispatch({
-      type: types.ADD_EXPERIMENT,
-      experiment
-    });
-    post("/run", experiment).then(experiment => {
+    post("/experiment", experiment).then(experiment => {
       dispatch({
-        type: types.EXPERIMENT_DONE,
+        type: types.ADD_EXPERIMENT,
         experiment
+      });
+      get(`/run?experiment=${experiment.id}`).then(report => {
+        if (report.isError) {
+          dispatch({
+            type: types.EXPERIMENT_ERROR,
+            experimentId: experiment.id,
+            error: report.error.message
+          });
+        } else {
+          dispatch({
+            type: types.EXPERIMENT_DONE,
+            experimentId: experiment.id,
+            report
+          });
+        }
       });
     });
   };

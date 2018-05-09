@@ -39,7 +39,7 @@ export default class extends Component {
             <Button onClick={this.handleClose.bind(this)} color="default">
               Cancel
             </Button>
-            <Button onClick={this.props.retry} color="primary" autoFocus>
+            <Button onClick={this.props.retry} color="primary">
               Retry
             </Button>
           </DialogActions>

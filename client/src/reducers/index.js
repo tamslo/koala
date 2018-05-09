@@ -11,7 +11,11 @@ export default (state = initialState, action = {}) => {
         ...state,
         experiments: {
           ...state.experiments,
-          [action.experiment.id]: { ...action.experiment, done: false }
+          [action.experiment.id]: {
+            ...action.experiment,
+            done: false,
+            error: false
+          }
         }
       };
     case types.EXPERIMENT_DONE:
@@ -19,7 +23,22 @@ export default (state = initialState, action = {}) => {
         ...state,
         experiments: {
           ...state.experiments,
-          [action.experiment.id]: { ...action.experiment, done: true }
+          [action.report.id]: {
+            ...state.experiments[action.report.id],
+            done: true,
+            report: action.report.content
+          }
+        }
+      };
+    case types.EXPERIMENT_ERROR:
+      return {
+        ...state,
+        experiments: {
+          ...state.experiments,
+          [action.experimentId]: {
+            ...state.experiments[action.experimentId],
+            error: true
+          }
         }
       };
     default:

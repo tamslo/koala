@@ -2,8 +2,9 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
 import { fetchContext, run } from "../actions";
-import LoadingDialog from "./LoadingDialog";
+import Loading from "./Loading";
 import Inputs from "./Inputs";
+import Experiments from "./Experiments";
 
 class Content extends Component {
   componentWillMount() {
@@ -13,12 +14,12 @@ class Content extends Component {
   render() {
     const { context } = this.props;
     if (context === null) {
-      return <LoadingDialog content={"Setting everything up..."} />;
+      return <Loading content={"Setting everything up..."} />;
     }
 
     if (context.isError) {
       return (
-        <LoadingDialog
+        <Loading
           content={context.error.message}
           error={context.isError}
           retry={this.props.fetchContext}
@@ -29,6 +30,7 @@ class Content extends Component {
     return (
       <Container className="content">
         <Inputs aligners={this.props.context.aligners} run={this.props.run} />
+        <Experiments experiments={this.props.context.experiments} />
       </Container>
     );
   }
