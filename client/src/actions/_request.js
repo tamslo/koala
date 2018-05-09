@@ -1,7 +1,7 @@
 const hostname = window && window.location && window.location.hostname;
 const SERVER_URL = "http://" + hostname + ":5000";
 
-export default route => {
+export const get = route => {
   return fetch(`${SERVER_URL}${route}`)
     .then(response => {
       if (!response.ok) {

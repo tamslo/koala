@@ -1,1 +1,3 @@
-export const FETCH_DATA = "FETCH_DATA";
+export const FETCH_CONTEXT = "FETCH_CONTEXT";
+export const ADD_EXPERIMENT = "ADD_EXPERIMENT";
+export const EXPERIMENT_DONE = "EXPERIMENT_DONE";

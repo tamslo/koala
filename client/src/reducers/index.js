@@ -1,6 +1,28 @@
-import { combineReducers } from "redux";
-import data from "./data";
+import * as types from "../actions/actionTypes";
 
-export default combineReducers({
-  data
-});
+const initialState = null;
+
+export default (state = initialState, action = {}) => {
+  switch (action.type) {
+    case types.FETCH_CONTEXT:
+      return action.context;
+    case types.ADD_EXPERIMENT:
+      return {
+        ...state,
+        experiments: {
+          ...state.experiments,
+          [action.experiment.id]: { ...action.experiment, done: false }
+        }
+      };
+    case types.EXPERIMENT_DONE:
+      return {
+        ...state,
+        experiments: {
+          ...state.experiments,
+          [action.experiment.id]: { ...action.experiment, done: true }
+        }
+      };
+    default:
+      return state;
+  }
+};

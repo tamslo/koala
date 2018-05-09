@@ -5,7 +5,6 @@ import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
 
 // Theme
-import MuiThemeProvider from "material-ui/styles/MuiThemeProvider";
 import Roboto from "./assets/Roboto-Regular.ttf";
 
 // Redux
@@ -18,11 +17,9 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
 
 ReactDOM.render(
-  <MuiThemeProvider>
-    <Provider store={store}>
-      <App />
-    </Provider>
-  </MuiThemeProvider>,
+  <Provider store={store}>
+    <App />
+  </Provider>,
   document.getElementById("root")
 );
 registerServiceWorker();

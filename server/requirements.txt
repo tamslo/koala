@@ -1,2 +1,2 @@
-Flask
-pyyaml
+flask
+flask_cors

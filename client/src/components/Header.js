@@ -5,7 +5,7 @@ import Typography from "material-ui/Typography";
 
 export default props => {
   return (
-    <AppBar position="static" color="default">
+    <AppBar position="static" color="primary">
       <Toolbar>
         <Typography variant="title" color="inherit">
           Koala
