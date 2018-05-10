@@ -30,7 +30,9 @@ class Content extends Component {
     return (
       <Container className="content">
         <Inputs aligners={this.props.context.aligners} run={this.props.run} />
-        <Experiments experiments={this.props.context.experiments} />
+        {Object.keys(this.props.context.experiments).length > 0 && (
+          <Experiments experiments={this.props.context.experiments} />
+        )}
       </Container>
     );
   }

@@ -4,36 +4,38 @@ import List, {
   ListItemSecondaryAction,
   ListItemText
 } from "material-ui/List";
-import Divider from "material-ui/Divider";
 import IconButton from "material-ui/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
+import Card from "./Card";
 
 export default class extends Component {
   render() {
     console.log(this.props.experiments);
     const { experiments } = this.props;
     return (
-      <List>
-        {Object.keys(experiments).map((experimentId, index) => (
-          <ListItem key={experimentId}>
-            <ListItemText
-              primary={this.primaryText(experimentId)}
-              secondary={this.secondaryText(experimentId)}
-            />
-            <ListItemSecondaryAction>
-              <IconButton aria-label="Delete">
-                <DeleteIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
-        ))}
-      </List>
+      <Card title="Executed experiments">
+        <List>
+          {Object.keys(experiments).map((experimentId, index) => (
+            <ListItem key={experimentId} button>
+              <ListItemText
+                primary={this.primaryText(experimentId)}
+                secondary={this.secondaryText(experimentId)}
+              />
+              <ListItemSecondaryAction>
+                <IconButton aria-label="Delete">
+                  <DeleteIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          ))}
+        </List>
+      </Card>
     );
   }
 
   primaryText(experimentId) {
     const experiment = this.props.experiments[experimentId];
-    return experiment["dataset"];
+    return experiment["name"];
   }
 
   secondaryText(experimentId) {
