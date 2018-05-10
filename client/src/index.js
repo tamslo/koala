@@ -5,7 +5,9 @@ import App from "./App";
 import registerServiceWorker from "./registerServiceWorker";
 
 // Theme
+import { MuiThemeProvider, createMuiTheme } from "material-ui/styles";
 import Roboto from "./assets/Roboto-Regular.ttf";
+import green from "material-ui/colors/green";
 
 // Redux
 import { Provider } from "react-redux";
@@ -16,10 +18,19 @@ import reducers from "./reducers";
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
 
+const theme = createMuiTheme({
+  palette: {
+    primary: { main: green[800] },
+    secondary: { main: green[600] }
+  }
+});
+
 ReactDOM.render(
-  <Provider store={store}>
-    <App />
-  </Provider>,
+  <MuiThemeProvider theme={theme}>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </MuiThemeProvider>,
   document.getElementById("root")
 );
 registerServiceWorker();
@@ -36,5 +47,6 @@ injectGlobal`
     margin: 0;
     padding: 0;
     font-family: "Roboto", sans-serif;
+    background-color: #eeeeee;
   }
 `;

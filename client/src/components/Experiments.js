@@ -10,7 +10,6 @@ import Card from "./Card";
 
 export default class extends Component {
   render() {
-    console.log(this.props.experiments);
     const { experiments } = this.props;
     return (
       <Card title="Executed experiments">
