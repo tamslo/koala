@@ -10,8 +10,7 @@ export default class extends Component {
     super(props);
     this.state = {
       name: "New Experiment",
-      dataset:
-        "https://www.ncbi.nlm.nih.gov/geo/download/?acc=GSE86658&format=file",
+      dataset: "https://www.example.com",
       aligner: "star"
     };
   }
@@ -58,7 +57,6 @@ export default class extends Component {
         </Container>
         <Actions>
           <Button
-            variant="raised"
             color="primary"
             onClick={() => this.props.run(this.state)}
             disabled={!this.canRun()}

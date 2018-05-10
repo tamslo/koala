@@ -9,10 +9,9 @@ export const get = route => {
       }
       return response.json();
     })
-    .then(json => json)
     .catch(error => {
-      console.error(error);
-      return { isError: true, error };
+      console.error(`Error in ${route}: ${error}`);
+      return { error };
     });
 };
 
@@ -34,9 +33,8 @@ export const post = (route, body) => {
       }
       return response.json();
     })
-    .then(json => json)
     .catch(error => {
-      console.error(error);
-      return { isError: true, error };
+      console.error(`Error in ${route}: ${error}`);
+      return { error };
     });
 };

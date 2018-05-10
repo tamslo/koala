@@ -9,7 +9,7 @@ app = Flask(__name__)
 CORS(app)
 
 config = json.load(open("../config.json", "r"), object_pairs_hook=OrderedDict)
-data_directory = "data/"
+data_directory = "../data/"
 
 cache = Cache(data_directory)
 experiments = Experiments(data_directory)
@@ -26,22 +26,32 @@ def experiment():
     params = request.get_json()
     return experiments.create(params)
 
-@app.route("/run", methods=["GET"])
-def run():
+@app.route("/data", methods=["GET"])
+def data():
     experiment_id = request.args.get("experiment")
-    print("ID")
-    print(experiment_id)
-    sys.stdout.flush()
     experiment = experiments.select(experiment_id)
     experiment_data = cache.get_experiment_data(experiment)
-    dataset_path = experiment_data["dataset"] or get_data(experiment["dataset"])
-    # TODO run experiment, evaluate, return report
-    report = {}
-    return json.dumps(report)
+    try:
+        if "dataset" in experiment_data:
+            dataset_path = experiment_data["dataset"]
+            experiment = experiments.add_status(experiment_id, "Loaded data")
+        else:
+            dataset_path = get_data(experiment["dataset"])
+            experiment = experiments.add_status(experiment_id, "Downloaded data")
+    except Exception as error:
+        experiment = experiments.mark_error(experiment_id, error)
+    return experiment
+
+@app.route("/done", methods=["GET"])
+def done():
+    experiment_id = request.args.get("experiment")
+    experiment = experiments.mark_done(experiment_id)
+    return experiment
 
 def get_data(url):
     file_name, headers = urllib.request.urlretrieve(url, cache.create_dataset(url))
     app.logger.info(file_name)
+    # TODO throw error if headers not okay
     app.logger.info(headers)
     return file_name
 

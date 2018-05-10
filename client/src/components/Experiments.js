@@ -1,4 +1,6 @@
 import React, { Component } from "react";
+import styled from "styled-components";
+import { withTheme } from "material-ui/styles";
 import List, {
   ListItem,
   ListItemSecondaryAction,
@@ -8,25 +10,27 @@ import IconButton from "material-ui/IconButton";
 import DeleteIcon from "@material-ui/icons/Delete";
 import Card from "./Card";
 
-export default class extends Component {
+class Experiments extends Component {
   render() {
     const { experiments } = this.props;
     return (
       <Card title="Executed experiments">
         <List>
-          {Object.keys(experiments).map((experimentId, index) => (
-            <ListItem key={experimentId} button>
-              <ListItemText
-                primary={this.primaryText(experimentId)}
-                secondary={this.secondaryText(experimentId)}
-              />
-              <ListItemSecondaryAction>
-                <IconButton aria-label="Delete">
-                  <DeleteIcon />
-                </IconButton>
-              </ListItemSecondaryAction>
-            </ListItem>
-          ))}
+          {Object.keys(experiments)
+            .reverse()
+            .map((experimentId, index) => (
+              <ListItem key={experimentId} button>
+                <ListItemText
+                  primary={this.primaryText(experimentId)}
+                  secondary={this.secondaryText(experimentId)}
+                />
+                <ListItemSecondaryAction>
+                  <IconButton aria-label="Delete">
+                    <DeleteIcon />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+            ))}
         </List>
       </Card>
     );
@@ -37,8 +41,27 @@ export default class extends Component {
     return experiment["name"];
   }
 
+  statusColor(experimentId) {
+    const experiment = this.props.experiments[experimentId];
+    const { primary, error } = this.props.theme.palette;
+    return !experiment.error && !experiment.done
+      ? primary.main
+      : experiment.error ? error.main : "inherit";
+  }
+
   secondaryText(experimentId) {
     const experiment = this.props.experiments[experimentId];
-    return experiment["created"];
+    const status = experiment["statuses"][experiment["statuses"].length - 1];
+    return (
+      <Status color={this.statusColor(experimentId)}>
+        {!experiment.error ? status.name : experiment.error}
+      </Status>
+    );
   }
 }
+
+const Status = styled.span`
+  color: ${props => props.color};
+`;
+
+export default withTheme()(Experiments);

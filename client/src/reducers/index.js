@@ -7,41 +7,25 @@ export default (state = initialState, action = {}) => {
     case types.FETCH_CONTEXT:
       return action.context;
     case types.ADD_EXPERIMENT:
-      return {
-        ...state,
-        experiments: {
-          ...state.experiments,
-          [action.experiment.id]: {
-            ...action.experiment,
-            done: false,
-            error: false
-          }
-        }
-      };
-    case types.EXPERIMENT_DONE:
-      return {
-        ...state,
-        experiments: {
-          ...state.experiments,
-          [action.report.id]: {
-            ...state.experiments[action.report.id],
-            done: true,
-            report: action.report.content
-          }
-        }
-      };
-    case types.EXPERIMENT_ERROR:
-      return {
-        ...state,
-        experiments: {
-          ...state.experiments,
-          [action.experimentId]: {
-            ...state.experiments[action.experimentId],
-            error: true
-          }
-        }
-      };
+      return updateExperiments(state, { ...action.experiment, done: false });
+    case types.UPDATE_EXPERIMENT:
+      const experiment = updateExperiment(state, action.experiment);
+      return updateExperiments(state, experiment);
     default:
       return state;
   }
+};
+
+const updateExperiments = (state, experiment) => {
+  return {
+    ...state,
+    experiments: {
+      ...state.experiments,
+      [experiment.id]: experiment
+    }
+  };
+};
+
+const updateExperiment = (state, experiment) => {
+  return { ...state.experiments[experiment.id], ...experiment };
 };

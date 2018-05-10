@@ -11,7 +11,7 @@ export default props => {
       <Toolbar>
         <Image src={logo} alt="Koala logo" />
         <Typography variant="title" color="inherit">
-          Koala
+          Koala RNA-Seq Platform
         </Typography>
       </Toolbar>
     </AppBar>

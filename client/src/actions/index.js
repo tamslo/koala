@@ -12,28 +12,43 @@ export const fetchContext = () => {
   };
 };
 
-export const run = experiment => {
+export const run = params => {
   return dispatch => {
-    post("/experiment", experiment).then(experiment => {
+    post("/experiment", params).then(experiment => {
       dispatch({
         type: types.ADD_EXPERIMENT,
         experiment
       });
-      get(`/run?experiment=${experiment.id}`).then(report => {
-        if (report.isError) {
-          dispatch({
-            type: types.EXPERIMENT_ERROR,
-            experimentId: experiment.id,
-            error: report.error.message
-          });
-        } else {
-          dispatch({
-            type: types.EXPERIMENT_DONE,
-            experimentId: experiment.id,
-            report
-          });
-        }
-      });
+      runExperiment(experiment, dispatch);
     });
   };
+};
+
+const runExperiment = (experiment, dispatch) => {
+  get(`/data?experiment=${experiment.id}`)
+    .then(experiment => {
+      return updateExperiment(experiment, dispatch);
+    })
+    .then(experiment => {
+      // TODO alignment
+      return experiment;
+    })
+    .then(experiment => {
+      return get(`/done?experiment=${experiment.id}`);
+    })
+    .then(experiment => {
+      updateExperiment(experiment, dispatch);
+    })
+    .catch(error => error);
+};
+
+const updateExperiment = (experiment, dispatch) => {
+  dispatch({
+    type: types.UPDATE_EXPERIMENT,
+    experiment
+  });
+  if (experiment.error) {
+    throw new Error(experiment);
+  }
+  return experiment;
 };
