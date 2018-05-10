@@ -71,6 +71,9 @@ export default class extends Component {
 const Container = styled.div`
   display: flex;
   align-items: center;
+  padding-left: 24px; // alignment with list
+  padding-right: 4px; // alignment with list
+  margin-bottom: 24px;
 `;
 
 const DataInput = styled(TextField)`

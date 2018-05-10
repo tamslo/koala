@@ -1,4 +1,5 @@
 import os, json, uuid, sys
+from time import gmtime, strftime
 
 class Experiments:
     def __init__(self, data_directory):
@@ -12,6 +13,7 @@ class Experiments:
     def create(self, params):
         experiment_id = str(uuid.uuid4())
         params["id"] = experiment_id
+        params["created"] = strftime("%a, %d %b %Y %H:%M", gmtime())
         experiment = json.dumps(params)
         with open(self.directory + experiment_id + ".json", "w") as file:
             file.write(experiment)
