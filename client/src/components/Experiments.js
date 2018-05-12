@@ -4,14 +4,14 @@ import { withTheme } from "material-ui/styles";
 import List, {
   ListItem,
   ListItemSecondaryAction,
-  ListItemText
+  ListItemText,
+  ListSubheader
 } from "material-ui/List";
 import IconButton from "material-ui/IconButton";
 import Collapse from "material-ui/transitions/Collapse";
 import DeleteIcon from "@material-ui/icons/Delete";
 import ExpandLess from "@material-ui/icons/ExpandLess";
 import ExpandMore from "@material-ui/icons/ExpandMore";
-import Card from "./Card";
 import Experiment from "./Experiment";
 
 class Experiments extends Component {
@@ -32,13 +32,13 @@ class Experiments extends Component {
 
   render() {
     return (
-      <Card title="Executed experiments">
-        <List>
-          {Object.keys(this.props.experiments)
-            .reverse()
-            .map(this.renderExperiment.bind(this))}
-        </List>
-      </Card>
+      <List
+        subheader={<StyledHeader component="div">Experiments</StyledHeader>}
+      >
+        {Object.keys(this.props.experiments)
+          .reverse()
+          .map(this.renderExperiment.bind(this))}
+      </List>
     );
   }
 
@@ -64,12 +64,13 @@ class Experiments extends Component {
   renderListItem(experiment) {
     const { deleteExperiment } = this.props;
     return (
-      <ListItem
+      <StyledListItem
         key={experiment.id}
         button
         onClick={() => {
           this.toggleExperiment(experiment.id);
         }}
+        disableGutters
       >
         <ListItemText
           primary={this.primaryText(experiment.id)}
@@ -100,7 +101,7 @@ class Experiments extends Component {
             )}
           </IconButton>
         </ListItemSecondaryAction>
-      </ListItem>
+      </StyledListItem>
     );
   }
 
@@ -135,6 +136,14 @@ class Experiments extends Component {
 
 const Status = styled.span`
   color: ${props => props.color};
+`;
+
+const StyledHeader = styled(ListSubheader)`
+  padding-left: 12px !important;
+`;
+
+const StyledListItem = styled(ListItem)`
+  padding-left: 12px !important;
 `;
 
 const InsetListItem = styled(ListItem)`

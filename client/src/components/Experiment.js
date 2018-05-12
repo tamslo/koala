@@ -30,7 +30,7 @@ class Experiment extends Component {
       : entry.error ? formatTime(entry.error) : formatTime(entry.started);
 
     const status =
-      action === "interrupted"
+      action === "interrupted" || action === "done"
         ? { text: "INFO", color: warning.main }
         : entry.completed
           ? { text: "DONE", color: primary.main }
@@ -38,11 +38,15 @@ class Experiment extends Component {
             ? { text: "ERROR", color: error.main }
             : { text: "START", color: text.secondary };
 
+    const content = entry.error
+      ? this.props.error
+      : texts[action] || capitalize(action);
+
     return (
       <LogEntry key={`log-entry-${index}`} index={index}>
         {`[${time}] [`}
         <Status color={status.color}>{status.text}</Status>
-        {`] ${this.props.error || texts[action] || capitalize(action)}`}
+        {`] ${content}`}
       </LogEntry>
     );
   }

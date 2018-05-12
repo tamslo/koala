@@ -44,6 +44,7 @@ def data(id):
             get_data(experiment["dataset"])
             experiment = experiments.log_complete(experiment, "dataset")
     except Exception as error:
+        cache.clean_up("dataset", experiment["dataset"])
         experiment = experiments.mark_error(id, error)
     return json.dumps(experiment)
 
@@ -53,8 +54,6 @@ def done(id):
 
 def get_data(url):
     file_name, headers = urllib.request.urlretrieve(url, cache.create_dataset(url))
-    # TODO throw error if headers not okay and remove created file
-    app.logger.info(headers)
     return file_name
 
 def clean_up():

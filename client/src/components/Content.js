@@ -33,6 +33,7 @@ class Content extends Component {
           aligners={this.props.context.aligners}
           runExperiment={this.props.runExperiment}
         />
+        <Spacer />
         {Object.keys(this.props.context.experiments).length > 0 && (
           <Experiments
             experiments={this.props.context.experiments}
@@ -45,7 +46,11 @@ class Content extends Component {
 }
 
 const Container = styled.div`
-  padding: 10px;
+  padding: 32px;
+`;
+
+const Spacer = styled.div`
+  height: 32px;
 `;
 
 const mapStateToProps = state => {
