@@ -58,7 +58,7 @@ export default class extends Component {
         <Actions>
           <Button
             color="primary"
-            onClick={() => this.props.run(this.state)}
+            onClick={() => this.props.runExperiment(this.state)}
             disabled={!this.canRun()}
           >
             Run

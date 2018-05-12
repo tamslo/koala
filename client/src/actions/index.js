@@ -1,9 +1,9 @@
 import * as types from "./actionTypes";
-import { get, post } from "./_request";
+import { getRequest, postRequest, deleteRequest } from "./_request";
 
 export const fetchContext = () => {
   return dispatch => {
-    get("/context").then(context => {
+    getRequest("/context").then(context => {
       dispatch({
         type: types.FETCH_CONTEXT,
         context
@@ -12,20 +12,31 @@ export const fetchContext = () => {
   };
 };
 
-export const run = params => {
+export const deleteExperiment = id => {
   return dispatch => {
-    post("/experiment", params).then(experiment => {
+    deleteRequest("/experiment/" + id).then(experiment => {
       dispatch({
-        type: types.ADD_EXPERIMENT,
+        type: types.DELETE_EXPERIMENT,
         experiment
       });
-      runExperiment(experiment, dispatch);
     });
   };
 };
 
-const runExperiment = (experiment, dispatch) => {
-  get(`/data?experiment=${experiment.id}`)
+export const runExperiment = params => {
+  return dispatch => {
+    postRequest("/experiment", params).then(experiment => {
+      dispatch({
+        type: types.ADD_EXPERIMENT,
+        experiment
+      });
+      handleExperimentRun(experiment, dispatch);
+    });
+  };
+};
+
+const handleExperimentRun = (experiment, dispatch) => {
+  getRequest("/data/" + experiment.id)
     .then(experiment => {
       return updateExperiment(experiment, dispatch);
     })
@@ -34,7 +45,7 @@ const runExperiment = (experiment, dispatch) => {
       return experiment;
     })
     .then(experiment => {
-      return get(`/done?experiment=${experiment.id}`);
+      return getRequest("/done/" + experiment.id);
     })
     .then(experiment => {
       updateExperiment(experiment, dispatch);

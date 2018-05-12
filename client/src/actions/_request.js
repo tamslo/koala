@@ -1,21 +1,12 @@
 const hostname = window && window.location && window.location.hostname;
 const SERVER_URL = "http://" + hostname + ":5000";
 
-export const get = route => {
-  return fetch(`${SERVER_URL}${route}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`Server returned ${response.status}`);
-      }
-      return response.json();
-    })
-    .catch(error => {
-      console.error(`Error in ${route}: ${error}`);
-      return { error };
-    });
+export const getRequest = route => {
+  const request = new Request(`${SERVER_URL}${route}`);
+  return handleFetch(request);
 };
 
-export const post = (route, body) => {
+export const postRequest = (route, body) => {
   const request = new Request(`${SERVER_URL}${route}`, {
     headers: {
       "Content-Type": "application/json",
@@ -26,6 +17,16 @@ export const post = (route, body) => {
     mode: "cors",
     timeout: 0
   });
+
+  return handleFetch(request);
+};
+
+export const deleteRequest = route => {
+  const request = new Request(`${SERVER_URL}${route}`, { method: "DELETE" });
+  return handleFetch(request);
+};
+
+const handleFetch = request => {
   return fetch(request)
     .then(response => {
       if (!response.ok) {
@@ -34,7 +35,7 @@ export const post = (route, body) => {
       return response.json();
     })
     .catch(error => {
-      console.error(`Error in ${route}: ${error}`);
+      console.error(`Error in ${request.url}: ${error}`);
       return { error };
     });
 };

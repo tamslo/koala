@@ -22,12 +22,12 @@ class Cache:
             index_file.write(json.dumps(self.index))
         return dataset_id
 
-    def get_experiment_data(self, params):
+    def get_experiment_data(self, experiment):
         # TODO look for alignment and other results once implemented
-        experiment = { "dataset": None }
-        if params["dataset"] in list(self.index.keys()):
-            experiment["dataset"] = self.dataset_path(self.index[params["dataset"]])
-        return experiment
+        cached_data = { "dataset": None }
+        if experiment["dataset"] in list(self.index.keys()):
+            cached_data["dataset"] = self.dataset_path(self.index[experiment["dataset"]])
+        return cached_data
 
     def create_dataset(self, url):
         dataset_id = self.__cache(url)

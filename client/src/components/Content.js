@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
-import { fetchContext, run } from "../actions";
+import { fetchContext, runExperiment, deleteExperiment } from "../actions";
 import Loading from "./Loading";
 import Inputs from "./Inputs";
 import Experiments from "./Experiments";
@@ -29,9 +29,15 @@ class Content extends Component {
 
     return (
       <Container className="content">
-        <Inputs aligners={this.props.context.aligners} run={this.props.run} />
+        <Inputs
+          aligners={this.props.context.aligners}
+          runExperiment={this.props.runExperiment}
+        />
         {Object.keys(this.props.context.experiments).length > 0 && (
-          <Experiments experiments={this.props.context.experiments} />
+          <Experiments
+            experiments={this.props.context.experiments}
+            deleteExperiment={this.props.deleteExperiment}
+          />
         )}
       </Container>
     );
@@ -53,8 +59,11 @@ const mapDispatchToProps = dispatch => {
     fetchContext: () => {
       dispatch(fetchContext());
     },
-    run: params => {
-      dispatch(run(params));
+    runExperiment: params => {
+      dispatch(runExperiment(params));
+    },
+    deleteExperiment: id => {
+      dispatch(deleteExperiment(id));
     }
   };
 };

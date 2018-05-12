@@ -22,35 +22,37 @@ def get_context():
     })
 
 @app.route("/experiment", methods=["POST"])
-def experiment():
-    params = request.get_json()
-    return experiments.create(params)
+@app.route("/experiment/<id>", methods=["DELETE"])
+def experiment(id = None):
+    if request.method == "POST":
+        params = request.get_json()
+        experiment = experiments.create(params)
+        return json.dumps(experiment)
+    else:
+        return json.dumps(experiments.delete(id))
 
-@app.route("/data", methods=["GET"])
-def data():
-    experiment_id = request.args.get("experiment")
-    experiment = experiments.select(experiment_id)
+@app.route("/data/<id>", methods=["GET"])
+def data(id):
+    experiment = experiments.select(id)
     experiment_data = cache.get_experiment_data(experiment)
     try:
         if "dataset" in experiment_data:
             dataset_path = experiment_data["dataset"]
-            experiment = experiments.add_status(experiment_id, "Loaded data")
+            experiment = experiments.add_log_entry(experiment, "load data", one_step = True)
         else:
-            dataset_path = get_data(experiment["dataset"])
-            experiment = experiments.add_status(experiment_id, "Downloaded data")
+            experiment = experiments.add_log_entry(experiment, "download data")
+            get_data(experiment["dataset"])
+            experiment = experiments.log_complete(experiment, "download data")
     except Exception as error:
-        experiment = experiments.mark_error(experiment_id, error)
-    return experiment
+        experiment = experiments.mark_error(id, error)
+    return json.dumps(experiment)
 
-@app.route("/done", methods=["GET"])
-def done():
-    experiment_id = request.args.get("experiment")
-    experiment = experiments.mark_done(experiment_id)
-    return experiment
+@app.route("/done/<id>", methods=["GET"])
+def done(id):
+    return json.dumps(experiments.mark_done(id))
 
 def get_data(url):
     file_name, headers = urllib.request.urlretrieve(url, cache.create_dataset(url))
-    app.logger.info(file_name)
     # TODO throw error if headers not okay
     app.logger.info(headers)
     return file_name

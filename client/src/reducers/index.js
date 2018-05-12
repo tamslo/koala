@@ -11,6 +11,8 @@ export default (state = initialState, action = {}) => {
     case types.UPDATE_EXPERIMENT:
       const experiment = updateExperiment(state, action.experiment);
       return updateExperiments(state, experiment);
+    case types.DELETE_EXPERIMENT:
+      return deleteFromExperiments(state, action.experiment);
     default:
       return state;
   }
@@ -28,4 +30,16 @@ const updateExperiments = (state, experiment) => {
 
 const updateExperiment = (state, experiment) => {
   return { ...state.experiments[experiment.id], ...experiment };
+};
+
+const deleteFromExperiments = (state, experiment) => {
+  const experiments = Object.keys(state.experiments).reduce(
+    (experiments, experimentId) => {
+      return experimentId === experiment.id
+        ? experiments
+        : { ...experiments, [experimentId]: state.experiments[experimentId] };
+    },
+    {}
+  );
+  return { ...state, experiments };
 };

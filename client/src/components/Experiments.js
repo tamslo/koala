@@ -12,7 +12,7 @@ import Card from "./Card";
 
 class Experiments extends Component {
   render() {
-    const { experiments } = this.props;
+    const { experiments, deleteExperiment } = this.props;
     return (
       <Card title="Executed experiments">
         <List>
@@ -25,7 +25,13 @@ class Experiments extends Component {
                   secondary={this.secondaryText(experimentId)}
                 />
                 <ListItemSecondaryAction>
-                  <IconButton aria-label="Delete">
+                  <IconButton
+                    aria-label="Delete"
+                    onClick={() => {
+                      deleteExperiment(experimentId);
+                    }}
+                    disabled={!experiments[experimentId].done}
+                  >
                     <DeleteIcon />
                   </IconButton>
                 </ListItemSecondaryAction>
@@ -51,10 +57,11 @@ class Experiments extends Component {
 
   secondaryText(experimentId) {
     const experiment = this.props.experiments[experimentId];
-    const status = experiment["statuses"][experiment["statuses"].length - 1];
     return (
       <Status color={this.statusColor(experimentId)}>
-        {!experiment.error ? status.name : experiment.error}
+        {!experiment.error
+          ? experiment.done ? "Done" : "Running"
+          : experiment.error}
       </Status>
     );
   }

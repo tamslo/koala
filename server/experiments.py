@@ -1,5 +1,6 @@
 import os, json, uuid, sys
-from time import gmtime, strftime
+from time import localtime, strftime
+from collections import OrderedDict
 
 class Experiments:
     def __init__(self, data_directory):
@@ -10,60 +11,68 @@ class Experiments:
         if not os.path.isdir(self.directory):
             os.makedirs(self.directory)
 
-    def __status(self, name):
-        return {
-            "time": strftime("%a, %d %b %Y %H:%M", gmtime()),
-            "name": name
-        }
+    def __write(self, experiment):
+        with open(self.experiment_path(experiment["id"]), "w") as file:
+            file.write(json.dumps(experiment))
+            return experiment
+
+    def __set(self, experiment, name, value):
+        experiment[name] = value
+        return self.__write(experiment)
+
+    def __edit_log_entry(self, experiment, name, field):
+        time = localtime() # strftime("%a, %d %b %Y %H:%M", localtime())
+        experiment["log"][name][field] = time
+        return self.__write(experiment)
 
     def create(self, experiment):
-        experiment_id = str(uuid.uuid4())
-        experiment["id"] = experiment_id
+        experiment["id"] = str(uuid.uuid4())
         experiment["error"] = False
         experiment["done"] = False
         experiment["report"] = None
-        experiment["statuses"] = [self.__status("Created experiment")]
-        experiment = json.dumps(experiment)
-
-        with open(self.experiment_path(experiment_id), "w") as file:
-            file.write(experiment)
-            return experiment
+        experiment["log"] = OrderedDict()
+        experiment = self.__write(experiment)
+        return self.add_log_entry(experiment, "create", one_step = True)
 
     def select(self, experiment_id):
         with open(self.experiment_path(experiment_id), "r") as file:
-            return json.load(file)
+            return json.load(file, object_pairs_hook=OrderedDict)
 
-    def set(self, experiment_id, name, value):
+    def delete(self, experiment_id):
         experiment = self.select(experiment_id)
-        experiment[name] = value
-        experiment = json.dumps(experiment)
-        with open(self.experiment_path(experiment_id), "w") as file:
-            file.write(experiment)
-            return experiment
+        os.remove(self.experiment_path(experiment_id))
+        return experiment
 
-    def add_status(self, experiment_id, status):
-        experiment = self.select(experiment_id)
-        statuses = experiment["statuses"]
-        statuses.append(self.__status(status))
-        return self.set(experiment_id, "statuses", statuses)
+    def add_log_entry(self, experiment, name, one_step = False):
+        time = localtime() # strftime("%a, %d %b %Y %H:%M", localtime())
+        experiment["log"][name] = { "started": time, "completed": False, "error": False }
+        if one_step:
+            experiment["log"][name]["completed"] = time
+        return self.__write(experiment)
+
+    def log_complete(experiment, name):
+        return self.__edit_log_entry(experiment, name, "completed")
+
+    def log_error(self, experiment):
+        name = list(experiment["log"].keys())[-1]
+        return self.__edit_log_entry(experiment, name, "error")
 
     def mark_error(self, experiment_id, error):
         experiment = self.select(experiment_id)
-        experiment = self.add_status(experiment_id, "Error")
-        return self.set(experiment_id, "error", str(error))
+        experiment = self.log_error(experiment)
+        return self.__set(experiment, "error", str(error))
 
     def mark_done(self, experiment_id):
         experiment = self.select(experiment_id)
-        experiment = self.add_status(experiment_id, "Done")
-        return self.set(experiment_id, "done", True)
+        experiment = self.add_log_entry(experiment, "done", one_step = True)
+        return self.__set(experiment, "done", True)
 
     def all(self):
         experiments = {}
         for path in os.listdir(self.directory):
             with open(self.directory + path, "r") as file:
                 experiment = json.load(file)
-            experiment_id = path.split("json")[0]
-            experiments[experiment_id] = experiment
+            experiments[experiment["id"]] = experiment
         return experiments
 
     def experiment_path(self, experiment_id):
