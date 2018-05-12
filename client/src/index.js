@@ -7,7 +7,7 @@ import registerServiceWorker from "./registerServiceWorker";
 // Theme
 import { MuiThemeProvider, createMuiTheme } from "material-ui/styles";
 import Roboto from "./assets/Roboto-Regular.ttf";
-import green from "material-ui/colors/green";
+import { green, yellow } from "material-ui/colors";
 
 // Redux
 import { Provider } from "react-redux";
@@ -21,7 +21,8 @@ const store = createStore(reducers, composeEnhancers(applyMiddleware(thunk)));
 const theme = createMuiTheme({
   palette: {
     primary: { main: green[800] },
-    secondary: { main: green[600] }
+    secondary: { main: green[600] },
+    warning: { main: yellow[600] }
   }
 });
 

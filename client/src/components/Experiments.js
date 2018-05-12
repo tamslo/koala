@@ -30,7 +30,13 @@ class Experiments extends Component {
                     onClick={() => {
                       deleteExperiment(experimentId);
                     }}
-                    disabled={!experiments[experimentId].done}
+                    disabled={
+                      !(
+                        experiments[experimentId].done ||
+                        experiments[experimentId].interrupted ||
+                        experiments[experimentId].error
+                      )
+                    }
                   >
                     <DeleteIcon />
                   </IconButton>
@@ -49,10 +55,12 @@ class Experiments extends Component {
 
   statusColor(experimentId) {
     const experiment = this.props.experiments[experimentId];
-    const { primary, error } = this.props.theme.palette;
-    return !experiment.error && !experiment.done
-      ? primary.main
-      : experiment.error ? error.main : "inherit";
+    const { primary, error, warning } = this.props.theme.palette;
+    return experiment.done
+      ? "inherit"
+      : experiment.interrupted
+        ? warning.main
+        : experiment.error ? error.main : primary.main;
   }
 
   secondaryText(experimentId) {
@@ -60,7 +68,9 @@ class Experiments extends Component {
     return (
       <Status color={this.statusColor(experimentId)}>
         {!experiment.error
-          ? experiment.done ? "Done" : "Running"
+          ? experiment.done
+            ? "Done"
+            : experiment.interrupted ? "Interrupted" : "Running"
           : experiment.error}
       </Status>
     );

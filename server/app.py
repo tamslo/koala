@@ -3,7 +3,7 @@ from flask_cors import CORS
 from collections import OrderedDict
 from cache import Cache
 from experiments import Experiments
-import json, urllib, sys
+import json, urllib, sys, atexit
 
 app = Flask(__name__)
 CORS(app)
@@ -36,13 +36,13 @@ def data(id):
     experiment = experiments.select(id)
     experiment_data = cache.get_experiment_data(experiment)
     try:
-        if "dataset" in experiment_data:
+        if experiment_data["dataset"]:
             dataset_path = experiment_data["dataset"]
-            experiment = experiments.add_log_entry(experiment, "load data", one_step = True)
+            experiment = experiments.add_log_entry(experiment, "dataset cached", one_step = True)
         else:
-            experiment = experiments.add_log_entry(experiment, "download data")
+            experiment = experiments.add_log_entry(experiment, "dataset")
             get_data(experiment["dataset"])
-            experiment = experiments.log_complete(experiment, "download data")
+            experiment = experiments.log_complete(experiment, "dataset")
     except Exception as error:
         experiment = experiments.mark_error(id, error)
     return json.dumps(experiment)
@@ -53,11 +53,33 @@ def done(id):
 
 def get_data(url):
     file_name, headers = urllib.request.urlretrieve(url, cache.create_dataset(url))
-    # TODO throw error if headers not okay
+    # TODO throw error if headers not okay and remove created file
     app.logger.info(headers)
     return file_name
 
+def clean_up():
+    # Not working properly if debug=True, see https://stackoverflow.com/questions/37064595/handling-atexit-for-multiple-app-objects-with-flask-dev-server-reloader
+    for experiment_id, experiment in experiments.all().items():
+        last_log_entry = list(experiment["log"].keys())[-1]
+        if (
+            experiment["done"] or
+            experiment["error"] or
+            experiment["log"][last_log_entry]["completed"]
+        ):
+            continue
+        else:
+            experiments.mark_interrupted(experiment_id)
+            if last_log_entry in experiment:
+                try:
+                    cache.clean_up(last_log_entry, experiment[last_log_entry])
+                except Exception as error:
+                    app.logger.error("Could not clean up cache for {} {}, {}".format(
+                        last_log_entry,
+                        experiment[last_log_entry],
+                        error
+                    ))
+
+atexit.register(clean_up)
+
 if __name__ == "__main__":
-    app.env = "development"
-    app.debug = True
-    app.run()
+    app.run(host = "0.0.0.0", debug = True)

@@ -1,4 +1,4 @@
-import os, json, uuid, sys
+import os, json, uuid, shutil, sys
 
 class Cache:
     def __init__(self, data_directory):
@@ -14,12 +14,15 @@ class Cache:
             with open(self.index_path, "w") as index_file:
                 index_file.write(json.dumps({}));
 
+    def __write_index(self):
+        with open(self.index_path, "w") as index_file:
+            index_file.write(json.dumps(self.index))
+
     def __cache(self, url):
         dataset_id = str(uuid.uuid4())
         os.mkdir(self.directory + dataset_id)
         self.index[url] = dataset_id
-        with open(self.index_path, "w") as index_file:
-            index_file.write(json.dumps(self.index))
+        self.__write_index()
         return dataset_id
 
     def get_experiment_data(self, experiment):
@@ -31,10 +34,17 @@ class Cache:
 
     def create_dataset(self, url):
         dataset_id = self.__cache(url)
+        print(self.index, flush=True)
         return self.dataset_path(dataset_id)
 
     def dataset_path(self, dataset_id):
         return self.directory + dataset_id + "/" + "data.fastq"
+
+    def clean_up(self, name, id):
+        if name == "dataset":
+            shutil.rmtree(self.directory + self.index[id])
+            del self.index[id]
+            self.__write_index()
 
 def is_uuid(id):
     try:
