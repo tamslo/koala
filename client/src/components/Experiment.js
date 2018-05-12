@@ -4,14 +4,20 @@ import { withTheme } from "material-ui/styles";
 
 class Experiment extends Component {
   render() {
-    return <Container>{this.renderLog()}</Container>;
+    return (
+      <div>
+        <Entry>{`Data URL: ${this.props.dataset}`}</Entry>
+        <Entry>{`Aligner: ${this.props.aligner}`}</Entry>
+        {this.renderLog()}
+      </div>
+    );
   }
 
   renderLog() {
     return (
-      <div>
+      <Log>
         {Object.keys(this.props.log).map(this.renderLogEntry.bind(this))}
-      </div>
+      </Log>
     );
   }
 
@@ -43,11 +49,11 @@ class Experiment extends Component {
       : texts[action] || capitalize(action);
 
     return (
-      <LogEntry key={`log-entry-${index}`} index={index}>
+      <Entry key={`log-entry-${index}`}>
         {`[${time}] [`}
         <Status color={status.color}>{status.text}</Status>
         {`] ${content}`}
-      </LogEntry>
+      </Entry>
     );
   }
 }
@@ -67,13 +73,13 @@ const capitalize = string => {
   return string.substr(0, 1).toUpperCase() + string.substr(1);
 };
 
-const Container = styled.div`
-  padding: 12px;
+const Log = styled.div`
+  padding-top: 12px;
+  font-family: monospace;
 `;
 
-const LogEntry = styled.div`
-  margin-top: ${props => (props.index === 0 ? 0 : 12)}px;
-  font-family: monospace;
+const Entry = styled.div`
+  margin-bottom: 12px;
 `;
 
 const Status = styled.span`
