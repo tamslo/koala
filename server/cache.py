@@ -1,4 +1,4 @@
-import os, json, uuid, shutil, sys
+import os, json, uuid, shutil
 
 class Cache:
     def __init__(self, data_directory):
@@ -34,7 +34,6 @@ class Cache:
 
     def create_dataset(self, url):
         dataset_id = self.__cache(url)
-        print(self.index, flush=True)
         return self.dataset_path(dataset_id)
 
     def dataset_path(self, dataset_id):

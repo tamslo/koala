@@ -3,7 +3,7 @@ from flask_cors import CORS
 from collections import OrderedDict
 from cache import Cache
 from experiments import Experiments
-import json, urllib, sys, atexit
+import json, urllib, atexit
 
 app = Flask(__name__)
 CORS(app)
@@ -38,7 +38,7 @@ def data(id):
     try:
         if experiment_data["dataset"]:
             dataset_path = experiment_data["dataset"]
-            experiment = experiments.add_log_entry(experiment, "dataset cached", one_step = True)
+            experiment = experiments.add_log_entry(experiment, "cached", one_step = True)
         else:
             experiment = experiments.add_log_entry(experiment, "dataset")
             get_data(experiment["dataset"])

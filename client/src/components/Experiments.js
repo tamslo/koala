@@ -7,44 +7,100 @@ import List, {
   ListItemText
 } from "material-ui/List";
 import IconButton from "material-ui/IconButton";
+import Collapse from "material-ui/transitions/Collapse";
 import DeleteIcon from "@material-ui/icons/Delete";
+import ExpandLess from "@material-ui/icons/ExpandLess";
+import ExpandMore from "@material-ui/icons/ExpandMore";
 import Card from "./Card";
+import Experiment from "./Experiment";
 
 class Experiments extends Component {
+  constructor(props) {
+    super(props);
+    this.state = { open: [] };
+  }
+
+  toggleExperiment(id) {
+    if (this.state.open.includes(id)) {
+      this.setState({
+        open: this.state.open.filter(experimentId => experimentId !== id)
+      });
+    } else {
+      this.setState({ open: [...this.state.open, id] });
+    }
+  }
+
   render() {
-    const { experiments, deleteExperiment } = this.props;
     return (
       <Card title="Executed experiments">
         <List>
-          {Object.keys(experiments)
+          {Object.keys(this.props.experiments)
             .reverse()
-            .map((experimentId, index) => (
-              <ListItem key={experimentId} button>
-                <ListItemText
-                  primary={this.primaryText(experimentId)}
-                  secondary={this.secondaryText(experimentId)}
-                />
-                <ListItemSecondaryAction>
-                  <IconButton
-                    aria-label="Delete"
-                    onClick={() => {
-                      deleteExperiment(experimentId);
-                    }}
-                    disabled={
-                      !(
-                        experiments[experimentId].done ||
-                        experiments[experimentId].interrupted ||
-                        experiments[experimentId].error
-                      )
-                    }
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-            ))}
+            .map(this.renderExperiment.bind(this))}
         </List>
       </Card>
+    );
+  }
+
+  renderExperiment(experimentId) {
+    const { experiments } = this.props;
+    const experiment = experiments[experimentId];
+    return (
+      <div key={experiment.id}>
+        {this.renderListItem(experiment)}
+        <Collapse
+          in={this.state.open.includes(experiment.id)}
+          timeout="auto"
+          unmountOnExit
+        >
+          <InsetListItem>
+            <Experiment {...experiment} />
+          </InsetListItem>
+        </Collapse>
+      </div>
+    );
+  }
+
+  renderListItem(experiment) {
+    const { deleteExperiment } = this.props;
+    return (
+      <ListItem
+        key={experiment.id}
+        button
+        onClick={() => {
+          this.toggleExperiment(experiment.id);
+        }}
+      >
+        <ListItemText
+          primary={this.primaryText(experiment.id)}
+          secondary={this.secondaryText(experiment.id)}
+        />
+        <ListItemSecondaryAction>
+          <IconButton
+            aria-label="Delete"
+            onClick={() => {
+              deleteExperiment(experiment.id);
+            }}
+            disabled={
+              !(experiment.done || experiment.interrupted || experiment.error)
+            }
+          >
+            <DeleteIcon />
+          </IconButton>
+          <IconButton
+            aria-label="Collapse"
+            onClick={() => {
+              this.toggleExperiment(experiment.id);
+            }}
+          >
+            {this.state.open.includes(experiment.id) ? (
+              <ExpandLess />
+            ) : (
+              <ExpandMore />
+            )}
+          </IconButton>
+        </ListItemSecondaryAction>
+      </ListItem>
     );
   }
 
@@ -71,7 +127,7 @@ class Experiments extends Component {
           ? experiment.done
             ? "Done"
             : experiment.interrupted ? "Interrupted" : "Running"
-          : experiment.error}
+          : "Error"}
       </Status>
     );
   }
@@ -79,6 +135,10 @@ class Experiments extends Component {
 
 const Status = styled.span`
   color: ${props => props.color};
+`;
+
+const InsetListItem = styled(ListItem)`
+  padding-left: 32px !important;
 `;
 
 export default withTheme()(Experiments);

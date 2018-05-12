@@ -1,4 +1,4 @@
-import os, json, uuid, sys
+import os, json, uuid
 from time import localtime, strftime
 from collections import OrderedDict
 
