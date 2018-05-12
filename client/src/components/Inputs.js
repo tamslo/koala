@@ -54,21 +54,23 @@ export default class extends Component {
         </FixedWidthTextField>
         <Button
           color="primary"
-          onClick={() => this.props.runExperiment(this.state)}
+          onClick={() => this.props.addExperiment(this.state)}
           disabled={!this.canRun()}
+          size="large"
         >
-          Create
+          Add
         </Button>
       </Container>
     );
   }
 
   canRun() {
+    const nameValid = this.state.name !== "";
     const dataValid = this.state.dataset !== "";
     const alignerValid = Object.keys(this.props.aligners).includes(
       this.state.aligner
     );
-    return dataValid && alignerValid;
+    return nameValid && dataValid && alignerValid;
   }
 }
 

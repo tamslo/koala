@@ -23,34 +23,49 @@ export const deleteExperiment = id => {
   };
 };
 
-export const runExperiment = params => {
+export const addExperiment = params => {
   return dispatch => {
     postRequest("/experiment", params).then(experiment => {
       dispatch({
         type: types.ADD_EXPERIMENT,
         experiment
       });
-      handleExperimentRun(experiment, dispatch);
     });
   };
 };
 
-const handleExperimentRun = (experiment, dispatch) => {
-  getRequest("/data/" + experiment.id)
-    .then(experiment => {
-      return updateExperiment(experiment, dispatch);
-    })
-    .then(experiment => {
-      // TODO alignment
-      return experiment;
-    })
-    .then(experiment => {
-      return getRequest("/done/" + experiment.id);
-    })
-    .then(experiment => {
-      updateExperiment(experiment, dispatch);
-    })
-    .catch(error => error);
+export const runExperiment = id => {
+  return dispatch => {
+    dispatch({
+      type: types.RUN_EXPERIMENT,
+      id
+    });
+    handleExperimentRun(id, dispatch).then(() => {
+      dispatch({
+        type: types.EXPERIMENT_DONE
+      });
+    });
+  };
+};
+
+const handleExperimentRun = (experimentId, dispatch) => {
+  return new Promise((resolve, reject) => {
+    getRequest("/data/" + experimentId)
+      .then(experiment => {
+        return updateExperiment(experiment, dispatch);
+      })
+      .then(experiment => {
+        // TODO alignment
+        return experiment;
+      })
+      .then(experiment => {
+        return getRequest("/done/" + experiment.id);
+      })
+      .then(experiment => {
+        resolve(updateExperiment(experiment, dispatch));
+      })
+      .catch(error => reject);
+  });
 };
 
 const updateExperiment = (experiment, dispatch) => {

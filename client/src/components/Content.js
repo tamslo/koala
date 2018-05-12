@@ -1,7 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
-import { fetchContext, runExperiment, deleteExperiment } from "../actions";
+import {
+  fetchContext,
+  addExperiment,
+  deleteExperiment,
+  runExperiment
+} from "../actions";
 import Loading from "./Loading";
 import Inputs from "./Inputs";
 import Experiments from "./Experiments";
@@ -11,8 +16,15 @@ class Content extends Component {
     this.props.fetchContext();
   }
 
+  componentDidUpdate() {
+    const { jobs, runExperiment } = this.props;
+    if (jobs.running === null && jobs.waiting.length > 0) {
+      runExperiment(jobs.waiting[0]);
+    }
+  }
+
   render() {
-    const { context } = this.props;
+    const { context, addExperiment, deleteExperiment, jobs } = this.props;
     if (context === null) {
       return <Loading content={"Setting everything up..."} />;
     }
@@ -29,15 +41,13 @@ class Content extends Component {
 
     return (
       <Container className="content">
-        <Inputs
-          aligners={this.props.context.aligners}
-          runExperiment={this.props.runExperiment}
-        />
+        <Inputs aligners={context.aligners} addExperiment={addExperiment} />
         <Spacer />
-        {Object.keys(this.props.context.experiments).length > 0 && (
+        {Object.keys(context.experiments).length > 0 && (
           <Experiments
-            experiments={this.props.context.experiments}
-            deleteExperiment={this.props.deleteExperiment}
+            experiments={context.experiments}
+            deleteExperiment={deleteExperiment}
+            jobs={jobs}
           />
         )}
       </Container>
@@ -55,7 +65,8 @@ const Spacer = styled.div`
 
 const mapStateToProps = state => {
   return {
-    context: state
+    context: state.context,
+    jobs: state.jobs
   };
 };
 
@@ -64,11 +75,14 @@ const mapDispatchToProps = dispatch => {
     fetchContext: () => {
       dispatch(fetchContext());
     },
-    runExperiment: params => {
-      dispatch(runExperiment(params));
+    addExperiment: params => {
+      dispatch(addExperiment(params));
     },
     deleteExperiment: id => {
       dispatch(deleteExperiment(id));
+    },
+    runExperiment: id => {
+      dispatch(runExperiment(id));
     }
   };
 };

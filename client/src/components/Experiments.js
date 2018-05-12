@@ -62,7 +62,7 @@ class Experiments extends Component {
   }
 
   renderListItem(experiment) {
-    const { deleteExperiment } = this.props;
+    const { deleteExperiment, jobs } = this.props;
     return (
       <StyledListItem
         key={experiment.id}
@@ -82,9 +82,7 @@ class Experiments extends Component {
             onClick={() => {
               deleteExperiment(experiment.id);
             }}
-            disabled={
-              !(experiment.done || experiment.interrupted || experiment.error)
-            }
+            disabled={experiment.id === jobs.running}
           >
             <DeleteIcon />
           </IconButton>
@@ -111,9 +109,10 @@ class Experiments extends Component {
   }
 
   statusColor(experimentId) {
-    const experiment = this.props.experiments[experimentId];
+    const { jobs, experiments } = this.props;
+    const experiment = experiments[experimentId];
     const { primary, error, warning } = this.props.theme.palette;
-    return experiment.done
+    return experiment.done || jobs.waiting.includes(experiment.id)
       ? "inherit"
       : experiment.interrupted
         ? warning.main
@@ -121,13 +120,16 @@ class Experiments extends Component {
   }
 
   secondaryText(experimentId) {
-    const experiment = this.props.experiments[experimentId];
+    const { jobs, experiments } = this.props;
+    const experiment = experiments[experimentId];
     return (
       <Status color={this.statusColor(experimentId)}>
         {!experiment.error
-          ? experiment.done
-            ? "Done"
-            : experiment.interrupted ? "Interrupted" : "Running"
+          ? jobs.waiting.includes(experiment.id)
+            ? "Waiting"
+            : experiment.done
+              ? "Done"
+              : experiment.interrupted ? "Interrupted" : "Running"
           : "Error"}
       </Status>
     );
