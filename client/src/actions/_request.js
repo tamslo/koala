@@ -36,6 +36,6 @@ const handleFetch = request => {
     })
     .catch(error => {
       console.error(`Error in ${request.url}: ${error}`);
-      return { error };
+      return { isError: true, error };
     });
 };

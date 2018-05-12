@@ -15,10 +15,12 @@ export const fetchContext = () => {
 export const deleteExperiment = id => {
   return dispatch => {
     deleteRequest("/experiment/" + id).then(experiment => {
-      dispatch({
-        type: types.DELETE_EXPERIMENT,
-        experiment
-      });
+      if (!experiment.isError) {
+        dispatch({
+          type: types.DELETE_EXPERIMENT,
+          experiment
+        });
+      }
     });
   };
 };
@@ -26,10 +28,12 @@ export const deleteExperiment = id => {
 export const addExperiment = params => {
   return dispatch => {
     postRequest("/experiment", params).then(experiment => {
-      dispatch({
-        type: types.ADD_EXPERIMENT,
-        experiment
-      });
+      if (!experiment.isError) {
+        dispatch({
+          type: types.ADD_EXPERIMENT,
+          experiment
+        });
+      }
     });
   };
 };
@@ -40,11 +44,13 @@ export const runExperiment = id => {
       type: types.RUN_EXPERIMENT,
       id
     });
-    handleExperimentRun(id, dispatch).then(() => {
-      dispatch({
-        type: types.EXPERIMENT_DONE
-      });
-    });
+    handleExperimentRun(id, dispatch)
+      .then(response => {
+        dispatch({
+          type: types.EXPERIMENT_DONE
+        });
+      })
+      .catch(console.error);
   };
 };
 
