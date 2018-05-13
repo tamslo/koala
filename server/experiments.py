@@ -20,9 +20,13 @@ class Experiments:
         experiment[name] = value
         return self.__write(experiment)
 
-    def __edit_log_entry(self, experiment, name, field):
+    def __last_log_entry(self, experiment, action):
+        return [entry for entry in experiment["log"] if entry["action"] == action][-1]
+
+    def __edit_log_entry(self, experiment, action, field):
         time = localtime()
-        experiment["log"][name][field] = time
+        entry = self.__last_log_entry(experiment, action)
+        entry[field] = time
         return self.__write(experiment)
 
     def create(self, experiment):
@@ -31,8 +35,7 @@ class Experiments:
         experiment["done"] = False
         experiment["interrupted"] = False
         experiment["report"] = None
-        experiment["log"] = OrderedDict()
-        experiment = self.__write(experiment)
+        experiment["log"] = []
         return self.add_log_entry(experiment, "create", one_step = True)
 
     def select(self, experiment_id):
@@ -48,11 +51,17 @@ class Experiments:
         experiment = self.__write(experiment)
         return self.add_log_entry(experiment, "update", one_step = True)
 
-    def add_log_entry(self, experiment, name, one_step = False):
+    def add_log_entry(self, experiment, action, one_step = False):
         time = localtime()
-        experiment["log"][name] = { "started": time, "completed": False, "error": False }
+        entry = ({
+            "action": action,
+            "started": time,
+            "completed": False,
+            "error": False
+        })
         if one_step:
-            experiment["log"][name]["completed"] = time
+            entry["completed"] = time
+        experiment["log"].append(entry)
         return self.__write(experiment)
 
     def log_complete(self, experiment, name):
@@ -82,6 +91,12 @@ class Experiments:
         for path in os.listdir(self.directory):
             experiment = self.select(path.split(".json")[0])
             experiments[experiment["id"]] = experiment
+        return OrderedDict(
+            sorted(
+                experiments.items(),
+                key = lambda tuple: self.__last_log_entry(tuple[1], "create")["started"]
+            )
+        )
         return experiments
 
     def experiment_path(self, experiment_id):

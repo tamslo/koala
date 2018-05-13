@@ -39,8 +39,8 @@ class Cache:
     def dataset_path(self, dataset_id):
         return self.directory + dataset_id + "/" + "data.fastq"
 
-    def clean_up(self, name, id):
-        if name == "dataset":
+    def clean_up(self, action, id):
+        if action == "dataset":
             shutil.rmtree(self.directory + self.index[id])
             del self.index[id]
             self.__write_index()

@@ -16,15 +16,9 @@ experiments = Experiments(data_directory)
 
 @app.route("/context", methods=["GET"])
 def get_context():
-    sorted_experiments = OrderedDict(
-        sorted(
-            experiments.all().items(),
-            key = lambda tuple: tuple[1]["log"]["create"]["started"]
-        )
-    )
     return json.dumps({
         "aligners": config["aligners"],
-        "experiments": sorted_experiments
+        "experiments": experiments.all()
     })
 
 @app.route("/experiment", methods=["POST", "PUT"])
@@ -69,22 +63,24 @@ def get_data(url):
 def clean_up():
     # Not working properly if debug=True, see https://stackoverflow.com/questions/37064595/handling-atexit-for-multiple-app-objects-with-flask-dev-server-reloader
     for experiment_id, experiment in experiments.all().items():
-        last_log_entry = list(experiment["log"].keys())[-1]
+        last_log_entry = experiment["log"][-1]
         if (
             experiment["done"] or
             experiment["error"] or
-            experiment["log"][last_log_entry]["completed"]
+            last_log_entry["completed"]
         ):
             continue
         else:
             experiments.mark_interrupted(experiment_id)
-            if last_log_entry in experiment:
+            action = last_log_entry["action"]
+            if action in experiment:
+                id = experiment[action]
                 try:
-                    cache.clean_up(last_log_entry, experiment[last_log_entry])
+                    cache.clean_up(action, id)
                 except Exception as error:
-                    app.logger.error("Could not clean up cache for {} {}, {}".format(
-                        last_log_entry,
-                        experiment[last_log_entry],
+                    app.logger.error("Manual cache-cleanup needed for {} {} ({})".format(
+                        action,
+                        id,
                         error
                     ))
 

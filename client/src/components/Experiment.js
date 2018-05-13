@@ -14,21 +14,17 @@ class Experiment extends Component {
   }
 
   renderLog() {
-    return (
-      <Log>
-        {Object.keys(this.props.log).map(this.renderLogEntry.bind(this))}
-      </Log>
-    );
+    return <Log>{this.props.log.map(this.renderLogEntry.bind(this))}</Log>;
   }
 
-  renderLogEntry(action, index) {
-    const { log, theme } = this.props;
+  renderLogEntry(entry, index) {
+    const { theme } = this.props;
     const { primary, error, warning, text } = theme.palette;
-    const entry = log[action];
     const texts = {
       create: "Create experiment",
       cached: "Load data from cache",
-      dataset: "Download data"
+      dataset: "Download data",
+      update: "Update experiment"
     };
 
     const time = entry.completed
@@ -36,7 +32,7 @@ class Experiment extends Component {
       : entry.error ? formatTime(entry.error) : formatTime(entry.started);
 
     const status =
-      action === "interrupted" || action === "done"
+      entry.action === "interrupted" || entry.action === "done"
         ? { text: "INFO", color: warning.main }
         : entry.completed
           ? { text: "DONE", color: primary.main }
@@ -46,7 +42,7 @@ class Experiment extends Component {
 
     const content = entry.error
       ? this.props.error
-      : texts[action] || capitalize(action);
+      : texts[entry.action] || capitalize(entry.action);
 
     return (
       <Entry key={`log-entry-${index}`}>

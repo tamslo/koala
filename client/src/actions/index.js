@@ -90,12 +90,13 @@ const handleExperimentRun = (experimentId, dispatch) => {
 };
 
 const updateExperiment = (experiment, dispatch) => {
+  if (experiment.isError) {
+    throw new Error(experiment.error);
+  }
+
   dispatch({
     type: types.UPDATE_EXPERIMENT,
     experiment
   });
-  if (experiment.error) {
-    throw new Error(experiment);
-  }
   return experiment;
 };
