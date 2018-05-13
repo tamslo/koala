@@ -1,5 +1,5 @@
 import * as types from "./actionTypes";
-import { getRequest, postRequest, deleteRequest } from "./_request";
+import { getRequest, postRequest, deleteRequest, putRequest } from "./_request";
 
 export const fetchContext = () => {
   return dispatch => {
@@ -28,6 +28,21 @@ export const deleteExperiment = id => {
 export const addExperiment = params => {
   return dispatch => {
     postRequest("/experiment", params).then(experiment => {
+      if (!experiment.isError) {
+        dispatch({
+          type: types.ADD_EXPERIMENT,
+          experiment
+        });
+      }
+    });
+  };
+};
+
+export const retryExperiment = experiment => {
+  return dispatch => {
+    const params = { ...experiment, interrupted: false };
+    putRequest("/experiment", params).then(experiment => {
+      console.log(experiment);
       if (!experiment.isError) {
         dispatch({
           type: types.ADD_EXPERIMENT,

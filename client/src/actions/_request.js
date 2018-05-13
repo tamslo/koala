@@ -7,22 +7,30 @@ export const getRequest = route => {
 };
 
 export const postRequest = (route, body) => {
+  return bodyRequest(route, body, "POST");
+};
+
+export const putRequest = (route, body) => {
+  return bodyRequest(route, body, "PUT");
+};
+
+export const deleteRequest = route => {
+  const request = new Request(`${SERVER_URL}${route}`, { method: "DELETE" });
+  return handleFetch(request);
+};
+
+const bodyRequest = (route, body, method) => {
   const request = new Request(`${SERVER_URL}${route}`, {
     headers: {
       "Content-Type": "application/json",
       "Access-Control-Allow-Origin": "*"
     },
-    method: "POST",
+    method,
     body: JSON.stringify(body),
     mode: "cors",
     timeout: 0
   });
 
-  return handleFetch(request);
-};
-
-export const deleteRequest = route => {
-  const request = new Request(`${SERVER_URL}${route}`, { method: "DELETE" });
   return handleFetch(request);
 };
 

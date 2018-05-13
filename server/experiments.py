@@ -44,6 +44,10 @@ class Experiments:
         os.remove(self.experiment_path(experiment_id))
         return experiment
 
+    def update(self, experiment):
+        experiment = self.__write(experiment)
+        return self.add_log_entry(experiment, "update", one_step = True)
+
     def add_log_entry(self, experiment, name, one_step = False):
         time = localtime()
         experiment["log"][name] = { "started": time, "completed": False, "error": False }

@@ -31,7 +31,7 @@ export default (state = initialState, action = {}) => {
           waiting: state.waiting.filter(id => id !== action.experiment.id)
         };
       }
-      return { ...state, waiting: [...state.waiting, action.experiment.id] };
+      return state;
     case types.EXPERIMENT_DONE:
       return { ...state, running: null };
     default:

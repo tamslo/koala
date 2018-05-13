@@ -10,8 +10,9 @@ import List, {
 import IconButton from "material-ui/IconButton";
 import Collapse from "material-ui/transitions/Collapse";
 import DeleteIcon from "@material-ui/icons/Delete";
-import ExpandLess from "@material-ui/icons/ExpandLess";
-import ExpandMore from "@material-ui/icons/ExpandMore";
+import RefreshIcon from "@material-ui/icons/Refresh";
+import ExpandLessIcon from "@material-ui/icons/ExpandLess";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Experiment from "./Experiment";
 
 class Experiments extends Component {
@@ -62,7 +63,7 @@ class Experiments extends Component {
   }
 
   renderListItem(experiment) {
-    const { deleteExperiment, jobs } = this.props;
+    const { deleteExperiment, retryExperiment, jobs } = this.props;
     return (
       <StyledListItem
         key={experiment.id}
@@ -77,25 +78,29 @@ class Experiments extends Component {
           secondary={this.secondaryText(experiment.id)}
         />
         <ListItemSecondaryAction>
+          {experiment.interrupted && (
+            <IconButton
+              aria-label="Retry"
+              onClick={() => retryExperiment(experiment)}
+            >
+              <RefreshIcon />
+            </IconButton>
+          )}
           <IconButton
             aria-label="Delete"
-            onClick={() => {
-              deleteExperiment(experiment.id);
-            }}
+            onClick={() => deleteExperiment(experiment.id)}
             disabled={experiment.id === jobs.running}
           >
             <DeleteIcon />
           </IconButton>
           <IconButton
             aria-label="Collapse"
-            onClick={() => {
-              this.toggleExperiment(experiment.id);
-            }}
+            onClick={() => this.toggleExperiment(experiment.id)}
           >
             {this.state.open.includes(experiment.id) ? (
-              <ExpandLess />
+              <ExpandLessIcon />
             ) : (
-              <ExpandMore />
+              <ExpandMoreIcon />
             )}
           </IconButton>
         </ListItemSecondaryAction>

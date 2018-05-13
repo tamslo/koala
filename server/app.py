@@ -16,17 +16,27 @@ experiments = Experiments(data_directory)
 
 @app.route("/context", methods=["GET"])
 def get_context():
+    sorted_experiments = OrderedDict(
+        sorted(
+            experiments.all().items(),
+            key = lambda tuple: tuple[1]["log"]["create"]["started"]
+        )
+    )
     return json.dumps({
         "aligners": config["aligners"],
-        "experiments": experiments.all()
+        "experiments": sorted_experiments
     })
 
-@app.route("/experiment", methods=["POST"])
+@app.route("/experiment", methods=["POST", "PUT"])
 @app.route("/experiment/<id>", methods=["DELETE"])
 def experiment(id = None):
     if request.method == "POST":
         params = request.get_json()
         experiment = experiments.create(params)
+        return json.dumps(experiment)
+    elif request.method == "PUT":
+        params = request.get_json()
+        experiment = experiments.update(params)
         return json.dumps(experiment)
     else:
         return json.dumps(experiments.delete(id))

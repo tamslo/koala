@@ -7,7 +7,7 @@ export default (state = initialState, action = {}) => {
     case types.FETCH_CONTEXT:
       return action.context;
     case types.ADD_EXPERIMENT:
-      return updateExperiments(state, { ...action.experiment, done: false });
+      return updateExperiments(state, action.experiment);
     case types.UPDATE_EXPERIMENT:
       const experiment = updateExperiment(state, action.experiment);
       return updateExperiments(state, experiment);

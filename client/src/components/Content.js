@@ -5,7 +5,8 @@ import {
   fetchContext,
   addExperiment,
   deleteExperiment,
-  runExperiment
+  runExperiment,
+  retryExperiment
 } from "../actions";
 import Loading from "./Loading";
 import Inputs from "./Inputs";
@@ -24,7 +25,13 @@ class Content extends Component {
   }
 
   render() {
-    const { context, addExperiment, deleteExperiment, jobs } = this.props;
+    const {
+      context,
+      addExperiment,
+      deleteExperiment,
+      retryExperiment,
+      jobs
+    } = this.props;
     if (context === null) {
       return <Loading content={"Setting everything up..."} />;
     }
@@ -47,6 +54,7 @@ class Content extends Component {
           <Experiments
             experiments={context.experiments}
             deleteExperiment={deleteExperiment}
+            retryExperiment={retryExperiment}
             jobs={jobs}
           />
         )}
@@ -70,21 +78,12 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    fetchContext: () => {
-      dispatch(fetchContext());
-    },
-    addExperiment: params => {
-      dispatch(addExperiment(params));
-    },
-    deleteExperiment: id => {
-      dispatch(deleteExperiment(id));
-    },
-    runExperiment: id => {
-      dispatch(runExperiment(id));
-    }
-  };
+const actions = {
+  fetchContext,
+  addExperiment,
+  deleteExperiment,
+  runExperiment,
+  retryExperiment
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Content);
+export default connect(mapStateToProps, actions)(Content);
