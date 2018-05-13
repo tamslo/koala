@@ -13,7 +13,9 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import DownloadIcon from "@material-ui/icons/CloudDownload";
 import Experiment from "./Experiment";
+import { SERVER_URL } from "../request";
 
 class Experiments extends Component {
   constructor(props) {
@@ -86,6 +88,14 @@ class Experiments extends Component {
               <RefreshIcon />
             </IconButton>
           )}
+          {experiment.done && (
+            <IconButton
+              aria-label="Download"
+              href={SERVER_URL + "/download/all?experiment=" + experiment.id}
+            >
+              <DownloadIcon />
+            </IconButton>
+          )}
           <IconButton
             aria-label="Delete"
             onClick={() => deleteExperiment(experiment.id)}
@@ -117,11 +127,13 @@ class Experiments extends Component {
     const { jobs, experiments } = this.props;
     const experiment = experiments[experimentId];
     const { primary, error, warning } = this.props.theme.palette;
-    return experiment.done || jobs.waiting.includes(experiment.id)
-      ? "inherit"
+    return experiment.error
+      ? error.main
       : experiment.interrupted
         ? warning.main
-        : experiment.error ? error.main : primary.main;
+        : experiment.done || jobs.waiting.includes(experiment.id)
+          ? "inherit"
+          : primary.main;
   }
 
   secondaryText(experimentId) {

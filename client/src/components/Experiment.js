@@ -1,16 +1,34 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { withTheme } from "material-ui/styles";
+import IconButton from "material-ui/IconButton";
+import DownloadIcon from "@material-ui/icons/CloudDownload";
+import { SERVER_URL } from "../request";
 
 class Experiment extends Component {
   render() {
     return (
       <div>
-        <Entry>{`Data URL: ${this.props.dataset}`}</Entry>
-        <Entry>{`Aligner: ${this.props.aligner}`}</Entry>
+        <Entry>
+          {`Data URL: ${this.props.dataset}`}
+          {this.renderDownloadButton("dataset")}
+        </Entry>
+        <Entry>
+          {`Aligner: ${this.props.aligner}`}
+          {this.renderDownloadButton("aligner")}
+        </Entry>
         {this.renderLog()}
       </div>
     );
+  }
+
+  renderDownloadButton(key) {
+    const url = this.props.downloads[key];
+    return url ? (
+      <StyledIconButton aria-label={"Download"} href={SERVER_URL + url}>
+        <DownloadIcon />
+      </StyledIconButton>
+    ) : null;
   }
 
   renderLog() {
@@ -34,11 +52,11 @@ class Experiment extends Component {
     const status =
       entry.action === "done"
         ? { text: "INFO", color: text.secondary }
-        : entry.completed
-          ? { text: "DONE", color: primary.main }
-          : entry.error
-            ? { text: "ERROR", color: error.main }
-            : { text: "INTERRUPT", color: warning.main };
+        : entry.error
+          ? { text: "ERROR", color: error.main }
+          : entry.interrupted
+            ? { text: "INTERRUPT", color: warning.main }
+            : { text: "DONE", color: primary.main };
 
     const content = entry.error
       ? this.props.error
@@ -80,6 +98,10 @@ const Entry = styled.div`
 
 const Status = styled.span`
   color: ${props => props.color};
+`;
+
+const StyledIconButton = styled(IconButton)`
+  margin-left: 12px !important;
 `;
 
 export default withTheme()(Experiment);

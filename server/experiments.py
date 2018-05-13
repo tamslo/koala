@@ -36,6 +36,7 @@ class Experiments:
         experiment["interrupted"] = False
         experiment["report"] = None
         experiment["log"] = []
+        experiment["downloads"] = {}
         return self.add_log_entry(experiment, "create", one_step = True)
 
     def select(self, experiment_id):
@@ -64,12 +65,16 @@ class Experiments:
         experiment["log"].append(entry)
         return self.__write(experiment)
 
-    def log_complete(self, experiment, name):
-        return self.__edit_log_entry(experiment, name, "completed")
+    def add_download(self, experiment, key, path):
+        experiment["downloads"][key] = "/download?path={}".format(path)
+        return self.__write(experiment)
+
+    def log_complete(self, experiment, action):
+        return self.__edit_log_entry(experiment, action, "completed")
 
     def log_error(self, experiment):
-        name = list(experiment["log"].keys())[-1]
-        return self.__edit_log_entry(experiment, name, "error")
+        action = experiment["log"][-1]["action"]
+        return self.__edit_log_entry(experiment, action, "error")
 
     def mark_error(self, experiment_id, error):
         experiment = self.select(experiment_id)

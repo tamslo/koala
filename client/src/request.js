@@ -1,9 +1,9 @@
 const hostname = window && window.location && window.location.hostname;
-const SERVER_URL = "http://" + hostname + ":5000";
+export const SERVER_URL = "http://" + hostname + ":5000";
 
-export const getRequest = route => {
+export const getRequest = (route, json = true) => {
   const request = new Request(`${SERVER_URL}${route}`);
-  return handleFetch(request);
+  return handleFetch(request, json);
 };
 
 export const postRequest = (route, body) => {
@@ -34,13 +34,13 @@ const bodyRequest = (route, body, method) => {
   return handleFetch(request);
 };
 
-const handleFetch = request => {
+const handleFetch = (request, json = true) => {
   return fetch(request)
     .then(response => {
       if (!response.ok) {
         throw new Error(`Server returned ${response.status}`);
       }
-      return response.json();
+      return json ? response.json() : response;
     })
     .catch(error => {
       console.error(`Error in ${request.url}: ${error}`);

@@ -1,5 +1,5 @@
 import * as types from "./actionTypes";
-import { getRequest, postRequest, deleteRequest, putRequest } from "./_request";
+import { getRequest, postRequest, deleteRequest, putRequest } from "../request";
 
 export const fetchContext = () => {
   return dispatch => {
@@ -98,5 +98,9 @@ const updateExperiment = (experiment, dispatch) => {
     type: types.UPDATE_EXPERIMENT,
     experiment
   });
+
+  if (experiment.error) {
+    throw new Error(experiment.error);
+  }
   return experiment;
 };
