@@ -32,13 +32,13 @@ class Experiment extends Component {
       : entry.error ? formatTime(entry.error) : formatTime(entry.started);
 
     const status =
-      entry.action === "interrupted" || entry.action === "done"
-        ? { text: "INFO", color: warning.main }
+      entry.action === "done"
+        ? { text: "INFO", color: text.secondary }
         : entry.completed
           ? { text: "DONE", color: primary.main }
           : entry.error
             ? { text: "ERROR", color: error.main }
-            : { text: "START", color: text.secondary };
+            : { text: "INTERRUPT", color: warning.main };
 
     const content = entry.error
       ? this.props.error

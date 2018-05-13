@@ -78,7 +78,6 @@ class Experiments:
 
     def mark_interrupted(self, experiment_id):
         experiment = self.select(experiment_id)
-        experiment = self.add_log_entry(experiment, "interrupted", one_step = True)
         return self.__set(experiment, "interrupted", True)
 
     def mark_done(self, experiment_id):
