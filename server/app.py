@@ -45,7 +45,10 @@ def data(id):
             experiment = experiments.add_log_entry(experiment, "cached", one_step = True)
         else:
             experiment = experiments.add_log_entry(experiment, "dataset")
-            dataset_path = get_data(experiment["dataset"])
+            dataset_path, headers = urllib.request.urlretrieve(
+                experiment["dataset"],
+                cache.create_dataset(experiment["dataset"])
+            )
             experiment = experiments.log_complete(experiment, "dataset")
         experiment = experiments.add_download(experiment, "dataset", dataset_path)
     except Exception as error:
@@ -75,10 +78,6 @@ def download():
     path = request.args.get("path")
     file_name = path.split("/")[-1]
     return send_file(path, as_attachment=True, attachment_filename=file_name)
-
-def get_data(url):
-    file_name, headers = urllib.request.urlretrieve(url, cache.create_dataset(url))
-    return file_name
 
 def clean_up():
     # Not working properly if debug=True, see https://stackoverflow.com/questions/37064595/handling-atexit-for-multiple-app-objects-with-flask-dev-server-reloader
