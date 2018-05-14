@@ -1,0 +1,21 @@
+#!/bin/sh
+
+echo ""
+echo "Starting deployment"
+echo ""
+echo "Killing server"
+killall python
+echo ""
+echo "Checking out current version"
+git --work-tree=/home/deploy/code/ --git-dir=/home/deploy/git/ checkout -f
+cd ~/code
+echo ""
+echo "Installing dependencies"
+echo ""
+./scripts/install.sh
+echo ""
+echo "Starting in production mode"
+./scripts/start-prod.sh
+echo ""
+echo "Deployment finished"
+echo ""

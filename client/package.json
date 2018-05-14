@@ -15,7 +15,7 @@
   },
   "scripts": {
     "start":
-      "concurrently \"react-scripts start\" \"cd ../server && python app.py\" -n \"client,server\" -c \"green,yellow\" --kill-others-on-fail",
+      "concurrently \"react-scripts start\" \"cd ../ && python3 app.py -d\" -n \"client,server\" -c \"green,yellow\" --kill-others-on-fail",
     "start-client": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
