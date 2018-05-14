@@ -8,8 +8,8 @@ Make sure you have the following programs installed, versions given are those us
 
 * node (10.0.0)
 * npm (5.6.0)
-* python3 (3.5.2)
-* pip3 (8.1.1)
+* python (3.5.2)
+* pip (8.1.1)
 * docker (1.13.1)
 * docker-compose (1.8.0)
 
@@ -17,7 +17,7 @@ To install required modules, run `scripts/install.sh`.
 
 To start the app in development mode, run `scripts/start-dev.sh`, the app is accessible under https://localhost:3000.
 
-To start the app in production mode `scripts/start-prod.sh`, , the app is accessible under https://localhost:5000.
+To start the app in production mode `scripts/start-prod.sh`, the app is accessible under https://localhost:5000.
 
 ## Deployment
 

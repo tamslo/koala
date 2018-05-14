@@ -1,2 +1,2 @@
-# docker-compose up -d
+docker-compose up -d
 cd client && npm start
