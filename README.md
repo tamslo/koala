@@ -23,6 +23,8 @@ To start the app in production mode `scripts/start-prod.sh`, the app is accessib
 
 **TODO**: Needs to be set up
 
+The deployment server is `vm-slosarek-01.eaalab.hpi.uni-potsdam.de` (192.168.31.121).
+
 To deploy, if not done already, add the deploy remote `git remote add deploy Tamara.Slosarek@vm-slosarek-01.eaalab.hpi.uni-potsdam.de:git` and push the current version to the deploy remote `git push deploy`.
 
 We are using a git remote on the deployment servervm-slosarek-01.eaalab.hpi.uni-potsdam.de (for instructions see https://gist.github.com/noelboss/3fe13927025b89757f8fb12e9066f2fa) that deploys the current version using the `post-receive` hook. Copy the hook to the server with `cp ~/code/scripts/post-receive ~/git/hooks/post-receive` and make it executable with `chmod a+x ~/git/hooks/post-receive`.
