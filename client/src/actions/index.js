@@ -100,6 +100,10 @@ const updateExperiment = (experiment, dispatch) => {
   });
 
   if (experiment.error) {
+    dispatch({
+      type: types.EXPERIMENT_DONE,
+      experiment
+    });
     throw new Error(experiment.error);
   }
   return experiment;

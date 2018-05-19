@@ -132,4 +132,4 @@ if __name__ == "__main__":
     parser = optparse.OptionParser()
     parser.add_option("-d", "--debug", action="store_true", dest="debug", help=optparse.SUPPRESS_HELP)
     options, _ = parser.parse_args()
-    app.run(host = "0.0.0.0", port = "5000", debug = bool(options.debug))
+    app.run(host="0.0.0.0", port="5000", debug=bool(options.debug))
