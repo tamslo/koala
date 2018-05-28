@@ -13,7 +13,8 @@ echo ""
 echo "Installing dependencies"
 echo ""
 pip3 install -r requirements.txt
-cd client && npm install
+cd client
+npm install
 echo ""
 echo "Starting in production mode"
 cd ..
