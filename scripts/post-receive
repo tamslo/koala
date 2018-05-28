@@ -17,7 +17,7 @@ echo "Starting deployment"
 echo ""
 
 echo "Killing server"
-killall python
+killall python3
 
 echo ""
 echo "Checking out current version"
