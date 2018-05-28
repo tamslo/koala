@@ -22,6 +22,7 @@ source scripts/install.sh
 
 echo ""
 echo "Starting in production mode"
+cd ~/code
 chmod a+x scripts/prod-start.sh
 source scripts/prod-start.sh
 
