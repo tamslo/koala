@@ -1,5 +1,6 @@
 #!/bin/bash
 
+source ~/.bashrc
 echo ""
 echo "Starting deployment"
 echo ""
