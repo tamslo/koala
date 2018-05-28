@@ -1,24 +1,30 @@
 #!/bin/bash
 
 source /home/deploy/.bashrc
+
 echo ""
 echo "Starting deployment"
 echo ""
+
 echo "Killing server"
 killall python
+
 echo ""
 echo "Checking out current version"
 git --work-tree=/home/deploy/code/ --git-dir=/home/deploy/git/ checkout -f
-cd ~/code
+
 echo ""
 echo "Installing dependencies"
 echo ""
+cd ~/code
 chmod a+x scripts/install.sh
-./scripts/install.sh
+source scripts/install.sh
+
 echo ""
 echo "Starting in production mode"
 chmod a+x scripts/prod-start.sh
-./scripts/prod-start.sh
+source scripts/prod-start.sh
+
 echo ""
 echo "Deployment finished"
 echo ""
