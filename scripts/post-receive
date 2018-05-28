@@ -12,7 +12,7 @@ cd ~/code
 echo ""
 echo "Installing dependencies"
 echo ""
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 cd client && npm install
 echo ""
 echo "Starting in production mode"
@@ -21,7 +21,7 @@ docker-compose up -d
 cd client
 npm run build
 cd ..
-nohup python app.py >> info.log 2>> error.log &
+nohup python3 app.py >> info.log 2>> error.log &
 echo ""
 echo "Deployment finished"
 echo ""
