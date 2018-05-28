@@ -12,13 +12,16 @@ cd ~/code
 echo ""
 echo "Installing dependencies"
 echo ""
-chmod a+x ~/code/scripts/install.sh
-./scripts/install.sh
+pip install -r requirements.txt
+cd client && npm install
 echo ""
 echo "Starting in production mode"
 cd ..
-chmod a+x ~/code/scripts/prod-start.sh
-./scripts/prod-start.sh
+docker-compose up -d
+cd client
+npm run build
+cd ..
+nohup python app.py >> info.log 2>> error.log &
 echo ""
 echo "Deployment finished"
 echo ""
