@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source ~/.bashrc
+source /home/deploy/.bashrc
 echo ""
 echo "Starting deployment"
 echo ""
@@ -13,17 +13,12 @@ cd ~/code
 echo ""
 echo "Installing dependencies"
 echo ""
-pip3 install -r requirements.txt
-cd client
-npm install
+chmod a+x scripts/install.sh
+./scripts/install.sh
 echo ""
 echo "Starting in production mode"
-cd ..
-docker-compose up -d
-cd client
-npm run build
-cd ..
-nohup python3 app.py >> info.log 2>> error.log &
+chmod a+x scripts/prod-start.sh
+./scripts/prod-start.sh
 echo ""
 echo "Deployment finished"
 echo ""
