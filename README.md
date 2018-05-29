@@ -6,12 +6,11 @@ An extensible platform to run and evaluate RNA-Seq analysis pipelines. The curre
 
 Make sure you have the following programs installed, versions given are those used for development:
 
-* node (10.0.0)
+* node (10.2.1)
 * npm (5.6.0)
 * python (3.5.2)
 * pip (8.1.1)
-* docker (1.13.1)
-* docker-compose (1.8.0)
+* docker (17.12.1-ce)
 
 Install requirements by running `./scripts/install.sh`.
 
@@ -27,4 +26,4 @@ The deployment server is `vm-slosarek-01.eaalab.hpi.uni-potsdam.de` (192.168.31.
 
 To deploy, if not done already, add the deploy remote `git remote add deploy deploy@192.168.31.121:git` and push the current version to the deploy remote `git push deploy`.
 
-We are using a git remote on the deployment server `vm-slosarek-01.eaalab.hpi.uni-potsdam.de` (for instructions see https://gist.github.com/noelboss/3fe13927025b89757f8fb12e9066f2fa) that deploys the current version using the `post-receive` hook. Make sure the post-receive hook is executable with `chmod a+x ~/git/hooks/post-receive`. To update the hook, run `cp ~/code/scripts/post-receive ~/git/hooks/post-receive`
+We are using a git remote on the deployment server that installs and runs the current version using the `post-receive` hook (for instructions see https://gist.github.com/noelboss/3fe13927025b89757f8fb12e9066f2fa). Make sure the post-receive hook is executable with `chmod a+x ~/git/hooks/post-receive`. To update the hook, run `cp ~/code/scripts/post-receive ~/git/hooks/post-receive`.

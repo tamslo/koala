@@ -1,4 +1,5 @@
-docker-compose up -d
+killall python3
+
 cd client
 npm run build
 cd ..

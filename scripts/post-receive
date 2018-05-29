@@ -16,9 +16,6 @@ echo ""
 echo "Starting deployment"
 echo ""
 
-echo "Killing server"
-killall python3
-
 echo ""
 echo "Checking out current version"
 git --work-tree=/home/deploy/code/ --git-dir=/home/deploy/git/ checkout -f
@@ -37,5 +34,5 @@ chmod a+x scripts/prod-start.sh
 source scripts/prod-start.sh
 
 echo ""
-echo "Deployment finished"
+echo "Deployment finished, PID is $(lsof -i:5000)"
 echo ""
