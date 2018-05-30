@@ -1,6 +1,0 @@
-{
-  "aligners": {
-    "star": { "name": "STAR" },
-    "novoalign": { "name": "Novoalign" }
-  }
-}

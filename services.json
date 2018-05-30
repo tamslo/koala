@@ -1,0 +1,4 @@
+[
+  { "id": "star", "name": "STAR", "type": "aligner" },
+  { "id": "novoalign", "name": "Novoalign", "type": "aligner" }
+]

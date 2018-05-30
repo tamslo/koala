@@ -7,10 +7,14 @@ import Button from "material-ui/Button";
 export default class extends Component {
   constructor(props) {
     super(props);
+    const aligners = this.props.services.filter(
+      service => service.type === "aligner"
+    );
     this.state = {
       name: "New Experiment",
       dataset: "https://www.example.com",
-      aligner: "star"
+      aligner: aligners[0].id,
+      aligners
     };
   }
 
@@ -21,7 +25,6 @@ export default class extends Component {
   };
 
   render() {
-    const { aligners } = this.props;
     return (
       <Container>
         <FixedWidthTextField
@@ -46,15 +49,21 @@ export default class extends Component {
           <MenuItem value="">
             <em>None</em>
           </MenuItem>
-          {Object.keys(aligners).map(aligner => (
-            <MenuItem key={aligner} value={aligner}>
-              {aligners[aligner].name}
+          {this.state.aligners.map(aligner => (
+            <MenuItem key={aligner.id} value={aligner.id}>
+              {aligner.name}
             </MenuItem>
           ))}
         </FixedWidthTextField>
         <Button
           color="primary"
-          onClick={() => this.props.addExperiment(this.state)}
+          onClick={() =>
+            this.props.addExperiment({
+              name: this.state.name,
+              dataset: this.state.dataset,
+              aligner: this.state.aligner
+            })
+          }
           disabled={!this.canRun()}
           size="large"
         >
@@ -67,9 +76,9 @@ export default class extends Component {
   canRun() {
     const nameValid = this.state.name !== "";
     const dataValid = this.state.dataset !== "";
-    const alignerValid = Object.keys(this.props.aligners).includes(
-      this.state.aligner
-    );
+    const alignerValid = this.state.aligners
+      .map(aligner => aligner.id)
+      .includes(this.state.aligner);
     return nameValid && dataValid && alignerValid;
   }
 }

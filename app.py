@@ -8,7 +8,7 @@ from experiments import Experiments
 app = Flask(__name__)
 CORS(app)
 
-config = json.load(open("config.json", "r"), object_pairs_hook=OrderedDict)
+services = json.load(open("services.json", "r"), object_pairs_hook=OrderedDict)
 data_directory = "data/"
 archive_directory = data_directory + "zips/"
 if not os.path.isdir(archive_directory):
@@ -24,7 +24,7 @@ def ping():
 @app.route("/context", methods=["GET"])
 def get_context():
     return json.dumps({
-        "aligners": config["aligners"],
+        "services": services,
         "experiments": experiments.all()
     })
 
