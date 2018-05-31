@@ -14,7 +14,7 @@ class Experiment extends Component {
           {this.renderDownloadButton("dataset")}
         </Entry>
         <Entry>
-          {`Aligner: ${this.props.aligner}`}
+          {`Aligner: ${this.props.alignment}`}
           {this.renderDownloadButton("aligner")}
         </Entry>
         {this.renderLog()}
