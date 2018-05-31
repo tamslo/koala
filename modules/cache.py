@@ -25,13 +25,17 @@ class Cache:
         self.__write_index()
         return dataset_id
 
-    def get_experiment_data(self, experiment):
-        # TODO look for alignment and other results once implemented
-        # TODO refactor -- simple lookup
-        cached_data = { "dataset": None, "alignment": None }
-        if experiment["dataset"] in list(self.index.keys()):
-            cached_data["dataset"] = self.dataset_path(self.index[experiment["dataset"]])
-        return cached_data
+    def lookup(self, experiment, action):
+        if experiment["dataset"] in self.index:
+            dataset_id = self.index[experiment["dataset"]]
+            if action == "dataset":
+                return self.dataset_path(dataset_id)
+            else:
+                directory_path = self.directory + dataset_id + "/" + experiment[action]
+                if os.path.isdir(directory_path):
+                    return os.listdir(directory_path)[0]
+            # Default value
+        return False
 
     def create_dataset(self, url):
         dataset_id = self.__cache(url)
@@ -42,7 +46,7 @@ class Cache:
 
     def create_path(self, experiment, action):
         dataset_id = self.index[experiment["dataset"]]
-        path = self.directory + dataset_id + "/" + action + "/" + experiment[action]
+        path = self.directory + dataset_id + "/" + experiment[action]
         os.makedirs(path)
         return path
 

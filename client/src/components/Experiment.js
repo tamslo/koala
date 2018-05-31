@@ -44,7 +44,6 @@ class Experiment extends Component {
     const { primary, error, warning, text } = theme.palette;
     const texts = {
       create: "Create experiment",
-      dataset_cached: "Load data from cache",
       dataset: "Download data",
       update: "Update experiment"
     };
@@ -64,7 +63,7 @@ class Experiment extends Component {
 
     const content = entry.error
       ? this.props.error
-      : texts[entry.action] || capitalize(entry.action);
+      : texts[entry.action] || formatAction(entry.action);
 
     return (
       <Entry key={`log-entry-${index}`}>
@@ -85,6 +84,14 @@ const formatTime = time => {
 const pad = number => {
   number = number.toString();
   return number.length === 2 ? number : "0" + number;
+};
+
+const formatAction = string => {
+  if (string.endsWith("_cached")) {
+    return `Load ${string.split("_")[0]} from cache`;
+  } else {
+    return capitalize(string);
+  }
 };
 
 const capitalize = string => {

@@ -15,10 +15,9 @@ class Runner:
 
     def execute(self, action, experiment_id):
         experiment = self.experiments.select(experiment_id)
-        experiment_data = self.cache.get_experiment_data(experiment)
+        file_path = self.cache.lookup(experiment, action)
         try:
-            if experiment_data[action]:
-                file_path = experiment_data[action]
+            if file_path:
                 experiment = self.experiments.add_log_entry(
                     experiment,
                     "{}_cached".format(action),
@@ -45,8 +44,7 @@ class Runner:
         alignment_directory = self.cache.create_path(experiment, "alignment")
         self.docker_client.containers.run(
             "star",
-            "touch {}/alignment.bam; ".format(alignment_directory) +
-            "echo 'TEST' > {}/alignment.bam".format(alignment_directory),
+            "touch {}/alignment.bam".format(alignment_directory),
             volumes={
                 self.absolute_data_path: {
                     "bind": "/data",
