@@ -15,12 +15,10 @@ export const fetchContext = () => {
 export const deleteExperiment = id => {
   return dispatch => {
     deleteRequest("/experiment?id=" + id).then(experiment => {
-      if (!experiment.error) {
-        dispatch({
-          type: types.DELETE_EXPERIMENT,
-          experiment
-        });
-      }
+      dispatch({
+        type: types.DELETE_EXPERIMENT,
+        experiment
+      });
     });
   };
 };
