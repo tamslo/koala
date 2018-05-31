@@ -53,6 +53,7 @@ class Content extends Component {
         {Object.keys(context.experiments).length > 0 && (
           <Experiments
             experiments={context.experiments}
+            services={context.services}
             deleteExperiment={deleteExperiment}
             retryExperiment={retryExperiment}
             jobs={jobs}

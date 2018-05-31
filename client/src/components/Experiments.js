@@ -46,7 +46,7 @@ class Experiments extends Component {
   }
 
   renderExperiment(experimentId) {
-    const { experiments } = this.props;
+    const { experiments, services } = this.props;
     const experiment = experiments[experimentId];
     return (
       <div key={experiment.id}>
@@ -57,7 +57,7 @@ class Experiments extends Component {
           unmountOnExit
         >
           <InsetListItem>
-            <Experiment {...experiment} />
+            <Experiment {...experiment} services={services} />
           </InsetListItem>
         </Collapse>
       </div>
