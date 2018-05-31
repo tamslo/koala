@@ -56,26 +56,34 @@ def done():
     experiment_id = request.args.get("experiment")
     return json.dumps(experiments.mark_done(experiment_id))
 
-@app.route("/download/all", methods=["GET"])
-def download_all():
-    # TODO one route, if no path given, download all -- make download module
-    experiment_id = request.args.get("experiment")
-    experiment = experiments.select(experiment_id)
-    archive_name = experiment["name"] + ".zip"
-    archive_path = archive_directory + archive_name
-    archive = zipfile.ZipFile(archive_path, "w")
-    for key, url in experiment["downloads"].items():
-        path = url.split("path=")[1]
-        file_name = path.split("/")[-1]
-        archive.write(path, file_name)
-    archive.close()
-    return send_file(archive_path, as_attachment=True, attachment_filename=archive_name)
-
 @app.route("/download", methods=["GET"])
 def download():
+    experiment_id = request.args.get("experiment")
     path = request.args.get("path")
-    file_name = path.split("/")[-1]
-    return send_file(path, as_attachment=True, attachment_filename=file_name)
+
+    if path != None:
+        file_name = path.split("/")[-1]
+        return send_file(
+            path,
+            as_attachment=True,
+            attachment_filename=file_name
+        )
+
+    elif experiment_id != None:
+        experiment = experiments.select(experiment_id)
+        archive_name = experiment["name"] + ".zip"
+        archive_path = archive_directory + archive_name
+        archive = zipfile.ZipFile(archive_path, "w")
+        for key, url in experiment["downloads"].items():
+            path = url.split("path=")[1]
+            file_name = path.split("/")[-1]
+            archive.write(path, file_name)
+        archive.close()
+        return send_file(
+            archive_path,
+            as_attachment=True,
+            attachment_filename=archive_name
+        )
 
 
 # Routes for client built with `npm run build`
