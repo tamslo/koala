@@ -39,11 +39,18 @@ class Cache:
     def dataset_path(self, dataset_id):
         return self.directory + dataset_id + "/" + "data.fastq"
 
-    def clean_up(self, action, id):
-        if action == "dataset":
-            shutil.rmtree(self.directory + self.index[id])
-            del self.index[id]
+    def clean_up(self, action, experiment):
+        if not experiment["dataset"] in self.index:
+            return None
+
+        dataset_folder = self.directory + self.index[experiment["dataset"]]
+        file_path = dataset_folder + "/" + experiment[action]
+        if action == "dataset" and os.path.isdir(dataset_folder):
+            shutil.rmtree(dataset_folder)
+            del self.index[experiment[action]]
             self.__write_index()
+        elif action != "dataset" and os.path.exists(file_path):
+            os.remove(self.directory + dataset_folder + "/" + file_id)
 
 def is_uuid(id):
     try:

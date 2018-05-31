@@ -40,7 +40,7 @@ class Experiment extends Component {
     const { primary, error, warning, text } = theme.palette;
     const texts = {
       create: "Create experiment",
-      cached: "Load data from cache",
+      dataset_cached: "Load data from cache",
       dataset: "Download data",
       update: "Update experiment"
     };

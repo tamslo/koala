@@ -14,7 +14,7 @@ export const fetchContext = () => {
 
 export const deleteExperiment = id => {
   return dispatch => {
-    deleteRequest("/experiment/" + id).then(experiment => {
+    deleteRequest("/experiment?id=" + id).then(experiment => {
       if (!experiment.isError) {
         dispatch({
           type: types.DELETE_EXPERIMENT,
@@ -71,16 +71,16 @@ export const runExperiment = id => {
 
 const handleExperimentRun = (experimentId, dispatch) => {
   return new Promise((resolve, reject) => {
-    getRequest("/data/" + experimentId)
+    getRequest("/execute?step=dataset&experiment=" + experimentId)
       .then(experiment => {
         return updateExperiment(experiment, dispatch);
       })
       .then(experiment => {
-        // TODO alignment
+        // return getRequest("/execute?step=alignment&experiment=" + experimentId);
         return experiment;
       })
       .then(experiment => {
-        return getRequest("/done/" + experiment.id);
+        return getRequest("/done?experiment=" + experiment.id);
       })
       .then(experiment => {
         resolve(updateExperiment(experiment, dispatch));

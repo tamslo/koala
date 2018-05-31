@@ -61,7 +61,7 @@ export default class extends Component {
             this.props.addExperiment({
               name: this.state.name,
               dataset: this.state.dataset,
-              aligner: this.state.aligner
+              alignment: this.state.aligner
             })
           }
           disabled={!this.canRun()}

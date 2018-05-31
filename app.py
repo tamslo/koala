@@ -1,9 +1,10 @@
-import json, urllib, atexit, zipfile, time, os, optparse
+import json, atexit, zipfile, time, os, optparse
 from flask import Flask, request, send_file, send_from_directory
 from flask_cors import CORS
 from collections import OrderedDict
-from cache import Cache
-from experiments import Experiments
+from modules.cache import Cache
+from modules.experiments import Experiments
+from modules.runner import Runner
 
 app = Flask(__name__)
 CORS(app)
@@ -16,6 +17,7 @@ if not os.path.isdir(archive_directory):
 
 cache = Cache(data_directory)
 experiments = Experiments(data_directory)
+runner = Runner(cache, experiments)
 
 @app.route("/ping")
 def ping():
@@ -28,9 +30,8 @@ def get_context():
         "experiments": experiments.all()
     })
 
-@app.route("/experiment", methods=["POST", "PUT"])
-@app.route("/experiment/<id>", methods=["DELETE"])
-def experiment(id = None):
+@app.route("/experiment", methods=["POST", "PUT", "DELETE"])
+def experiment():
     if request.method == "POST":
         params = request.get_json()
         experiment = experiments.create(params)
@@ -40,35 +41,24 @@ def experiment(id = None):
         experiment = experiments.update(params)
         return json.dumps(experiment)
     else:
-        return json.dumps(experiments.delete(id))
+        experiment_id = request.args.get("id")
+        return json.dumps(experiments.delete(experiment_id))
 
-@app.route("/data/<id>", methods=["GET"])
-def data(id):
-    experiment = experiments.select(id)
-    experiment_data = cache.get_experiment_data(experiment)
-    try:
-        if experiment_data["dataset"]:
-            dataset_path = experiment_data["dataset"]
-            experiment = experiments.add_log_entry(experiment, "cached", one_step = True)
-        else:
-            experiment = experiments.add_log_entry(experiment, "dataset")
-            dataset_path, headers = urllib.request.urlretrieve(
-                experiment["dataset"],
-                cache.create_dataset(experiment["dataset"])
-            )
-            experiment = experiments.log_complete(experiment, "dataset")
-        experiment = experiments.add_download(experiment, "dataset", dataset_path)
-    except Exception as error:
-        cache.clean_up("dataset", experiment["dataset"])
-        experiment = experiments.mark_error(id, error)
+@app.route("/execute", methods=["GET"])
+def data():
+    step = request.args.get("step")
+    experiment_id = request.args.get("experiment")
+    experiment = runner.execute(step, experiment_id)
     return json.dumps(experiment)
 
-@app.route("/done/<id>", methods=["GET"])
-def done(id):
-    return json.dumps(experiments.mark_done(id))
+@app.route("/done", methods=["GET"])
+def done():
+    experiment_id = request.args.get("experiment")
+    return json.dumps(experiments.mark_done(experiment_id))
 
 @app.route("/download/all", methods=["GET"])
 def download_all():
+    # TODO one route, if no path given, download all -- make download module
     experiment_id = request.args.get("experiment")
     experiment = experiments.select(experiment_id)
     archive_name = experiment["name"] + ".zip"
@@ -86,6 +76,7 @@ def download():
     path = request.args.get("path")
     file_name = path.split("/")[-1]
     return send_file(path, as_attachment=True, attachment_filename=file_name)
+
 
 # Routes for client built with `npm run build`
 
@@ -116,9 +107,8 @@ def clean_up():
             experiments.mark_interrupted(experiment_id)
             action = last_log_entry["action"]
             if action in experiment:
-                id = experiment[action]
                 try:
-                    cache.clean_up(action, id)
+                    cache.clean_up(action, experiment)
                 except Exception as error:
                     app.logger.error("Manual cache-cleanup needed for {} {} ({})".format(
                         action,
