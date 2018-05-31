@@ -60,25 +60,27 @@ export const runExperiment = id => {
     });
 
     // Chain execution steps
-    getRequest("/execute?step=dataset&experiment=" + id)
+    let latestExperiment = null;
+    getRequest("/execute?action=dataset&experiment=" + id)
       .then(experiment => {
+        latestExperiment = experiment;
         updateExperiment(experiment, dispatch);
-        return getRequest(
-          "/execute?step=alignment&experiment=" + experiment.id
-        );
+        return getRequest("/execute?action=alignment&experiment=" + id);
       })
       .then(experiment => {
+        latestExperiment = experiment;
         updateExperiment(experiment, dispatch);
-        return getRequest("/done?experiment=" + experiment.id);
+        return getRequest("/done?experiment=" + id);
       })
       .then(experiment => {
+        latestExperiment = experiment;
         updateExperiment(experiment, dispatch);
         dispatch({
           type: types.EXPERIMENT_DONE
         });
       })
       .catch(error => {
-        const experiment = { id, error };
+        const experiment = { ...latestExperiment, error };
         dispatch({
           type: types.UPDATE_EXPERIMENT,
           experiment
