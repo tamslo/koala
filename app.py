@@ -17,7 +17,7 @@ if not os.path.isdir(archive_directory):
 
 cache = Cache(data_directory)
 experiments = Experiments(data_directory)
-runner = Runner(cache, experiments)
+runner = Runner(cache, experiments, data_directory)
 
 @app.route("/ping")
 def ping():
@@ -46,9 +46,9 @@ def experiment():
 
 @app.route("/execute", methods=["GET"])
 def data():
-    step = request.args.get("step")
+    action = request.args.get("action")
     experiment_id = request.args.get("experiment")
-    experiment = runner.execute(step, experiment_id)
+    experiment = runner.execute(action, experiment_id)
     return json.dumps(experiment)
 
 @app.route("/done", methods=["GET"])

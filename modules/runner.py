@@ -1,33 +1,37 @@
-import urllib
+import urllib, docker, yaml
 
 class Runner:
-    def __init__(self, cache, experiments):
+    def __init__(self, cache, experiments, data_directory):
         self.cache = cache
         self.experiments = experiments
-        self.step_actions = {
+        self.actions = {
             "dataset": self.__get_dataset,
             "alignment": self.__align
         }
+        self.docker_client = docker.from_env()
+        with open("config.yml", "r") as config_file:
+            config = yaml.load(config_file)
+            self.absolute_data_path = config["absolute_repo_path"] + data_directory
 
-    def execute(self, step, experiment_id):
+    def execute(self, action, experiment_id):
         experiment = self.experiments.select(experiment_id)
         experiment_data = self.cache.get_experiment_data(experiment)
         try:
-            if experiment_data[step]:
-                file_path = experiment_data[step]
+            if experiment_data[action]:
+                file_path = experiment_data[action]
                 experiment = self.experiments.add_log_entry(
                     experiment,
-                    "{}_cached".format(step),
+                    "{}_cached".format(action),
                     one_step = True
                 )
             else:
-                experiment = self.experiments.add_log_entry(experiment, step)
-                file_path = self.step_actions[step](experiment)
-                experiment = self.experiments.log_complete(experiment, step)
-            experiment = self.experiments.add_download(experiment, step, file_path)
+                experiment = self.experiments.add_log_entry(experiment, action)
+                file_path = self.actions[action](experiment)
+                experiment = self.experiments.log_complete(experiment, action)
+            experiment = self.experiments.add_download(experiment, action, file_path)
         except Exception as error:
-            self.cache.clean_up(step, experiment)
-            experiment = self.experiments.mark_error(id, error)
+            self.cache.clean_up(action, experiment)
+            experiment = self.experiments.mark_error(experiment_id, error)
         return experiment
 
     def __get_dataset(self, experiment):
@@ -38,4 +42,17 @@ class Runner:
         return dataset_path
 
     def __align(self, experiment):
-        return ""
+        alignment_directory = self.cache.create_path(experiment, "alignment")
+        self.docker_client.containers.run(
+            "star",
+            "touch {}/alignment.bam; ".format(alignment_directory) +
+            "echo 'TEST' > {}/alignment.bam".format(alignment_directory),
+            volumes={
+                self.absolute_data_path: {
+                    "bind": "/data",
+                    "mode": "rw"
+                }
+            },
+            auto_remove=True
+        )
+        return alignment_directory + "/" + "alignment.bam"

@@ -40,6 +40,12 @@ class Cache:
     def dataset_path(self, dataset_id):
         return self.directory + dataset_id + "/" + "data.fastq"
 
+    def create_path(self, experiment, action):
+        dataset_id = self.index[experiment["dataset"]]
+        path = self.directory + dataset_id + "/" + action + "/" + experiment[action]
+        os.makedirs(path)
+        return path
+
     def clean_up(self, action, experiment):
         if not experiment["dataset"] in self.index:
             return None
