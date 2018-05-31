@@ -15,7 +15,7 @@ export const fetchContext = () => {
 export const deleteExperiment = id => {
   return dispatch => {
     deleteRequest("/experiment?id=" + id).then(experiment => {
-      if (!experiment.isError) {
+      if (!experiment.error) {
         dispatch({
           type: types.DELETE_EXPERIMENT,
           experiment
@@ -28,7 +28,7 @@ export const deleteExperiment = id => {
 export const addExperiment = params => {
   return dispatch => {
     postRequest("/experiment", params).then(experiment => {
-      if (!experiment.isError) {
+      if (!experiment.error) {
         dispatch({
           type: types.ADD_EXPERIMENT,
           experiment
@@ -42,8 +42,7 @@ export const retryExperiment = experiment => {
   return dispatch => {
     const params = { ...experiment, interrupted: false };
     putRequest("/experiment", params).then(experiment => {
-      console.log(experiment);
-      if (!experiment.isError) {
+      if (!experiment.error) {
         dispatch({
           type: types.ADD_EXPERIMENT,
           experiment
@@ -59,38 +58,40 @@ export const runExperiment = id => {
       type: types.RUN_EXPERIMENT,
       id
     });
-    handleExperimentRun(id, dispatch)
-      .then(response => {
+
+    // Chain execution steps
+    getRequest("/execute?step=dataset&experiment=" + id)
+      .then(experiment => {
+        updateExperiment(experiment, dispatch);
+        return getRequest(
+          "/execute?step=alignment&experiment=" + experiment.id
+        );
+      })
+      .then(experiment => {
+        updateExperiment(experiment, dispatch);
+        return getRequest("/done?experiment=" + experiment.id);
+      })
+      .then(experiment => {
+        updateExperiment(experiment, dispatch);
         dispatch({
           type: types.EXPERIMENT_DONE
         });
       })
-      .catch(console.error);
+      .catch(error => {
+        const experiment = { id, error };
+        dispatch({
+          type: types.UPDATE_EXPERIMENT,
+          experiment
+        });
+        dispatch({
+          type: types.EXPERIMENT_DONE
+        });
+      });
   };
 };
 
-const handleExperimentRun = (experimentId, dispatch) => {
-  return new Promise((resolve, reject) => {
-    getRequest("/execute?step=dataset&experiment=" + experimentId)
-      .then(experiment => {
-        return updateExperiment(experiment, dispatch);
-      })
-      .then(experiment => {
-        // return getRequest("/execute?step=alignment&experiment=" + experimentId);
-        return experiment;
-      })
-      .then(experiment => {
-        return getRequest("/done?experiment=" + experiment.id);
-      })
-      .then(experiment => {
-        resolve(updateExperiment(experiment, dispatch));
-      })
-      .catch(error => reject);
-  });
-};
-
 const updateExperiment = (experiment, dispatch) => {
-  if (experiment.isError) {
+  if (experiment.error) {
     throw new Error(experiment.error);
   }
 
@@ -99,12 +100,5 @@ const updateExperiment = (experiment, dispatch) => {
     experiment
   });
 
-  if (experiment.error) {
-    dispatch({
-      type: types.EXPERIMENT_DONE,
-      experiment
-    });
-    throw new Error(experiment.error);
-  }
   return experiment;
 };

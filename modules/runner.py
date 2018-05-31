@@ -21,28 +21,20 @@ class Runner:
                     one_step = True
                 )
             else:
-                print("Creating start log", flush=True)
                 experiment = self.experiments.add_log_entry(experiment, step)
-                print("Running action", flush=True)
                 file_path = self.step_actions[step](experiment)
-                print("Creating end log", flush=True)
                 experiment = self.experiments.log_complete(experiment, step)
             experiment = self.experiments.add_download(experiment, step, file_path)
         except Exception as error:
-            print("Error in step " + step + ": " + str(error))
             self.cache.clean_up(step, experiment)
             experiment = self.experiments.mark_error(id, error)
         return experiment
 
     def __get_dataset(self, experiment):
-        print("Getting dataset", flush=True)
-        try:
-            dataset_path, headers = urllib.request.urlretrieve(
-                experiment["dataset"],
-                self.cache.create_dataset(experiment["dataset"])
-            )
-        except Exception as error:
-            print(error, flush=True)
+        dataset_path, headers = urllib.request.urlretrieve(
+            experiment["dataset"],
+            self.cache.create_dataset(experiment["dataset"])
+        )
         return dataset_path
 
     def __align(self, experiment):

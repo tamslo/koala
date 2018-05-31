@@ -36,11 +36,11 @@ class Content extends Component {
       return <Loading content={"Setting everything up..."} />;
     }
 
-    if (context.isError) {
+    if (context.error) {
       return (
         <Loading
           content={context.error.message}
-          error={context.isError}
+          error={context.error}
           retry={this.props.fetchContext}
         />
       );

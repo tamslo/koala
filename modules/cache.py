@@ -27,7 +27,8 @@ class Cache:
 
     def get_experiment_data(self, experiment):
         # TODO look for alignment and other results once implemented
-        cached_data = { "dataset": None }
+        # TODO refactor -- simple lookup
+        cached_data = { "dataset": None, "alignment": None }
         if experiment["dataset"] in list(self.index.keys()):
             cached_data["dataset"] = self.dataset_path(self.index[experiment["dataset"]])
         return cached_data
