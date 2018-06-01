@@ -12,7 +12,7 @@ Make sure you have the following programs installed, versions given are those us
 * pip (8.1.1)
 * docker (17.12.1-ce)
 
-Install requirements by running `./scripts/install.sh`, rename the `config.example.yml` to `config.yml`, and adapt the absolute path to the data directory, which is the repository path with a trailing dash.
+Install requirements by running `./scripts/install.sh`, rename the `config.example.yml` to `config.yml`, and adapt the absolute path to the repository (keep the trailing dash).
 
 To start the app in development mode, run `./scripts/dev-start.sh`, the app is accessible under https://localhost:3000.
 

@@ -5,19 +5,18 @@ from collections import OrderedDict
 from modules.cache import Cache
 from modules.experiments import Experiments
 from modules.runner import Runner
+from modules.downloader import Downloader
 
 app = Flask(__name__)
 CORS(app)
 
 services = json.load(open("services.json", "r"), object_pairs_hook=OrderedDict)
 data_directory = "data/"
-archive_directory = data_directory + "zips/"
-if not os.path.isdir(archive_directory):
-    os.makedirs(archive_directory)
 
 cache = Cache(data_directory)
 experiments = Experiments(data_directory)
 runner = Runner(cache, experiments, data_directory)
+downloader = Downloader(data_directory)
 
 @app.route("/ping")
 def ping():
@@ -60,30 +59,17 @@ def done():
 def download():
     experiment_id = request.args.get("experiment")
     path = request.args.get("path")
-
     if path != None:
-        file_name = path.split("/")[-1]
-        return send_file(
-            path,
-            as_attachment=True,
-            attachment_filename=file_name
-        )
-
+        download_path = path
+        download_name = downloader.file_name(path)
     elif experiment_id != None:
         experiment = experiments.select(experiment_id)
-        archive_name = experiment["name"] + ".zip"
-        archive_path = archive_directory + archive_name
-        archive = zipfile.ZipFile(archive_path, "w")
-        for key, url in experiment["downloads"].items():
-            path = url.split("path=")[1]
-            file_name = path.split("/")[-1]
-            archive.write(path, file_name)
-        archive.close()
-        return send_file(
-            archive_path,
-            as_attachment=True,
-            attachment_filename=archive_name
-        )
+        download_path, download_name = downloader.zip(experiment)
+    return send_file(
+        download_path,
+        as_attachment=True,
+        attachment_filename=download_name
+    )
 
 
 # Routes for client built with `npm run build`
