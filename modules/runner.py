@@ -1,7 +1,3 @@
-# Fix errors on deployment server, see http://code.activestate.com/lists/python-list/617037/
-import os
-os.environ['http_proxy']=''
-
 import urllib, docker, yaml
 
 class Runner:

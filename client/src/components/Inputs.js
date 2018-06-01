@@ -12,7 +12,7 @@ export default class extends Component {
     );
     this.state = {
       name: "New Experiment",
-      dataset: "https://www.example.com",
+      dataset: "https://www.hpi.de",
       aligner: aligners[0].id,
       aligners
     };
