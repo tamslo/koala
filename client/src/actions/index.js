@@ -78,7 +78,7 @@ export const runExperiment = id => {
         });
       })
       .catch(error => {
-        const experiment = { ...latestExperiment, error };
+        const experiment = { ...latestExperiment, id, error };
         dispatch({
           type: types.UPDATE_EXPERIMENT,
           experiment

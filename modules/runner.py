@@ -14,9 +14,9 @@ class Runner:
             self.absolute_data_path = config["absolute_repo_path"] + data_directory
 
     def execute(self, action, experiment_id):
-        experiment = self.experiments.select(experiment_id)
-        file_path = self.cache.lookup(experiment, action)
         try:
+            experiment = self.experiments.select(experiment_id)
+            file_path = self.cache.lookup(experiment, action)
             if file_path:
                 experiment = self.experiments.add_log_entry(
                     experiment,
@@ -29,8 +29,8 @@ class Runner:
                 experiment = self.experiments.log_complete(experiment, action)
             experiment = self.experiments.add_download(experiment, action, file_path)
         except Exception as error:
-            self.cache.clean_up(action, experiment)
             experiment = self.experiments.mark_error(experiment_id, error)
+            self.cache.clean_up(action, experiment)
         return experiment
 
     def __get_dataset(self, experiment):
