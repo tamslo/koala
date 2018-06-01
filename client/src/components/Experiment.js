@@ -27,9 +27,12 @@ class Experiment extends Component {
   }
 
   renderDownloadButton(key) {
-    const url = this.props.downloads[key];
-    return url ? (
-      <StyledIconButton aria-label={"Download"} href={SERVER_URL + url}>
+    const path = this.props.files[key];
+    return path ? (
+      <StyledIconButton
+        aria-label={"Download"}
+        href={SERVER_URL + "/download?path=" + path}
+      >
         <DownloadIcon />
       </StyledIconButton>
     ) : null;

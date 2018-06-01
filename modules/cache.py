@@ -33,7 +33,7 @@ class Cache:
             else:
                 directory_path = self.directory + dataset_id + "/" + experiment[action]
                 if os.path.isdir(directory_path):
-                    return directory_path + os.listdir(directory_path)[0]
+                    return directory_path + "/" + os.listdir(directory_path)[0]
         # Default value
         return False
 

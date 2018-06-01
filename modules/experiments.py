@@ -36,7 +36,7 @@ class Experiments:
         experiment["interrupted"] = False
         experiment["report"] = None
         experiment["log"] = []
-        experiment["downloads"] = {}
+        experiment["files"] = {}
         return self.add_log_entry(experiment, "create", one_step = True)
 
     def select(self, experiment_id):
@@ -66,7 +66,7 @@ class Experiments:
         return self.__write(experiment)
 
     def add_download(self, experiment, key, path):
-        experiment["downloads"][key] = "/download?path={}".format(path)
+        experiment["files"][key] = path
         return self.__write(experiment)
 
     def log_complete(self, experiment, action):
