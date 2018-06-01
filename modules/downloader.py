@@ -16,8 +16,7 @@ class Downloader:
         archive_name = experiment["name"] + ".zip"
         archive_path = self.directory + archive_name
         archive = zipfile.ZipFile(archive_path, "w")
-        for key, url in experiment["downloads"].items():
-            path = url.split("path=")[1]
+        for key, path in experiment["files"].items():
             file_name = path.split("/")[-1]
             archive.write(path, file_name)
         archive.close()
