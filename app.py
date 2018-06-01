@@ -78,6 +78,10 @@ def download():
 def serve():
     return send_from_directory("client/build/", "index.html")
 
+@app.route("/koala.ico")
+def serve():
+    return send_from_directory("client/build/", "koala.ico")
+
 @app.route("/static/js/<path:path>")
 def servejs(path):
     return send_from_directory("client/build/static/js/", path)

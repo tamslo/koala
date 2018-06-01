@@ -31,5 +31,6 @@ chmod a+x scripts/prod-start.sh
 source scripts/prod-start.sh
 
 echo ""
-echo "Deployment finished, PID is $(lsof -i:5000)"
+echo "Deployment finished"
+lsof -i:5000
 echo ""
