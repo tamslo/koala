@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom";
 import { injectGlobal } from "styled-components";
 import App from "./App";
-import registerServiceWorker from "./registerServiceWorker";
+// import registerServiceWorker from "./registerServiceWorker";
 
 // Theme
 import { MuiThemeProvider, createMuiTheme } from "material-ui/styles";
@@ -34,7 +34,7 @@ ReactDOM.render(
   </MuiThemeProvider>,
   document.getElementById("root")
 );
-registerServiceWorker();
+// registerServiceWorker();
 
 injectGlobal`
   body {
