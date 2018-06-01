@@ -79,7 +79,7 @@ def serve():
     return send_from_directory("client/build/", "index.html")
 
 @app.route("/koala.ico")
-def serve():
+def servefav():
     return send_from_directory("client/build/", "koala.ico")
 
 @app.route("/static/js/<path:path>")
