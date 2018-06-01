@@ -1,5 +1,5 @@
 # Install Python requirements
-pip install -r requirements.txt
+pip install -r requirements.txt --no-cache-dir
 
 # Install Node requirements
 cd client
