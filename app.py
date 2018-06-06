@@ -2,7 +2,7 @@ import json, atexit, zipfile, time, os, optparse
 from flask import Flask, request, send_file, send_from_directory
 from flask_cors import CORS
 from collections import OrderedDict
-from modules.cache import Cache
+from modules.datasets import Datasets
 from modules.experiments import Experiments
 from modules.runner import Runner
 from modules.downloader import Downloader
@@ -13,9 +13,9 @@ CORS(app)
 services = json.load(open("services.json", "r"), object_pairs_hook=OrderedDict)
 data_directory = "data/"
 
-cache = Cache(data_directory)
+datasets = Datasets(data_directory)
 experiments = Experiments(data_directory)
-runner = Runner(cache, experiments, data_directory)
+runner = Runner(datasets, experiments, data_directory)
 downloader = Downloader(data_directory)
 
 @app.route("/ping")
@@ -27,7 +27,7 @@ def get_context():
     return json.dumps({
         "services": services,
         "experiments": experiments.all(),
-        "datasets": cache.get_datasets()
+        "datasets": datasets.get_datasets()
     })
 
 @app.route("/experiment", methods=["POST", "PUT", "DELETE"])
@@ -107,9 +107,9 @@ def clean_up():
             action = last_log_entry["action"]
             if action in experiment:
                 try:
-                    cache.clean_up(action, experiment)
+                    datasets.clean_up(action, experiment)
                 except Exception as error:
-                    app.logger.error("Manual cache-cleanup needed for {} {} ({})".format(
+                    app.logger.error("Manual cleanup of datasets needed for {} {} ({})".format(
                         action,
                         id,
                         error

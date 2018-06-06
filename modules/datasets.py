@@ -1,6 +1,6 @@
 import os, json, uuid, shutil
 
-class Cache:
+class Datasets:
     def __init__(self, data_directory):
         self.directory = data_directory + "cache/"
         self.index_path = self.directory + "index.json"
