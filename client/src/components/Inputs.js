@@ -12,7 +12,7 @@ export default class extends Component {
     );
     this.state = {
       name: "New Experiment",
-      dataset: "https://www.hpi.de",
+      dataset: Object.keys(this.props.datasets)[0],
       aligner: aligners[0].id,
       aligners
     };
@@ -33,12 +33,22 @@ export default class extends Component {
           onChange={this.handleChange("name")}
           margin="normal"
         />
-        <DataInput
-          label="Data URL"
-          value={this.state.dataset}
+        <FixedWidthTextField
+          select
+          label="Data Set"
+          value={this.state.dataset || ""}
           onChange={this.handleChange("dataset")}
           margin="normal"
-        />
+        >
+          <MenuItem value="">
+            <em>None</em>
+          </MenuItem>
+          {Object.keys(this.props.datasets).map(datasetId => (
+            <MenuItem key={datasetId} value={datasetId}>
+              {datasetId}
+            </MenuItem>
+          ))}
+        </FixedWidthTextField>
         <FixedWidthTextField
           select
           label="Aligner"
@@ -55,6 +65,7 @@ export default class extends Component {
             </MenuItem>
           ))}
         </FixedWidthTextField>
+        <VerticalSpacer />
         <Button
           color="primary"
           onClick={() =>
@@ -99,4 +110,8 @@ const DataInput = styled(TextField)`
 const FixedWidthTextField = styled(TextField)`
   width: 200px;
   margin-right: 20px !important;
+`;
+
+const VerticalSpacer = styled.div`
+  flex: 1;
 `;

@@ -26,7 +26,8 @@ def ping():
 def get_context():
     return json.dumps({
         "services": services,
-        "experiments": experiments.all()
+        "experiments": experiments.all(),
+        "datasets": cache.get_datasets()
     })
 
 @app.route("/experiment", methods=["POST", "PUT", "DELETE"])

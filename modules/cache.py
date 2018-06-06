@@ -50,6 +50,9 @@ class Cache:
         os.makedirs(path)
         return path
 
+    def get_datasets(self):
+        return self.index
+
     def clean_up(self, action, experiment):
         if not experiment["dataset"] in self.index:
             return None

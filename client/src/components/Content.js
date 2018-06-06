@@ -48,7 +48,11 @@ class Content extends Component {
 
     return (
       <Container className="content">
-        <Inputs services={context.services} addExperiment={addExperiment} />
+        <Inputs
+          services={context.services}
+          addExperiment={addExperiment}
+          datasets={context.datasets}
+        />
         <Spacer />
         {Object.keys(context.experiments).length > 0 && (
           <Experiments
