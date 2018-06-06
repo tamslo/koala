@@ -9,7 +9,7 @@ import {
   retryExperiment
 } from "../actions";
 import Loading from "./Loading";
-import Inputs from "./Inputs";
+import AddExperiment from "./AddExperiment";
 import Experiments from "./Experiments";
 
 class Content extends Component {
@@ -48,7 +48,7 @@ class Content extends Component {
 
     return (
       <Container className="content">
-        <Inputs
+        <AddExperiment
           services={context.services}
           addExperiment={addExperiment}
           datasets={context.datasets}

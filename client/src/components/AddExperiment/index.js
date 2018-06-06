@@ -3,6 +3,8 @@ import styled from "styled-components";
 import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/Menu/MenuItem";
 import Button from "material-ui/Button";
+import Divider from "material-ui/Divider";
+import AddDataset from "./AddDataset";
 
 export default class extends Component {
   constructor(props) {
@@ -12,21 +14,32 @@ export default class extends Component {
     );
     this.state = {
       name: "New Experiment",
-      dataset: Object.keys(this.props.datasets)[0],
-      aligner: aligners[0].id,
-      aligners
+      datasets: this.props.datasets,
+      dataset: "",
+      aligner: "",
+      aligners,
+      addDataset: false
     };
   }
 
   handleChange = name => event => {
-    this.setState({
-      [name]: event.target.value
-    });
+    if (name === "dataset" && event.target.value === "add") {
+      this.startAddDataset();
+    } else {
+      this.setState({
+        [name]: event.target.value
+      });
+    }
   };
 
   render() {
     return (
       <Container>
+        <AddDataset
+          addDataset={this.addDataset.bind(this)}
+          cancel={this.cancelAddDataset.bind(this)}
+          open={this.state.addDataset}
+        />
         <FixedWidthTextField
           label="Name"
           value={this.state.name}
@@ -40,14 +53,13 @@ export default class extends Component {
           onChange={this.handleChange("dataset")}
           margin="normal"
         >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
-          {Object.keys(this.props.datasets).map(datasetId => (
+          {Object.keys(this.state.datasets).map(datasetId => (
             <MenuItem key={datasetId} value={datasetId}>
               {datasetId}
             </MenuItem>
           ))}
+          <Divider />
+          <MenuItem value="add">Add data set</MenuItem>
         </FixedWidthTextField>
         <FixedWidthTextField
           select
@@ -56,9 +68,6 @@ export default class extends Component {
           onChange={this.handleChange("aligner")}
           margin="normal"
         >
-          <MenuItem value="">
-            <em>None</em>
-          </MenuItem>
           {this.state.aligners.map(aligner => (
             <MenuItem key={aligner.id} value={aligner.id}>
               {aligner.name}
@@ -71,7 +80,7 @@ export default class extends Component {
           onClick={() =>
             this.props.addExperiment({
               name: this.state.name,
-              dataset: this.state.dataset,
+              dataset: this.props.dataset(this.state.dataset),
               alignment: this.state.aligner
             })
           }
@@ -82,6 +91,22 @@ export default class extends Component {
         </Button>
       </Container>
     );
+  }
+
+  startAddDataset() {
+    this.setState({ addDataset: true });
+  }
+
+  cancelAddDataset() {
+    this.setState({ addDataset: false });
+  }
+
+  addDataset(datasetId, dataset) {
+    this.setState({
+      addDataset: false,
+      datasets: { ...this.state.datasets, [datasetId]: dataset },
+      dataset: datasetId
+    });
   }
 
   canRun() {
@@ -99,12 +124,6 @@ const Container = styled.div`
   align-items: center;
   flex-wrap: wrap;
   padding-left: 12px;
-`;
-
-const DataInput = styled(TextField)`
-  flex-grow: 1;
-  min-width: 200px;
-  margin-right: 20px !important;
 `;
 
 const FixedWidthTextField = styled(TextField)`
