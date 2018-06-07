@@ -1,8 +1,8 @@
 import urllib, docker, yaml
 
 class Runner:
-    def __init__(self, cache, experiments, data_directory):
-        self.cache = cache
+    def __init__(self, datasets, experiments, data_directory):
+        self.datasets = datasets
         self.experiments = experiments
         self.actions = {
             "dataset": self.__get_dataset,
@@ -16,7 +16,7 @@ class Runner:
     def execute(self, action, experiment_id):
         try:
             experiment = self.experiments.select(experiment_id)
-            file_path = self.cache.lookup(experiment, action)
+            file_path = self.datasets.lookup(experiment, action)
             if file_path:
                 experiment = self.experiments.add_log_entry(
                     experiment,
@@ -30,18 +30,19 @@ class Runner:
             experiment = self.experiments.add_download(experiment, action, file_path)
         except Exception as error:
             experiment = self.experiments.mark_error(experiment_id, error)
-            self.cache.clean_up(action, experiment)
+            self.datasets.clean_up(action, experiment)
         return experiment
 
     def __get_dataset(self, experiment):
+        dataset = self.datasets.select(experiment["dataset"])
         dataset_path, headers = urllib.request.urlretrieve(
-            experiment["dataset"],
-            self.cache.create_dataset(experiment["dataset"])
+            dataset["url"],
+            dataset["path"]
         )
         return dataset_path
 
     def __align(self, experiment):
-        alignment_directory = self.cache.create_path(experiment, "alignment")
+        alignment_directory = self.datasets.create_path(experiment, "alignment")
         self.docker_client.containers.run(
             "star",
             "touch {}/alignment.bam".format(alignment_directory),

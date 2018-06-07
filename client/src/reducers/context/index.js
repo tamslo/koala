@@ -1,4 +1,5 @@
-import * as types from "../actions/actionTypes";
+import * as types from "../../actions/actionTypes";
+import { addDataset } from "./dataset";
 
 const initialState = null;
 
@@ -6,6 +7,8 @@ export default (state = initialState, action = {}) => {
   switch (action.type) {
     case types.FETCH_CONTEXT:
       return action.context;
+    case types.ADD_DATASET:
+      return { ...state, datasets: addDataset(state.datasets, action.dataset) };
     case types.ADD_EXPERIMENT:
       return updateExperiments(state, action.experiment);
     case types.UPDATE_EXPERIMENT:

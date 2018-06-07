@@ -1,16 +1,17 @@
 import os, json, uuid, shutil
+from modules.data_handler import DataHandler
 
 class Datasets:
     def __init__(self, data_directory):
-        self.directory = data_directory + "cache/"
+        self.directory = data_directory + "datasets/"
+        self.data_handler = DataHandler(self.directory)
         self.index_path = self.directory + "index.json"
         self.__setup()
         with open(self.index_path) as index_file:
             self.index = json.load(index_file)
 
     def __setup(self):
-        if not os.path.isdir(self.directory):
-            os.makedirs(self.directory)
+        if not os.path.exists(self.index_path):
             with open(self.index_path, "w") as index_file:
                 index_file.write(json.dumps({}));
 
@@ -18,12 +19,19 @@ class Datasets:
         with open(self.index_path, "w") as index_file:
             index_file.write(json.dumps(self.index))
 
-    def __cache(self, url):
-        dataset_id = str(uuid.uuid4())
-        os.mkdir(self.directory + dataset_id)
-        self.index[url] = dataset_id
+    def select(self, dataset_id):
+        return self.index[dataset_id]
+
+    def create(self, dataset):
+        os.mkdir(self.directory + dataset["id"])
+        self.index[dataset["id"]] = dataset
         self.__write_index()
-        return dataset_id
+        return dataset
+
+    def delete(self, dataset_id):
+        self.data_handler.delete(self.dataset_path(dataset_id))
+        dataset = self.index.pop(dataset_id)
+        return dataset
 
     def lookup(self, experiment, action):
         if experiment["dataset"] in self.index:
@@ -36,10 +44,6 @@ class Datasets:
                     return directory_path + "/" + os.listdir(directory_path)[0]
         # Default value
         return False
-
-    def create_dataset(self, url):
-        dataset_id = self.__cache(url)
-        return self.dataset_path(dataset_id)
 
     def dataset_path(self, dataset_id):
         return self.directory + dataset_id + "/" + "data.fastq"

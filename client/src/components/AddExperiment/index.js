@@ -9,16 +9,11 @@ import AddDataset from "./AddDataset";
 export default class extends Component {
   constructor(props) {
     super(props);
-    const aligners = this.props.services.filter(
-      service => service.type === "aligner"
-    );
     this.state = {
-      name: "New Experiment",
-      datasets: this.props.datasets,
-      dataset: "",
+      addDataset: false,
+      name: "",
       aligner: "",
-      aligners,
-      addDataset: false
+      dataset: ""
     };
   }
 
@@ -53,9 +48,9 @@ export default class extends Component {
           onChange={this.handleChange("dataset")}
           margin="normal"
         >
-          {Object.keys(this.state.datasets).map(datasetId => (
+          {Object.keys(this.props.datasets).map(datasetId => (
             <MenuItem key={datasetId} value={datasetId}>
-              {datasetId}
+              {this.props.datasets[datasetId].name}
             </MenuItem>
           ))}
           <Divider />
@@ -68,11 +63,13 @@ export default class extends Component {
           onChange={this.handleChange("aligner")}
           margin="normal"
         >
-          {this.state.aligners.map(aligner => (
-            <MenuItem key={aligner.id} value={aligner.id}>
-              {aligner.name}
-            </MenuItem>
-          ))}
+          {this.props.services
+            .filter(service => service.type === "aligner")
+            .map(aligner => (
+              <MenuItem key={aligner.id} value={aligner.id}>
+                {aligner.name}
+              </MenuItem>
+            ))}
         </FixedWidthTextField>
         <VerticalSpacer />
         <Button
@@ -80,7 +77,7 @@ export default class extends Component {
           onClick={() =>
             this.props.addExperiment({
               name: this.state.name,
-              dataset: this.props.dataset(this.state.dataset),
+              dataset: this.props.datasets[this.state.dataset],
               alignment: this.state.aligner
             })
           }
@@ -101,21 +98,19 @@ export default class extends Component {
     this.setState({ addDataset: false });
   }
 
-  addDataset(datasetId, dataset) {
-    this.setState({
-      addDataset: false,
-      datasets: { ...this.state.datasets, [datasetId]: dataset },
-      dataset: datasetId
-    });
+  addDataset(dataset) {
+    this.setState(
+      { addDataset: false, dataset: dataset.id },
+      this.props.addDataset(dataset)
+    );
   }
 
   canRun() {
-    const nameValid = this.state.name !== "";
-    const dataValid = this.state.dataset !== "";
-    const alignerValid = this.state.aligners
-      .map(aligner => aligner.id)
-      .includes(this.state.aligner);
-    return nameValid && dataValid && alignerValid;
+    return (
+      this.state.name !== "" &&
+      this.state.dataset !== "" &&
+      this.state.aligner !== ""
+    );
   }
 }
 

@@ -8,6 +8,7 @@ import {
   runExperiment,
   retryExperiment
 } from "../actions";
+import { addDataset, deleteDataset } from "../actions/dataset";
 import Loading from "./Loading";
 import AddExperiment from "./AddExperiment";
 import Experiments from "./Experiments";
@@ -30,6 +31,8 @@ class Content extends Component {
       addExperiment,
       deleteExperiment,
       retryExperiment,
+      addDataset,
+      deleteDataset,
       jobs
     } = this.props;
     if (context === null) {
@@ -52,6 +55,8 @@ class Content extends Component {
           services={context.services}
           addExperiment={addExperiment}
           datasets={context.datasets}
+          addDataset={addDataset}
+          deleteDataset={deleteDataset}
         />
         <Spacer />
         {Object.keys(context.experiments).length > 0 && (
@@ -88,7 +93,9 @@ const actions = {
   addExperiment,
   deleteExperiment,
   runExperiment,
-  retryExperiment
+  retryExperiment,
+  addDataset,
+  deleteDataset
 };
 
 export default connect(mapStateToProps, actions)(Content);
