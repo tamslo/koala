@@ -10,7 +10,7 @@ class Experiment extends Component {
     return (
       <div>
         <Entry>
-          {`Data URL: ${this.props.dataset}`}
+          {`Data Set: ${this.props.datasets[this.props.dataset].name}`}
           {this.renderDownloadButton("dataset")}
         </Entry>
         <Entry>

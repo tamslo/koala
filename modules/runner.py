@@ -35,17 +35,19 @@ class Runner:
 
     def __get_dataset(self, experiment):
         dataset = self.datasets.select(experiment["dataset"])
+        path = self.datasets.create_path(experiment, "dataset")
         dataset_path, headers = urllib.request.urlretrieve(
             dataset["url"],
-            dataset["path"]
+            path
         )
         return dataset_path
 
     def __align(self, experiment):
-        alignment_directory = self.datasets.create_path(experiment, "alignment")
+        file_ending = "bam"
+        alignment_path = self.datasets.create_path(experiment, "alignment")
         self.docker_client.containers.run(
             "star",
-            "touch {}/alignment.bam".format(alignment_directory),
+            "touch {}/dummy.bam".format(alignment_path),
             volumes={
                 self.absolute_data_path: {
                     "bind": "/data",
@@ -54,4 +56,4 @@ class Runner:
             },
             auto_remove=True
         )
-        return alignment_directory + "/" + "alignment.bam"
+        return alignment_path

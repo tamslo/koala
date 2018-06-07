@@ -10,7 +10,11 @@ import AddDataset from "./AddDataset";
 export default class extends Component {
   constructor(props) {
     super(props);
-    this.state = {
+    this.state = this.initialState();
+  }
+
+  initialState() {
+    return {
       id: uuid(),
       addDataset: false,
       name: "",
@@ -76,20 +80,25 @@ export default class extends Component {
         <VerticalSpacer />
         <Button
           color="primary"
-          onClick={() =>
-            this.props.addExperiment({
-              id: this.state.id,
-              name: this.state.name,
-              dataset: this.props.datasets[this.state.dataset].id,
-              alignment: this.state.aligner
-            })
-          }
+          onClick={this.addExperiment.bind(this)}
           disabled={!this.canRun()}
           size="large"
         >
           Add
         </Button>
       </Container>
+    );
+  }
+
+  addExperiment() {
+    this.setState(
+      this.initialState(),
+      this.props.addExperiment({
+        id: this.state.id,
+        name: this.state.name,
+        dataset: this.props.datasets[this.state.dataset].id,
+        alignment: this.state.aligner
+      })
     );
   }
 

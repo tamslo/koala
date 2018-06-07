@@ -34,14 +34,20 @@ class Datasets:
         return dataset
 
     def lookup(self, experiment, action):
-        if experiment["dataset"] in self.index:
-            dataset_id = self.index[experiment["dataset"]]
-            if action == "dataset":
-                return self.dataset_path(dataset_id)
+        dataset_id = experiment["dataset"]
+        data_directory = self.directory + dataset_id + "/"
+        if os.path.isdir(data_directory):
+            dataset_path = self.dataset_path(dataset_id)
+            if action == "dataset" and os.path.exists(dataset_path):
+                return dataset_path
             else:
-                directory_path = self.directory + dataset_id + "/" + experiment[action]
-                if os.path.isdir(directory_path):
-                    return directory_path + "/" + os.listdir(directory_path)[0]
+                print("Lookup alignment", flush=True)
+                action_directory = data_directory + experiment[action]
+                print(action_directory, flush=True)
+                if os.path.isdir(action_directory):
+                    print("Found alignment")
+                    print(data_directory + "/" + os.listdir(data_directory)[0], flush=True)
+                    return data_directory + "/" + os.listdir(data_directory)[0]
         # Default value
         return False
 
@@ -49,26 +55,26 @@ class Datasets:
         return self.directory + dataset_id + "/" + "data.fastq"
 
     def create_path(self, experiment, action):
-        dataset_id = self.index[experiment["dataset"]]
-        path = self.directory + dataset_id + "/" + experiment[action]
-        os.makedirs(path)
+        dataset_id = experiment["dataset"]
+        data_directory = self.directory + dataset_id + "/"
+        if action == "dataset":
+            os.makedirs(data_directory, exist_ok=True)
+            path = self.dataset_path(dataset_id)
+        else:
+            path = self.directory + dataset_id + "/" + experiment[action]
+            os.makedirs(path)
         return path
 
     def get_datasets(self):
         return self.index
 
     def clean_up(self, action, experiment):
-        if not experiment["dataset"] in self.index:
-            return None
-
-        dataset_folder = self.directory + self.index[experiment["dataset"]]
-        file_path = dataset_folder + "/" + experiment[action]
-        if action == "dataset" and os.path.isdir(dataset_folder):
-            shutil.rmtree(dataset_folder)
-            del self.index[experiment[action]]
-            self.__write_index()
-        elif action != "dataset" and os.path.exists(file_path):
-            os.remove(self.directory + dataset_folder + "/" + file_id)
+        dataset_id = experiment["dataset"]
+        dataset_folder = self.directory + dataset_id + "/"
+        action_folder = dataset_folder + experiment[action]
+        delete_path = dataset_folder if action == "dataset" else action_folder
+        if os.path.isdir(delete_path):
+            shutil.rmtree(delete_path)
 
 def is_uuid(id):
     try:

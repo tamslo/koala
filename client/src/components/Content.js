@@ -63,6 +63,7 @@ class Content extends Component {
           <Experiments
             experiments={context.experiments}
             services={context.services}
+            datasets={context.datasets}
             deleteExperiment={deleteExperiment}
             retryExperiment={retryExperiment}
             jobs={jobs}
