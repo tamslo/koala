@@ -1,10 +1,10 @@
 import os, json, uuid, shutil
-from modules.data_handler import DataHandler
+from modules.file_handler import FileHandler
 
 class Datasets:
     def __init__(self, data_directory):
         self.directory = data_directory + "datasets/"
-        self.data_handler = DataHandler(self.directory)
+        self.file_handler = FileHandler(self.directory)
         self.index_path = self.directory + "index.json"
         self.__setup()
         with open(self.index_path) as index_file:
@@ -29,7 +29,7 @@ class Datasets:
         return dataset
 
     def delete(self, dataset_id):
-        self.data_handler.delete(self.dataset_path(dataset_id))
+        self.file_handler.delete(self.dataset_path(dataset_id))
         dataset = self.index.pop(dataset_id)
         return dataset
 

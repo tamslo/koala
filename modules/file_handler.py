@@ -1,6 +1,6 @@
 import os, json
 
-class DataHandler:
+class FileHandler:
     def __init__(self, directory):
         self.directory = directory
         self.__setup()
