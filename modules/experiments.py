@@ -1,4 +1,4 @@
-import os, json, uuid
+import os, json
 from time import localtime, strftime
 from collections import OrderedDict
 
@@ -30,7 +30,6 @@ class Experiments:
         return self.__write(experiment)
 
     def create(self, experiment):
-        experiment["id"] = str(uuid.uuid4())
         experiment["error"] = False
         experiment["done"] = False
         experiment["interrupted"] = False

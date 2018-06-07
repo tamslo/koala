@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import uuid from "uuid/v4";
 import styled from "styled-components";
 import TextField from "material-ui/TextField";
 import MenuItem from "material-ui/Menu/MenuItem";
@@ -10,6 +11,7 @@ export default class extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      id: uuid(),
       addDataset: false,
       name: "",
       aligner: "",
@@ -76,8 +78,9 @@ export default class extends Component {
           color="primary"
           onClick={() =>
             this.props.addExperiment({
+              id: this.state.id,
               name: this.state.name,
-              dataset: this.props.datasets[this.state.dataset],
+              dataset: this.props.datasets[this.state.dataset].id,
               alignment: this.state.aligner
             })
           }
