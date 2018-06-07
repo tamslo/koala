@@ -41,12 +41,8 @@ class Datasets:
             if action == "dataset" and os.path.exists(dataset_path):
                 return dataset_path
             else:
-                print("Lookup alignment", flush=True)
                 action_directory = data_directory + experiment[action]
-                print(action_directory, flush=True)
                 if os.path.isdir(action_directory):
-                    print("Found alignment")
-                    print(data_directory + "/" + os.listdir(data_directory)[0], flush=True)
                     return data_directory + "/" + os.listdir(data_directory)[0]
         # Default value
         return False
