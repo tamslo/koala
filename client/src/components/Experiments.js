@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { withTheme } from "material-ui/styles";
-import List, {
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-  ListSubheader
-} from "material-ui/List";
-import IconButton from "material-ui/IconButton";
-import Collapse from "material-ui/transitions/Collapse";
+import { withTheme } from "@material-ui/core/styles";
+import ListSubheader from "@material-ui/core/ListSubheader";
+import List from "@material-ui/core/List";
+import ListItem from "@material-ui/core/ListItem";
+import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
+import ListItemText from "@material-ui/core/ListItemText";
+import IconButton from "@material-ui/core/IconButton";
+import Collapse from "@material-ui/core/Collapse";
 import DeleteIcon from "@material-ui/icons/Delete";
 import RefreshIcon from "@material-ui/icons/Refresh";
 import ExpandLessIcon from "@material-ui/icons/ExpandLess";

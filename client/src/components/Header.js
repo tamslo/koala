@@ -1,8 +1,8 @@
 import React from "react";
 import styled from "styled-components";
-import AppBar from "material-ui/AppBar";
-import Toolbar from "material-ui/Toolbar";
-import Typography from "material-ui/Typography";
+import AppBar from "@material-ui/core/AppBar";
+import Toolbar from "@material-ui/core/Toolbar";
+import Typography from "@material-ui/core/Typography";
 import logo from "../assets/logo.png";
 
 export default props => {

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
-import { withTheme } from "material-ui/styles";
-import IconButton from "material-ui/IconButton";
+import { withTheme } from "@material-ui/core/styles";
+import IconButton from "@material-ui/core/IconButton";
 import DownloadIcon from "@material-ui/icons/CloudDownload";
 import { SERVER_URL } from "../request";
 

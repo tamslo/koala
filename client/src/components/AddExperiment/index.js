@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import uuid from "uuid/v4";
 import styled from "styled-components";
-import TextField from "material-ui/TextField";
-import MenuItem from "material-ui/Menu/MenuItem";
-import Button from "material-ui/Button";
-import Divider from "material-ui/Divider";
+import TextField from "@material-ui/core/TextField";
+import MenuItem from "@material-ui/core/MenuItem";
+import Button from "@material-ui/core/Button";
+import Divider from "@material-ui/core/Divider";
 import InfoIcon from "@material-ui/icons/Info";
 import AddDataset from "./AddDataset";
 import DatasetInfo from "./DatasetInfo";

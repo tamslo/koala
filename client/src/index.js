@@ -5,9 +5,9 @@ import App from "./App";
 // import registerServiceWorker from "./registerServiceWorker";
 
 // Theme
-import { MuiThemeProvider, createMuiTheme } from "material-ui/styles";
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import Roboto from "./assets/Roboto-Regular.ttf";
-import { green, yellow } from "material-ui/colors";
+import { green, yellow } from "@material-ui/core/colors";
 
 // Redux
 import { Provider } from "react-redux";
