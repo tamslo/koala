@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 // import styled from "styled-components";
-import Dialog from "../mui-wrappers/Dialog";
+import Dialog from "../../mui-wrappers/Dialog";
 
 export default class extends Component {
   render() {

@@ -1,8 +1,7 @@
 import React, { Component } from "react";
 import uuid from "uuid/v4";
-import styled from "styled-components";
-import TextField from "@material-ui/core/TextField";
-import Dialog from "../mui-wrappers/Dialog";
+import Dialog from "../../mui-wrappers/Dialog";
+import TextField from "../../mui-wrappers/TextField";
 
 export default class extends Component {
   constructor(props) {
@@ -40,17 +39,15 @@ export default class extends Component {
 
     return (
       <Dialog open={this.props.open} title="Add Data Set" actions={actions}>
-        <StyledTextField
+        <TextField
           label="Name"
           value={this.state.name}
           onChange={this.handleChange("name")}
-          margin="normal"
         />
-        <StyledTextField
+        <TextField
           label="Data URL"
           value={this.state.url}
           onChange={this.handleChange("url")}
-          margin="normal"
         />
       </Dialog>
     );
@@ -60,9 +57,3 @@ export default class extends Component {
     this.setState(this.initialState(), () => this.props.addDataset(this.state));
   }
 }
-
-const StyledTextField = styled(TextField)`
-  flex-grow: 1;
-  min-width: 200px;
-  margin-right: 20px !important;
-`;
