@@ -34,7 +34,7 @@ export default class extends Component {
         <DatasetInfo
           open={datasetInfo !== null}
           close={this.closeDatasetInfo.bind(this)}
-          dataset={(datasetInfo && datasets[dataset]) || {}}
+          dataset={datasetInfo || {}}
         />
         <TextField
           select={true}
@@ -72,6 +72,7 @@ export default class extends Component {
   }
 
   showDatasetInfo = dataset => event => {
+    event.stopPropagation(); // Stop process of adding dataset to experiment
     this.setState({ datasetInfo: dataset });
   };
 

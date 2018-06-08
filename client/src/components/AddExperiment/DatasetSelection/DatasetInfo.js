@@ -19,7 +19,7 @@ export default class extends Component {
     return (
       <Dialog
         open={this.props.open}
-        title={this.props.dataset.name}
+        title={this.props.dataset.name || ""}
         actions={actions}
       >
         <div>{`URL: ${this.props.dataset.url}`}</div>
