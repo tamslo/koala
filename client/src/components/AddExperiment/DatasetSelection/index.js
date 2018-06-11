@@ -68,7 +68,7 @@ export default class extends Component {
 
   addDataset(dataset) {
     this.setState({ addingDataset: false }, () =>
-      this.props.setDataset(dataset.id)
+      this.props.addDataset(dataset)
     );
   }
 

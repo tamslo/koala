@@ -39,7 +39,7 @@ export default class extends Component {
         <DatasetSelection
           datasets={this.props.datasets}
           dataset={this.state.dataset}
-          addDataset={this.props.addDataset}
+          addDataset={this.addDataset.bind(this)}
           setDataset={this.setDataset.bind(this)}
         />
 
@@ -80,6 +80,12 @@ export default class extends Component {
         dataset: this.props.datasets[this.state.dataset].id,
         alignment: this.state.aligner
       })
+    );
+  }
+
+  addDataset(dataset) {
+    this.setState({ dataset: dataset.id }, () =>
+      this.props.addDataset(dataset)
     );
   }
 

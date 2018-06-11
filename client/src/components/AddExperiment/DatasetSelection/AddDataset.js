@@ -31,7 +31,7 @@ export default class extends Component {
       },
       {
         name: "Add",
-        onClick: () => this.props.addDataset(this.state),
+        onClick: this.addDataset.bind(this),
         color: "primary",
         disabled: !this.canAdd()
       }
@@ -54,6 +54,7 @@ export default class extends Component {
   }
 
   addDataset() {
-    this.setState(this.initialState(), () => this.props.addDataset(this.state));
+    const dataset = this.state;
+    this.setState(this.initialState(), () => this.props.addDataset(dataset));
   }
 }
