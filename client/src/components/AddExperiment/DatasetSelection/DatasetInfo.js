@@ -6,11 +6,6 @@ export default class extends Component {
   render() {
     const actions = [
       {
-        name: "Delete",
-        onClick: () => this.props.close,
-        disabled: true
-      },
-      {
         name: "Close",
         onClick: this.props.close,
         color: "primary"

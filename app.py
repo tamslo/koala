@@ -30,15 +30,11 @@ def get_context():
         "datasets": datasets.get_datasets()
     })
 
-@app.route("/dataset", methods=["POST", "DELETE"])
+@app.route("/dataset", methods=["POST"])
 def dataset():
-    if request.method == "POST":
-        params = request.get_json()
-        dataset = datasets.create(params)
-        return json.dumps(dataset)
-    else:
-        dataset_id = request.args.get("id")
-        return json.dumps(datasets.delete(dataset_id))
+    params = request.get_json()
+    dataset = datasets.create(params)
+    return json.dumps(dataset)
 
 @app.route("/experiment", methods=["POST", "PUT", "DELETE"])
 def experiment():

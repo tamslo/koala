@@ -28,11 +28,6 @@ class Datasets:
         self.__write_index()
         return dataset
 
-    def delete(self, dataset_id):
-        self.file_handler.delete(self.dataset_path(dataset_id))
-        dataset = self.index.pop(dataset_id)
-        return dataset
-
     def lookup(self, experiment, action):
         dataset_id = experiment["dataset"]
         data_directory = self.directory + dataset_id + "/"

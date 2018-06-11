@@ -34,6 +34,7 @@ export default class extends Component {
         <DatasetInfo
           open={datasetInfo !== null}
           close={this.closeDatasetInfo.bind(this)}
+          close={this.closeDatasetInfo.bind(this)}
           dataset={datasetInfo || {}}
         />
         <TextField
