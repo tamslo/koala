@@ -21,4 +21,8 @@ export default class extends Component {
 const FixedWidthTextField = styled(TextField)`
   width: 200px;
   margin-right: 20px !important;
+  .MuiInput-input-134 {
+    display: flex !important;
+    justify-content: space-between !important;
+  }
 `;

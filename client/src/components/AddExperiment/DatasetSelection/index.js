@@ -85,6 +85,9 @@ const StyledInfoIcon = styled(InfoIcon)`
   height: 20px !important;
   width: 20px !important;
   color: #666666;
+  &:hover {
+    color: #333333;
+  }
 `;
 
 const DatasetItem = styled(MenuItem)`
