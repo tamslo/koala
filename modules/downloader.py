@@ -1,8 +1,8 @@
 import os, zipfile
 
 class Downloader:
-    def __init__(self, data_directory):
-        self.directory = data_directory + "tmp/"
+    def __init__(self, download_directory):
+        self.directory = download_directory
         self.__setup()
 
     def __setup(self):

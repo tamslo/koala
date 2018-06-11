@@ -1,4 +1,4 @@
-import json, atexit, zipfile, time, os, optparse
+import json, atexit, zipfile, time, os, optparse, shutil
 from flask import Flask, request, send_file, send_from_directory
 from flask_cors import CORS
 from collections import OrderedDict
@@ -12,11 +12,12 @@ CORS(app)
 
 services = json.load(open("services.json", "r"), object_pairs_hook=OrderedDict)
 data_directory = "data/"
+download_directory = "data/tmp/"
 
 datasets = Datasets(data_directory)
 experiments = Experiments(data_directory)
 runner = Runner(datasets, experiments, data_directory)
-downloader = Downloader(data_directory)
+downloader = Downloader(download_directory)
 
 @app.route("/ping")
 def ping():
@@ -99,6 +100,7 @@ def servemedia(path):
 
 
 def clean_up():
+    shutil.rmtree(download_directory)
     # Not working properly if debug=True, see https://stackoverflow.com/questions/37064595/handling-atexit-for-multiple-app-objects-with-flask-dev-server-reloader
     for experiment_id, experiment in experiments.all().items():
         last_log_entry = experiment["log"][-1]
