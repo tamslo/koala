@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import uuid from "uuid/v4";
 import Dialog from "../../mui-wrappers/Dialog";
 import TextField from "../../mui-wrappers/TextField";
+import Checkbox from "../../mui-wrappers/Checkbox";
 
 export default class extends Component {
   constructor(props) {
@@ -10,7 +11,7 @@ export default class extends Component {
   }
 
   initialState() {
-    return { id: uuid(), name: "", url: "" };
+    return { id: uuid(), name: "", url: "", pairedEnd: true };
   }
 
   canAdd() {
@@ -18,8 +19,14 @@ export default class extends Component {
   }
 
   handleChange = name => event => {
+    let value;
+    if (name === "pairedEnd") {
+      value = event.target.checked;
+    } else {
+      value = event.target.value;
+    }
     this.setState({
-      [name]: event.target.value
+      [name]: value
     });
   };
 
@@ -48,6 +55,11 @@ export default class extends Component {
           label="Data URL"
           value={this.state.url}
           onChange={this.handleChange("url")}
+        />
+        <Checkbox
+          label="Paired End"
+          onChange={this.handleChange("pairedEnd")}
+          checked={this.state.pairedEnd}
         />
       </Dialog>
     );
