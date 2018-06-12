@@ -5,7 +5,7 @@ import Divider from "@material-ui/core/Divider";
 import InfoIcon from "@material-ui/icons/Info";
 import AddDataset from "./AddDataset";
 import DatasetInfo from "./DatasetInfo";
-import TextField from "../../mui-wrappers/TextField";
+import Select from "../../mui-wrappers/inputs/Select";
 
 export default class extends Component {
   constructor(props) {
@@ -36,8 +36,7 @@ export default class extends Component {
           close={this.closeDatasetInfo.bind(this)}
           dataset={datasetInfo || {}}
         />
-        <TextField
-          select={true}
+        <Select
           label="Data Set"
           value={dataset || ""}
           onChange={this.handleChange}
@@ -52,7 +51,7 @@ export default class extends Component {
           ))}
           <Divider />
           <MenuItem value="add">Add data set</MenuItem>
-        </TextField>
+        </Select>
       </div>
     );
   }

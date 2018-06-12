@@ -11,6 +11,9 @@ export default class extends Component {
         onChange={this.props.onChange}
         margin="normal"
         select={this.props.select}
+        fullWidth={this.props.fullWidth}
+        width={this.props.width || 200}
+        type={this.props.type || "text"}
       >
         {this.props.children}
       </FixedWidthTextField>
@@ -19,7 +22,7 @@ export default class extends Component {
 }
 
 const FixedWidthTextField = styled(TextField)`
-  width: 200px;
+  width: ${props => props.width}px;
   margin-right: 20px !important;
   .MuiInput-input-134 {
     display: flex !important;

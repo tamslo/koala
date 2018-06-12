@@ -1,11 +1,12 @@
 import React, { Component } from "react";
+import styled from "styled-components";
 import FormControlLabel from "@material-ui/core/FormControlLabel";
 import Checkbox from "@material-ui/core/Checkbox";
 
 export default class extends Component {
   render() {
     return (
-      <FormControlLabel
+      <StyledFormControlLabel
         control={
           <Checkbox
             checked={this.props.checked}
@@ -18,3 +19,7 @@ export default class extends Component {
     );
   }
 }
+
+const StyledFormControlLabel = styled(FormControlLabel)`
+  white-space: nowrap;
+`;

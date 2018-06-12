@@ -3,7 +3,8 @@ import uuid from "uuid/v4";
 import styled from "styled-components";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
-import TextField from "../mui-wrappers/TextField";
+import TextField from "../mui-wrappers/inputs/Text";
+import Select from "../mui-wrappers/inputs/Select";
 import DatasetSelection from "./DatasetSelection";
 
 export default class extends Component {
@@ -43,8 +44,7 @@ export default class extends Component {
           setDataset={this.setDataset.bind(this)}
         />
 
-        <TextField
-          select={true}
+        <Select
           label="Aligner"
           value={this.state.aligner || ""}
           onChange={this.handleChange("aligner")}
@@ -56,7 +56,7 @@ export default class extends Component {
                 {aligner.name}
               </MenuItem>
             ))}
-        </TextField>
+        </Select>
 
         <VerticalSpacer />
         <Button
