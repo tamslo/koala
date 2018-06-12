@@ -22,7 +22,7 @@ class Datasets:
     def select(self, dataset_id):
         return self.index[dataset_id]
 
-    def create(self, dataset):
+    def create(self, dataset, files=None):
         os.mkdir(self.directory + dataset["id"])
         self.index[dataset["id"]] = dataset
         self.__write_index()

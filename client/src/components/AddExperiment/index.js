@@ -16,7 +16,7 @@ export default class extends Component {
   initialState() {
     return {
       id: uuid(),
-      name: "",
+      name: "New Experiment",
       aligner: "",
       dataset: ""
     };

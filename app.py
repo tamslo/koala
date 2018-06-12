@@ -33,8 +33,12 @@ def get_context():
 
 @app.route("/dataset", methods=["POST"])
 def dataset():
-    params = request.get_json()
-    dataset = datasets.create(params)
+    params = json.loads(request.form["json"])
+    files = request.files
+    # TODO remove this when file handling is implemented
+    if request.files:
+        raise Exception("File handling not implemented yet")
+    dataset = datasets.create(params, files)
     return json.dumps(dataset)
 
 @app.route("/experiment", methods=["POST", "PUT", "DELETE"])

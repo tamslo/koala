@@ -18,7 +18,7 @@ export default class extends Component {
   initialState() {
     return {
       id: uuid(),
-      name: "",
+      name: "New Data Set",
       method: "file",
       content: "",
       pairedEnd: true,
@@ -121,21 +121,20 @@ export default class extends Component {
       this.state.content.name;
     return (
       <div>
-        <StyledButton
+        <Button
           variant="outlined"
           onClick={() => {
             this.refs.file.click();
           }}
         >
-          Select file
+          {fileName || "Select file"}
           <input
             ref="file"
             type="file"
             style={{ display: "none" }}
             onChange={this.handleChange("content")}
           />
-        </StyledButton>
-        {fileName || <em>No file selected</em>}
+        </Button>
       </div>
     );
   }
@@ -150,10 +149,6 @@ const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
   flex-direction: column;
-`;
-
-const StyledButton = styled(Button)`
-  margin-right: 20px !important;
 `;
 
 const Row = styled.div`
