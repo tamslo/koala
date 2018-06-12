@@ -69,26 +69,33 @@ export default class extends Component {
             label="Name"
             value={this.state.name}
             onChange={this.handleChange("name")}
+            width={400}
           />
-          <Select
-            label="Method"
-            value={this.state.method}
-            onChange={this.handleChange("method")}
-          >
-            <MenuItem value="file">File</MenuItem>
-            <MenuItem value="url">URL</MenuItem>
-          </Select>
-          {this.renderFileSelection()}
-          <Checkbox
-            label="Paired end"
-            onChange={this.handleChange("pairedEnd")}
-            checked={this.state.pairedEnd}
-          />
-          <NumberField
-            label="Read length"
-            onChange={this.handleChange("readLength")}
-            value={this.state.readLength}
-          />
+          <Row>
+            <Select
+              label="Method"
+              value={this.state.method}
+              onChange={this.handleChange("method")}
+              width={50}
+            >
+              <MenuItem value="file">File</MenuItem>
+              <MenuItem value="url">URL</MenuItem>
+            </Select>
+            {this.renderFileSelection()}
+          </Row>
+          <div>
+            <NumberField
+              label="Read length"
+              onChange={this.handleChange("readLength")}
+              value={this.state.readLength}
+              width={100}
+            />
+            <Checkbox
+              label="Paired end"
+              onChange={this.handleChange("pairedEnd")}
+              checked={this.state.pairedEnd}
+            />
+          </div>
         </Container>
       </Dialog>
     );
@@ -96,26 +103,40 @@ export default class extends Component {
 
   renderFileSelection() {
     return this.state.method === "file" ? (
-      <StyledButton
-        variant="outlined"
-        onClick={() => {
-          this.refs.file.click();
-        }}
-      >
-        Upload file
-        <input
-          ref="file"
-          type="file"
-          style={{ display: "none" }}
-          onChange={this.handleChange("content")}
-        />
-      </StyledButton>
+      this.renderFileUpload()
     ) : (
       <TextField
         label="Data URL"
         value={this.state.url}
         onChange={this.handleChange("content")}
+        width={330}
       />
+    );
+  }
+
+  renderFileUpload() {
+    const fileName =
+      this.state.content &&
+      typeof this.state.content === "object" &&
+      this.state.content.name;
+    return (
+      <div>
+        <StyledButton
+          variant="outlined"
+          onClick={() => {
+            this.refs.file.click();
+          }}
+        >
+          Select file
+          <input
+            ref="file"
+            type="file"
+            style={{ display: "none" }}
+            onChange={this.handleChange("content")}
+          />
+        </StyledButton>
+        {fileName || <em>No file selected</em>}
+      </div>
     );
   }
 
@@ -128,8 +149,14 @@ export default class extends Component {
 const Container = styled.div`
   display: flex;
   flex-wrap: wrap;
+  flex-direction: column;
 `;
 
 const StyledButton = styled(Button)`
   margin-right: 20px !important;
+`;
+
+const Row = styled.div`
+  display: flex;
+  align-items: baseline;
 `;
