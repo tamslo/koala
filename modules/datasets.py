@@ -23,7 +23,14 @@ class Datasets:
         return self.index[dataset_id]
 
     def create(self, dataset, files=None):
-        os.mkdir(self.directory + dataset["id"])
+        directory = self.directory + dataset["id"] + "/"
+        os.mkdir(directory)
+        if files:
+            for file_key in files:
+                file = files[file_key]
+                file_directory = directory + file_key
+                dataset["content"][file_key] = file_directory
+                file.save(file_directory)
         self.index[dataset["id"]] = dataset
         self.__write_index()
         return dataset

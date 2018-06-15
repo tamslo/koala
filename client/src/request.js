@@ -42,6 +42,7 @@ const handleFetch = (request, json = true) => {
       }
       return json ? response.json() : response;
     })
+    .then(json => json)
     .catch(error => {
       return { error };
     });

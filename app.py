@@ -35,9 +35,6 @@ def get_context():
 def dataset():
     params = json.loads(request.form["json"])
     files = request.files
-    # TODO remove this when file handling is implemented
-    if request.files:
-        raise Exception("File handling not implemented yet")
     dataset = datasets.create(params, files)
     return json.dumps(dataset)
 

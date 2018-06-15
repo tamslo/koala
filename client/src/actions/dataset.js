@@ -1,15 +1,7 @@
 import * as types from "./actionTypes";
-import { postRequest } from "../request";
 
 export const addDataset = dataset => {
   return dispatch => {
-    // postRequest("/dataset", dataset).then(dataset => {
-    //   dispatch({
-    //     type: types.ADD_DATASET,
-    //     dataset
-    //   });
-    // });
-
     let data = new FormData();
     data.append("file", dataset.content);
     data.append("json", JSON.stringify(dataset));
@@ -31,6 +23,12 @@ export const addDataset = dataset => {
         }
         return response.json();
       })
+      .then(dataset =>
+        dispatch({
+          type: types.ADD_DATASET,
+          dataset
+        })
+      )
       .catch(error => {
         return { error };
       });
