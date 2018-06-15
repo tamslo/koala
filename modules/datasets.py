@@ -25,24 +25,30 @@ class Datasets:
     def create(self, dataset, files=None):
         directory = self.directory + dataset["id"] + "/"
         os.mkdir(directory)
-        if files:
-            for file_key in files:
+        for file_key in dataset["content"]:
+            file_path = directory + file_key + ".fastq"
+            if files:
                 file = files[file_key]
-                file_path = directory + file_key + ".fastq"
-                dataset["content"][file_key]["origin"] = file.filename
-                dataset["content"][file_key]["path"] = file_path
+                origin = file.filename
                 file.save(file_path)
+            else:
+                origin = dataset["content"][file_key]
+                dataset["content"][file_key] = {}
+            dataset["content"][file_key]["path"] = file_path
+            dataset["content"][file_key]["origin"] = origin
+
         self.index[dataset["id"]] = dataset
         self.__write_index()
         return dataset
 
     def lookup(self, experiment, action):
         dataset_id = experiment["dataset"]
-        data_directory = self.directory + dataset_id + "/"
+        data_directory = self.dataset_folder(dataset_id)
         if os.path.isdir(data_directory):
-            dataset_path = self.dataset_path(dataset_id)
-            if action == "dataset" and os.path.exists(dataset_path):
-                return dataset_path
+            if action == "dataset":
+                dataset = self.index[dataset_id]
+                if len(os.listdir(data_directory)) > 0:
+                    return data_directory
             else:
                 action_directory = data_directory + experiment[action]
                 if os.path.isdir(action_directory):
@@ -50,18 +56,14 @@ class Datasets:
         # Default value
         return False
 
-    def dataset_path(self, dataset_id):
-        return self.directory + dataset_id + "/" + "data.fastq"
+    def dataset_folder(self, dataset_id):
+        return self.directory + dataset_id + "/"
 
     def create_path(self, experiment, action):
         dataset_id = experiment["dataset"]
-        data_directory = self.directory + dataset_id + "/"
-        if action == "dataset":
-            os.makedirs(data_directory, exist_ok=True)
-            path = self.dataset_path(dataset_id)
-        else:
-            path = self.directory + dataset_id + "/" + experiment[action]
-            os.makedirs(path)
+        data_directory = self.dataset_folder(dataset_id)
+        path = self.dataset_folder(dataset_id) + experiment[action]
+        os.makedirs(path)
         return path
 
     def get_datasets(self):
@@ -69,11 +71,13 @@ class Datasets:
 
     def clean_up(self, action, experiment):
         dataset_id = experiment["dataset"]
-        dataset_folder = self.directory + dataset_id + "/"
+        dataset_folder = self.dataset_folder(dataset_id)
         action_folder = dataset_folder + experiment[action]
         delete_path = dataset_folder if action == "dataset" else action_folder
         if os.path.isdir(delete_path):
             shutil.rmtree(delete_path)
+        if action == "dataset":
+            os.mkdir(dataset_folder)
 
 def is_uuid(id):
     try:
