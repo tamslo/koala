@@ -90,8 +90,8 @@ const pad = number => {
 };
 
 const formatAction = string => {
-  if (string.endsWith("_cached")) {
-    return `Load ${string.split("_")[0]} from cache`;
+  if (string.endsWith("_loaded")) {
+    return `Load ${string.split("_")[0]} from disk`;
   } else {
     return capitalize(string);
   }

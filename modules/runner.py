@@ -22,7 +22,7 @@ class Runner:
             if file_path:
                 experiment = self.experiments.add_log_entry(
                     experiment,
-                    "{}_cached".format(action),
+                    "{}_loaded".format(action),
                     one_step = True
                 )
             else:
