@@ -3,7 +3,9 @@ import * as types from "./actionTypes";
 export const addDataset = dataset => {
   return dispatch => {
     let data = new FormData();
-    data.append("file", dataset.content);
+    Object.keys(dataset.content).forEach(fileKey =>
+      data.append(fileKey, dataset.content[fileKey])
+    );
     data.append("json", JSON.stringify(dataset));
 
     const request = new Request("http://localhost:5000/dataset", {

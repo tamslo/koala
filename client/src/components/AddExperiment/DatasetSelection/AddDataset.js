@@ -19,32 +19,50 @@ export default class extends Component {
     return {
       id: uuid(),
       name: "New Data Set",
-      method: "file",
-      content: "",
       pairedEnd: true,
-      readLength: 200
+      readLength: 200,
+      method: "file",
+      content: {}
     };
   }
 
   canAdd() {
+    // TODO check that URL is not empty and valid
     return (
       this.state.name !== "" &&
-      this.state.content !== "" &&
+      Object.keys(this.state.content).length !== "" &&
       this.state.readLength !== ""
     );
   }
 
   handleChange = name => event => {
-    let value;
-    if (name === "pairedEnd") {
-      value = event.target.checked;
-    } else if (name === "content") {
-      value = event.target.files[0];
-    } else {
-      value = event.target.value;
-    }
     this.setState({
-      [name]: value
+      [name]: event.target.value
+    });
+  };
+
+  changePairedEnd = event => {
+    // TODO remove file from content if true changes to false
+    this.setState({
+      pairedEnd: event.target.checked
+    });
+  };
+
+  changeMethod = event => {
+    this.setState({
+      method: event.target.value,
+      content: this.initialState().content
+    });
+  };
+
+  changeContent = key => event => {
+    const value =
+      this.state.method === "file" ? event.target.files[0] : event.target.value;
+    this.setState({
+      content: {
+        ...this.state.content,
+        [key]: value
+      }
     });
   };
 
@@ -75,7 +93,7 @@ export default class extends Component {
             <Select
               label="Method"
               value={this.state.method}
-              onChange={this.handleChange("method")}
+              onChange={this.changeMethod}
               width={50}
             >
               <MenuItem value="file">File</MenuItem>
@@ -92,7 +110,7 @@ export default class extends Component {
             />
             <Checkbox
               label="Paired end"
-              onChange={this.handleChange("pairedEnd")}
+              onChange={this.changePairedEnd}
               checked={this.state.pairedEnd}
             />
           </div>
@@ -108,7 +126,7 @@ export default class extends Component {
       <TextField
         label="Data URL"
         value={this.state.url}
-        onChange={this.handleChange("content")}
+        onChange={this.changeContent("forward")}
         width={330}
       />
     );
@@ -116,9 +134,9 @@ export default class extends Component {
 
   renderFileUpload() {
     const fileName =
-      this.state.content &&
-      typeof this.state.content === "object" &&
-      this.state.content.name;
+      this.state.content.forward &&
+      typeof this.state.content.forward === "object" &&
+      this.state.content.forward.name;
     return (
       <div>
         <Button
@@ -132,7 +150,7 @@ export default class extends Component {
             ref="file"
             type="file"
             style={{ display: "none" }}
-            onChange={this.handleChange("content")}
+            onChange={this.changeContent("forward")}
           />
         </Button>
       </div>
