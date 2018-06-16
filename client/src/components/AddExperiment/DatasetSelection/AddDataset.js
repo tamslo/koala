@@ -7,7 +7,11 @@ import Dialog from "../../mui-wrappers/Dialog";
 import TextField from "../../mui-wrappers/inputs/Text";
 import NumberField from "../../mui-wrappers/inputs/Number";
 import Select from "../../mui-wrappers/inputs/Select";
-import Checkbox from "../../mui-wrappers/inputs/Checkbox";
+
+const FORWARD = "forward";
+const REVERSE = "reverse";
+const PAIRED = "paired";
+const SINGLE = "single";
 
 export default class extends Component {
   constructor(props) {
@@ -19,7 +23,7 @@ export default class extends Component {
     return {
       id: uuid(),
       name: "New Data Set",
-      pairedEnd: true,
+      layout: PAIRED,
       readLength: 200,
       method: "file",
       content: {}
@@ -27,10 +31,10 @@ export default class extends Component {
   }
 
   canAdd() {
-    // TODO check that URL is not empty and valid
+    const contentLength = this.state.layout === PAIRED ? 2 : 1;
     return (
       this.state.name !== "" &&
-      Object.keys(this.state.content).length !== "" &&
+      Object.keys(this.state.content).length === contentLength &&
       this.state.readLength !== ""
     );
   }
@@ -41,10 +45,20 @@ export default class extends Component {
     });
   };
 
-  changePairedEnd = event => {
-    // TODO remove file from content if true changes to false
+  changeLayout = event => {
+    const layout = event.target.value;
+    let content = this.state.content;
+
+    // Remove reverse file from content if layout changes to single end
+    if (layout === SINGLE) {
+      content = content[FORWARD]
+        ? { [FORWARD]: content[FORWARD] }
+        : this.initialState().content;
+    }
+
     this.setState({
-      pairedEnd: event.target.checked
+      layout,
+      content
     });
   };
 
@@ -58,11 +72,23 @@ export default class extends Component {
   changeContent = key => event => {
     const value =
       this.state.method === "file" ? event.target.files[0] : event.target.value;
+    const removeKey =
+      this.state.method === "file"
+        ? event.target.files.length === 0
+        : event.target.value === "";
+    const contentWithoutKey = Object.keys(this.state.content).reduce(
+      (reducedContent, fileKey) =>
+        fileKey === key
+          ? reducedContent
+          : { ...reducedContent, [fileKey]: this.state.content[fileKey] },
+      {}
+    );
+    const contentWithNewValue = {
+      ...this.state.content,
+      [key]: value
+    };
     this.setState({
-      content: {
-        ...this.state.content,
-        [key]: value
-      }
+      content: removeKey ? contentWithoutKey : contentWithNewValue
     });
   };
 
@@ -87,72 +113,84 @@ export default class extends Component {
             label="Name"
             value={this.state.name}
             onChange={this.handleChange("name")}
-            width={400}
+            width={390}
           />
           <Row>
-            <Select
-              label="Method"
-              value={this.state.method}
-              onChange={this.changeMethod}
-              width={50}
-            >
-              <MenuItem value="file">File</MenuItem>
-              <MenuItem value="url">URL</MenuItem>
-            </Select>
-            {this.renderFileSelection()}
-          </Row>
-          <div>
             <NumberField
               label="Read length"
               onChange={this.handleChange("readLength")}
               value={this.state.readLength}
               width={100}
             />
-            <Checkbox
-              label="Paired end"
-              onChange={this.changePairedEnd}
-              checked={this.state.pairedEnd}
-            />
-          </div>
+            <Select
+              label="Method"
+              value={this.state.method}
+              onChange={this.changeMethod}
+              width={100}
+            >
+              <MenuItem value="file">File</MenuItem>
+              <MenuItem value="url">URL</MenuItem>
+            </Select>
+            <Select
+              label="Layout"
+              value={this.state.layout}
+              onChange={this.changeLayout}
+              width={150}
+            >
+              <MenuItem value={PAIRED}>Paired end</MenuItem>
+              <MenuItem value={SINGLE}>Single end</MenuItem>
+            </Select>
+          </Row>
+          {this.renderDataSelection()}
         </Container>
       </Dialog>
     );
   }
 
-  renderFileSelection() {
+  renderDataSelection() {
+    let selections = [this.renderSingleDataSelection(FORWARD)];
+    if (this.state.layout === PAIRED) {
+      selections = [...selections, this.renderSingleDataSelection(REVERSE)];
+    }
+    return selections;
+  }
+
+  renderSingleDataSelection(key) {
     return this.state.method === "file" ? (
-      this.renderFileUpload()
+      this.renderFileUpload(key)
     ) : (
       <TextField
-        label="Data URL"
+        key={key}
+        label={this.label("Data URL", key)}
         value={this.state.url}
-        onChange={this.changeContent("forward")}
-        width={330}
+        onChange={this.changeContent(key)}
+        width={390}
       />
     );
   }
 
-  renderFileUpload() {
+  renderFileUpload(key) {
     const fileName =
-      this.state.content.forward &&
-      typeof this.state.content.forward === "object" &&
-      this.state.content.forward.name;
+      this.state.content[key] &&
+      typeof this.state.content[key] === "object" &&
+      this.state.content[key].name;
+    const label = this.label(fileName || "Select file", key);
     return (
-      <div>
-        <Button
+      <div key={key}>
+        <StyledButton
           variant="outlined"
           onClick={() => {
-            this.refs.file.click();
+            this.refs[key].click();
           }}
         >
-          {fileName || "Select file"}
+          {label}
           <input
-            ref="file"
+            ref={key}
             type="file"
             style={{ display: "none" }}
-            onChange={this.changeContent("forward")}
+            onChange={this.changeContent(key)}
           />
-        </Button>
+        </StyledButton>
       </div>
     );
   }
@@ -160,6 +198,13 @@ export default class extends Component {
   addDataset() {
     const dataset = this.state;
     this.setState(this.initialState(), () => this.props.addDataset(dataset));
+  }
+
+  label(text, key) {
+    if (this.state.layout === PAIRED) {
+      text += ` (${key})`;
+    }
+    return text;
   }
 }
 
@@ -171,5 +216,9 @@ const Container = styled.div`
 
 const Row = styled.div`
   display: flex;
-  align-items: baseline;
+  flex-direction: row;
+`;
+
+const StyledButton = styled(Button)`
+  margin-top: 20px !important;
 `;
