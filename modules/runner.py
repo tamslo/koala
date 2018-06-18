@@ -17,8 +17,6 @@ class Runner:
         try:
             experiment = self.experiments.select(experiment_id)
             file_path = self.datasets.lookup(experiment, action)
-            print("Executing action " + action, flush=True)
-            print(file_path, flush=True)
             if file_path:
                 experiment = self.experiments.add_log_entry(
                     experiment,
@@ -40,11 +38,12 @@ class Runner:
         dataset_folder = self.datasets.dataset_folder(dataset["id"])
         for file in dataset["content"]:
             path = dataset["content"][file]["path"]
-            url = dataset["content"][file]["origin"]
-            urllib.request.urlretrieve(
-                url,
-                path
-            )
+            origin = dataset["content"][file]["origin"]
+            if dataset["method"] == "url":
+                urllib.request.urlretrieve(
+                    origin,
+                    path
+                )
         return dataset_folder
 
     def __align(self, experiment):
