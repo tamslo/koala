@@ -1,38 +1,44 @@
 import * as types from "./actionTypes";
-import { getRequest, postRequest, deleteRequest, putRequest } from "../request";
+import { getJson, postRequest, deleteRequest, putRequest } from "../api";
 
 export const fetchContext = () => {
   return dispatch => {
-    getRequest("/context").then(context => {
-      dispatch({
-        type: types.FETCH_CONTEXT,
-        context
-      });
-    });
+    getJson("/context")
+      .then(context => {
+        dispatch({
+          type: types.FETCH_CONTEXT,
+          context
+        });
+      })
+      .catch(error => console.log(error));
   };
 };
 
 export const deleteExperiment = id => {
   return dispatch => {
-    deleteRequest("/experiment?id=" + id).then(experiment => {
-      dispatch({
-        type: types.DELETE_EXPERIMENT,
-        experiment
-      });
-    });
+    deleteRequest("/experiment?id=" + id)
+      .then(experiment => {
+        dispatch({
+          type: types.DELETE_EXPERIMENT,
+          experiment
+        });
+      })
+      .catch(error => console.log(error));
   };
 };
 
 export const addExperiment = params => {
   return dispatch => {
-    postRequest("/experiment", params).then(experiment => {
-      if (!experiment.error) {
-        dispatch({
-          type: types.ADD_EXPERIMENT,
-          experiment
-        });
-      }
-    });
+    postRequest("/experiment", params)
+      .then(experiment => {
+        if (!experiment.error) {
+          dispatch({
+            type: types.ADD_EXPERIMENT,
+            experiment
+          });
+        }
+      })
+      .catch(error => ({ error }));
   };
 };
 
@@ -59,16 +65,16 @@ export const runExperiment = id => {
 
     // Chain execution steps
     let latestExperiment = null;
-    getRequest("/execute?action=dataset&experiment=" + id)
+    getJson("/execute?action=dataset&experiment=" + id)
       .then(experiment => {
         latestExperiment = experiment;
         updateExperiment(experiment, dispatch);
-        return getRequest("/execute?action=alignment&experiment=" + id);
+        return getJson("/execute?action=alignment&experiment=" + id);
       })
       .then(experiment => {
         latestExperiment = experiment;
         updateExperiment(experiment, dispatch);
-        return getRequest("/done?experiment=" + id);
+        return getJson("/done?experiment=" + id);
       })
       .then(experiment => {
         latestExperiment = experiment;

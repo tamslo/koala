@@ -3,7 +3,7 @@ import styled from "styled-components";
 import { withTheme } from "@material-ui/core/styles";
 import IconButton from "@material-ui/core/IconButton";
 import DownloadIcon from "@material-ui/icons/CloudDownload";
-import { SERVER_URL } from "../request";
+import { SERVER_URL } from "../api";
 
 class Experiment extends Component {
   render() {
@@ -53,7 +53,9 @@ class Experiment extends Component {
 
     const time = entry.completed
       ? formatTime(entry.completed)
-      : entry.error ? formatTime(entry.error) : formatTime(entry.started);
+      : entry.error
+        ? formatTime(entry.error)
+        : formatTime(entry.started);
 
     const status =
       entry.action === "done"

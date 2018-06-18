@@ -14,7 +14,7 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import DownloadIcon from "@material-ui/icons/CloudDownload";
 import Experiment from "./Experiment";
-import { SERVER_URL } from "../request";
+import { SERVER_URL } from "../api";
 
 class Experiments extends Component {
   constructor(props) {
@@ -150,7 +150,9 @@ class Experiments extends Component {
             ? "Waiting"
             : experiment.done
               ? "Done"
-              : experiment.interrupted ? "Interrupted" : "Running"
+              : experiment.interrupted
+                ? "Interrupted"
+                : "Running"
           : "Error"}
       </Status>
     );
