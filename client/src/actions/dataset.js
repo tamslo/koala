@@ -18,6 +18,8 @@ export const addDataset = dataset => {
       timeout: 0
     });
 
+    dispatch({ type: types.ADDING_DATASET });
+
     fetch(request)
       .then(response => {
         if (!response.ok) {
@@ -27,7 +29,7 @@ export const addDataset = dataset => {
       })
       .then(dataset =>
         dispatch({
-          type: types.ADD_DATASET,
+          type: types.ADDED_DATASET,
           dataset
         })
       )

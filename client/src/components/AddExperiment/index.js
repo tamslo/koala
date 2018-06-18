@@ -3,6 +3,7 @@ import uuid from "uuid/v4";
 import styled from "styled-components";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
+import Loading from "../Loading";
 import TextField from "../mui-wrappers/inputs/Text";
 import Select from "../mui-wrappers/inputs/Select";
 import DatasetSelection from "./DatasetSelection";
@@ -31,6 +32,9 @@ export default class extends Component {
   render() {
     return (
       <Container>
+        {this.props.datasetLoading && (
+          <Loading content={"Adding data set..."} />
+        )}
         <TextField
           label="Name"
           value={this.state.name}

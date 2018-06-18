@@ -54,6 +54,7 @@ class Content extends Component {
           services={context.services}
           addExperiment={addExperiment}
           datasets={context.datasets}
+          datasetLoading={context.datasetLoading}
           addDataset={addDataset}
         />
         <Spacer />
@@ -96,4 +97,7 @@ const actions = {
   addDataset
 };
 
-export default connect(mapStateToProps, actions)(Content);
+export default connect(
+  mapStateToProps,
+  actions
+)(Content);

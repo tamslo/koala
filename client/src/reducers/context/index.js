@@ -7,8 +7,14 @@ export default (state = initialState, action = {}) => {
   switch (action.type) {
     case types.FETCH_CONTEXT:
       return action.context;
-    case types.ADD_DATASET:
-      return { ...state, datasets: addDataset(state.datasets, action.dataset) };
+    case types.ADDING_DATASET:
+      return { ...state, datasetLoading: true };
+    case types.ADDED_DATASET:
+      return {
+        ...state,
+        datasetLoading: false,
+        datasets: addDataset(state.datasets, action.dataset)
+      };
     case types.ADD_EXPERIMENT:
       return updateExperiments(state, action.experiment);
     case types.UPDATE_EXPERIMENT:
