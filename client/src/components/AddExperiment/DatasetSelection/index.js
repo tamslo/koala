@@ -34,7 +34,7 @@ export default class extends Component {
         <DatasetInfo
           open={datasetInfo !== null}
           close={this.closeDatasetInfo.bind(this)}
-          dataset={datasetInfo || {}}
+          dataset={datasetInfo || null}
         />
         <Select
           label="Data Set"

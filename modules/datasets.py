@@ -29,13 +29,10 @@ class Datasets:
             file_path = directory + file_key + ".fastq"
             if files:
                 file = files[file_key]
-                origin = file.filename
+                name = file.filename
                 file.save(file_path)
-            else:
-                origin = dataset["content"][file_key]
-                dataset["content"][file_key] = {}
+                dataset["content"][file_key]["name"] = name
             dataset["content"][file_key]["path"] = file_path
-            dataset["content"][file_key]["origin"] = origin
 
         self.index[dataset["id"]] = dataset
         self.__write_index()

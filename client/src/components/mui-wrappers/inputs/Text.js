@@ -14,6 +14,7 @@ export default class extends Component {
         fullWidth={this.props.fullWidth}
         width={this.props.width || 200}
         type={this.props.type || "text"}
+        disabled={this.props.disabled}
       >
         {this.props.children}
       </FixedWidthTextField>

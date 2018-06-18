@@ -7,13 +7,7 @@ export default class extends Component {
   render() {
     return (
       <StyledFormControlLabel
-        control={
-          <Checkbox
-            checked={this.props.checked}
-            onChange={this.props.onChange}
-            color="primary"
-          />
-        }
+        control={<Checkbox {...this.props} color="primary" />}
         label={this.props.label}
       />
     );
