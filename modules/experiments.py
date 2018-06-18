@@ -1,20 +1,18 @@
 import os, json
 from time import localtime, strftime
 from collections import OrderedDict
+from modules.file_handler import FileHandler
 
 class Experiments:
     def __init__(self, data_directory):
         self.directory = data_directory + "experiments/"
-        self.__setup()
-
-    def __setup(self):
-        if not os.path.isdir(self.directory):
-            os.makedirs(self.directory)
+        self.file_handler = FileHandler(self.directory)
 
     def __write(self, experiment):
-        with open(self.experiment_path(experiment["id"]), "w") as file:
-            file.write(json.dumps(experiment))
-            return experiment
+        content = json.dumps(experiment)
+        path = self.experiment_path(experiment["id"])
+        self.file_handler.write(content, path)
+        return experiment
 
     def __set(self, experiment, name, value):
         experiment[name] = value
@@ -44,7 +42,7 @@ class Experiments:
 
     def delete(self, experiment_id):
         experiment = self.select(experiment_id)
-        os.remove(self.experiment_path(experiment_id))
+        self.file_handler.delete(self.experiment_path(experiment_id))
         return experiment
 
     def update(self, experiment):
