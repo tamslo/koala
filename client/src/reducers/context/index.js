@@ -1,5 +1,10 @@
 import * as types from "../../actions/actionTypes";
-import { addDataset } from "./dataset";
+import { addDataset } from "./datasets";
+import {
+  updateExperiment,
+  updateExperiments,
+  deleteFromExperiments
+} from "./experiments";
 
 const initialState = null;
 
@@ -25,30 +30,4 @@ export default (state = initialState, action = {}) => {
     default:
       return state;
   }
-};
-
-const updateExperiments = (state, experiment) => {
-  return {
-    ...state,
-    experiments: {
-      ...state.experiments,
-      [experiment.id]: experiment
-    }
-  };
-};
-
-const updateExperiment = (state, experiment) => {
-  return { ...state.experiments[experiment.id], ...experiment };
-};
-
-const deleteFromExperiments = (state, experiment) => {
-  const experiments = Object.keys(state.experiments).reduce(
-    (experiments, experimentId) => {
-      return experimentId === experiment.id
-        ? experiments
-        : { ...experiments, [experimentId]: state.experiments[experimentId] };
-    },
-    {}
-  );
-  return { ...state, experiments };
 };
