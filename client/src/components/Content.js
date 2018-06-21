@@ -1,30 +1,10 @@
 import React, { Component } from "react";
-import { connect } from "react-redux";
 import styled from "styled-components";
-import { fetchContext } from "../actions";
-import {
-  addExperiment,
-  deleteExperiment,
-  runExperiment,
-  retryExperiment
-} from "../actions/experiment";
-import { addDataset } from "../actions/dataset";
 import Loading from "./Loading";
 import AddExperiment from "./AddExperiment";
 import Experiments from "./Experiments";
 
-class Content extends Component {
-  componentWillMount() {
-    this.props.fetchContext();
-  }
-
-  componentDidUpdate() {
-    const { jobs, runExperiment } = this.props;
-    if (jobs.running === null && jobs.waiting.length > 0) {
-      runExperiment(jobs.waiting[0]);
-    }
-  }
-
+export default class extends Component {
   render() {
     const {
       context,
@@ -80,24 +60,3 @@ const Container = styled.div`
 const Spacer = styled.div`
   height: 32px;
 `;
-
-const mapStateToProps = state => {
-  return {
-    context: state.context,
-    jobs: state.jobs
-  };
-};
-
-const actions = {
-  fetchContext,
-  addExperiment,
-  deleteExperiment,
-  runExperiment,
-  retryExperiment,
-  addDataset
-};
-
-export default connect(
-  mapStateToProps,
-  actions
-)(Content);
