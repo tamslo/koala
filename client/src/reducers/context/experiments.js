@@ -5,8 +5,6 @@ const initialState = {};
 export default (state = initialState, action = {}) => {
   const { experiment } = action;
   switch (action.type) {
-    case types.FETCH_CONTEXT:
-      return action.context.experiments;
     case types.ADD_EXPERIMENT:
       return {
         ...state,
