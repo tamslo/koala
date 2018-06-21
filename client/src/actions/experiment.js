@@ -1,5 +1,6 @@
 import * as types from "./actionTypes";
 import { getJson, postRequest, deleteRequest, putRequest } from "../api";
+import constants from "../constants.json";
 
 export const deleteExperiment = id => {
   return dispatch => {
@@ -52,11 +53,13 @@ export const runExperiment = id => {
 
     // Chain execution steps
     let latestExperiment = null;
-    getJson("/execute?action=dataset&experiment=" + id)
+    const { actions } = constants;
+
+    getJson(`/execute?action=${actions.DATASET}&experiment=${id}`)
       .then(experiment => {
         latestExperiment = experiment;
         updateExperiment(experiment, dispatch);
-        return getJson("/execute?action=alignment&experiment=" + id);
+        return getJson(`/execute?action=${actions.ALIGNMENT}&experiment=${id}`);
       })
       .then(experiment => {
         latestExperiment = experiment;
