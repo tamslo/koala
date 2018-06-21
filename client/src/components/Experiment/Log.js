@@ -1,45 +1,14 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { withTheme } from "@material-ui/core/styles";
-import IconButton from "@material-ui/core/IconButton";
-import DownloadIcon from "@material-ui/icons/CloudDownload";
-import { SERVER_URL } from "../api";
 
-class Experiment extends Component {
+class Log extends Component {
   render() {
     return (
-      <div>
-        <Entry>
-          {`Data Set: ${this.props.datasets[this.props.dataset].name}`}
-          {this.renderDownloadButton("dataset")}
-        </Entry>
-        <Entry>
-          {`Aligner: ${
-            this.props.services.find(
-              service => service.id === this.props.alignment
-            ).name
-          }`}
-          {this.renderDownloadButton("alignment")}
-        </Entry>
-        {this.renderLog()}
-      </div>
+      <Container>
+        {this.props.log.map(this.renderLogEntry.bind(this))}
+      </Container>
     );
-  }
-
-  renderDownloadButton(key) {
-    const path = this.props.files[key];
-    return path ? (
-      <StyledIconButton
-        aria-label={"Download"}
-        href={SERVER_URL + "/export?path=" + path}
-      >
-        <DownloadIcon />
-      </StyledIconButton>
-    ) : null;
-  }
-
-  renderLog() {
-    return <Log>{this.props.log.map(this.renderLogEntry.bind(this))}</Log>;
   }
 
   renderLogEntry(entry, index) {
@@ -95,29 +64,21 @@ const formatAction = string => {
   if (string.endsWith("_loaded")) {
     return `Load ${string.split("_")[0]} from disk`;
   } else {
-    return capitalize(string);
+    return string.substr(0, 1).toUpperCase() + string.substr(1);
   }
 };
 
-const capitalize = string => {
-  return string.substr(0, 1).toUpperCase() + string.substr(1);
-};
-
-const Log = styled.div`
+const Container = styled.div`
   padding-top: 12px;
   font-family: monospace;
 `;
 
 const Entry = styled.div`
-  margin-bottom: 12px;
+  margin-bottom: 10px;
 `;
 
 const Status = styled.span`
   color: ${props => props.color};
 `;
 
-const StyledIconButton = styled(IconButton)`
-  margin-left: 12px !important;
-`;
-
-export default withTheme()(Experiment);
+export default withTheme()(Log);
