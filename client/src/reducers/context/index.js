@@ -12,7 +12,6 @@ export default (state = initialState, action = {}) => {
   } else {
     switch (action.type) {
       case types.FETCH_CONTEXT:
-        console.log(action.context);
         return action.context;
       default:
         return state;

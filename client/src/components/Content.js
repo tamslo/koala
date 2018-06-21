@@ -1,13 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import styled from "styled-components";
+import { fetchContext } from "../actions";
 import {
-  fetchContext,
   addExperiment,
   deleteExperiment,
   runExperiment,
   retryExperiment
-} from "../actions";
+} from "../actions/experiment";
 import { addDataset } from "../actions/dataset";
 import Loading from "./Loading";
 import AddExperiment from "./AddExperiment";
