@@ -3,9 +3,10 @@ import styled from "styled-components";
 import MenuItem from "@material-ui/core/MenuItem";
 import Divider from "@material-ui/core/Divider";
 import InfoIcon from "@material-ui/icons/Info";
+import Select from "../../mui-wrappers/inputs/Select";
+import Loading from "../../Loading";
 import AddDataset from "./AddDataset";
 import DatasetInfo from "./DatasetInfo";
-import Select from "../../mui-wrappers/inputs/Select";
 
 export default class extends Component {
   constructor(props) {
@@ -26,6 +27,7 @@ export default class extends Component {
     const { dataset, datasets } = this.props;
     return (
       <div>
+        {datasets.areLoading && <Loading content={"Adding data set..."} />}
         <AddDataset
           addDataset={this.addDataset.bind(this)}
           cancel={this.cancelAddingDataset.bind(this)}

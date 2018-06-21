@@ -34,6 +34,7 @@ class Content extends Component {
       addDataset,
       jobs
     } = this.props;
+
     if (context === null) {
       return <Loading content={"Setting everything up..."} />;
     }
@@ -54,7 +55,6 @@ class Content extends Component {
           services={context.services}
           addExperiment={addExperiment}
           datasets={context.datasets}
-          datasetLoading={context.datasetLoading}
           addDataset={addDataset}
         />
         <Spacer />
