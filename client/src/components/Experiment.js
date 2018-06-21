@@ -31,7 +31,7 @@ class Experiment extends Component {
     return path ? (
       <StyledIconButton
         aria-label={"Download"}
-        href={SERVER_URL + "/download?path=" + path}
+        href={SERVER_URL + "/export?path=" + path}
       >
         <DownloadIcon />
       </StyledIconButton>

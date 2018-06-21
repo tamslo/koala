@@ -95,7 +95,7 @@ class Experiments extends Component {
           {experiment.done && (
             <IconButton
               aria-label="Download"
-              href={SERVER_URL + "/download?experiment=" + experiment.id}
+              href={SERVER_URL + "/export?experiment=" + experiment.id}
             >
               <DownloadIcon />
             </IconButton>

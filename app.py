@@ -5,7 +5,7 @@ from collections import OrderedDict
 from modules.datasets import Datasets
 from modules.experiments import Experiments
 from modules.runner import Runner
-from modules.downloader import Downloader
+from modules.exporter import Exporter
 
 app = Flask(__name__)
 CORS(app)
@@ -15,12 +15,12 @@ with open("services.json", "r") as services_file:
 with open("constants.json", "r") as constants_file:
     constants = json.load(constants_file)
 data_directory = "data/"
-download_directory = "data/tmp/"
+export_directory = "data/tmp/"
 
 datasets = Datasets(data_directory, constants)
 experiments = Experiments(data_directory)
 runner = Runner(datasets, experiments, data_directory, constants)
-downloader = Downloader(download_directory)
+exporter = Exporter(export_directory)
 
 @app.route("/ping")
 def ping():
@@ -67,20 +67,20 @@ def done():
     experiment_id = request.args.get("experiment")
     return json.dumps(experiments.mark_done(experiment_id))
 
-@app.route("/download", methods=["GET"])
-def download():
+@app.route("/export", methods=["GET"])
+def export():
     experiment_id = request.args.get("experiment")
     path = request.args.get("path")
     if path != None:
-        download_path = path
-        download_name = downloader.file_name(path)
+        export_file_path = path
+        export_file_name = exporter.file_name(path)
     elif experiment_id != None:
         experiment = experiments.select(experiment_id)
-        download_path, download_name = downloader.zip(experiment)
+        export_file_path, export_file_name = exporter.zip(experiment)
     return send_file(
-        download_path,
+        export_file_path,
         as_attachment=True,
-        attachment_filename=download_name
+        attachment_filename=export_file_name
     )
 
 
@@ -104,7 +104,7 @@ def servemedia(path):
 
 
 def clean_up():
-    shutil.rmtree(download_directory)
+    shutil.rmtree(export_directory)
     # Not working properly if debug=True, see https://stackoverflow.com/questions/37064595/handling-atexit-for-multiple-app-objects-with-flask-dev-server-reloader
     for experiment_id, experiment in experiments.all().items():
         last_log_entry = experiment["log"][-1]

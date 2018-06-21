@@ -1,8 +1,8 @@
 import os, zipfile
 
-class Downloader:
-    def __init__(self, download_directory):
-        self.directory = download_directory
+class Exporter:
+    def __init__(self, export_directory):
+        self.directory = export_directory
         self.__setup()
 
     def __setup(self):
