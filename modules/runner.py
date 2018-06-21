@@ -1,12 +1,13 @@
-import urllib, docker, yaml
+import urllib, docker, yaml, traceback
 
 class Runner:
-    def __init__(self, datasets, experiments, data_directory):
+    def __init__(self, datasets, experiments, data_directory, constants):
         self.datasets = datasets
         self.experiments = experiments
+        self.constants = constants
         self.actions = {
-            "dataset": self.__get_dataset,
-            "alignment": self.__align
+            self.constants["actions"]["DATASET"]: self.__get_dataset,
+            self.constants["actions"]["ALIGNMENT"]: self.__align
         }
         self.docker_client = docker.from_env()
         with open("config.yml", "r") as config_file:
@@ -29,28 +30,35 @@ class Runner:
                 experiment = self.experiments.log_complete(experiment, action)
             experiment = self.experiments.add_download(experiment, action, file_path)
         except Exception as error:
+            print(error, flush=True)
+            traceback.print_exc()
             experiment = self.experiments.mark_error(experiment_id, error)
             self.datasets.clean_up(action, experiment)
         return experiment
 
     def __get_dataset(self, experiment):
-        dataset = self.datasets.select(experiment["dataset"])
-        dataset_folder = self.datasets.dataset_folder(dataset["id"])
+        dataset_id = experiment[self.constants["actions"]["DATASET"]]
+        dataset = self.datasets.select(dataset_id)
+        dataset_folder = self.datasets.dataset_folder(dataset_id)
         for file in dataset["content"]:
             path = dataset["content"][file]["path"]
-            origin = dataset["content"][file]["origin"]
-            if dataset["method"] == "url":
+            name = dataset["content"][file]["name"]
+            if dataset["method"] == self.constants["dataset"]["URL"]:
                 urllib.request.urlretrieve(
-                    origin,
+                    name,
                     path
                 )
         return dataset_folder
 
     def __align(self, experiment):
         file_ending = "bam"
-        alignment_path = self.datasets.create_path(experiment, "alignment")
+        alignment_path = self.datasets.create_path(
+            experiment,
+            self.constants["actions"]["ALIGNMENT"]
+        )
+        aligner = experiment[self.constants["actions"]["ALIGNMENT"]]
         self.docker_client.containers.run(
-            "star",
+            aligner,
             "touch {}/dummy.bam".format(alignment_path),
             volumes={
                 self.absolute_data_path: {

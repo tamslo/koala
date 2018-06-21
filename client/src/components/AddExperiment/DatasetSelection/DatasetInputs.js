@@ -5,7 +5,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import TextField from "../../mui-wrappers/inputs/Text";
 import NumberField from "../../mui-wrappers/inputs/Number";
 import Select from "../../mui-wrappers/inputs/Select";
-import * as constants from "./constants";
+import constants from "../../../constants.json";
 
 export default class extends Component {
   render() {
@@ -35,8 +35,8 @@ export default class extends Component {
             width={100}
             disabled={this.props.disabled}
           >
-            <MenuItem value="file">File</MenuItem>
-            <MenuItem value="url">URL</MenuItem>
+            <MenuItem value={constants.dataset.FILE}>File</MenuItem>
+            <MenuItem value={constants.dataset.URL}>URL</MenuItem>
           </Select>
           <Select
             label="Layout"
@@ -45,8 +45,8 @@ export default class extends Component {
             width={150}
             disabled={this.props.disabled}
           >
-            <MenuItem value={constants.PAIRED}>Paired end</MenuItem>
-            <MenuItem value={constants.SINGLE}>Single end</MenuItem>
+            <MenuItem value={constants.dataset.PAIRED}>Paired end</MenuItem>
+            <MenuItem value={constants.dataset.SINGLE}>Single end</MenuItem>
           </Select>
         </Row>
         {this.renderDataSelection()}
@@ -55,11 +55,13 @@ export default class extends Component {
   }
 
   renderDataSelection() {
-    let selections = [this.renderSingleDataSelection(constants.FORWARD)];
-    if (this.props.layout === constants.PAIRED) {
+    let selections = [
+      this.renderSingleDataSelection(constants.dataset.FORWARD)
+    ];
+    if (this.props.layout === constants.dataset.PAIRED) {
       selections = [
         ...selections,
-        this.renderSingleDataSelection(constants.REVERSE)
+        this.renderSingleDataSelection(constants.dataset.REVERSE)
       ];
     }
     return selections;
@@ -70,7 +72,7 @@ export default class extends Component {
       this.props.content[key] &&
       typeof this.props.content[key] === "object" &&
       this.props.content[key].name;
-    return this.props.method === "file"
+    return this.props.method === constants.dataset.FILE
       ? this.renderFileUpload(key, value)
       : this.renderUrlInput(key, value);
   }
@@ -112,7 +114,7 @@ export default class extends Component {
   }
 
   label(text, key) {
-    if (this.props.layout === constants.PAIRED) {
+    if (this.props.layout === constants.dataset.PAIRED) {
       text += ` (${key})`;
     }
     return text;

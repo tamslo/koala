@@ -2,6 +2,7 @@ data/tmp/
 data/datasets/
 data/experiments/
 config.yml
+client/src/constants.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

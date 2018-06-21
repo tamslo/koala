@@ -2,10 +2,11 @@ import os, json, uuid, shutil
 from modules.file_handler import FileHandler
 
 class Datasets:
-    def __init__(self, data_directory):
+    def __init__(self, data_directory, constants):
         self.directory = data_directory + "datasets/"
         self.file_handler = FileHandler(self.directory)
         self.index_path = self.directory + "index.json"
+        self.constants = constants
         self.__setup()
         with open(self.index_path) as index_file:
             self.index = json.load(index_file)
@@ -67,14 +68,18 @@ class Datasets:
         return self.index
 
     def clean_up(self, action, experiment):
-        dataset_id = experiment["dataset"]
-        dataset_folder = self.dataset_folder(dataset_id)
-        action_folder = dataset_folder + experiment[action]
-        delete_path = dataset_folder if action == "dataset" else action_folder
-        if os.path.isdir(delete_path):
-            shutil.rmtree(delete_path)
-        if action == "dataset":
-            os.mkdir(dataset_folder)
+        return None
+        # dataset_id = experiment["dataset"]
+        # dataset = self.select(dataset_id)
+        # dataset_folder = self.dataset_folder(dataset_id)
+        # action_folder = dataset_folder + experiment[action]
+        # delete_path = dataset_folder if action == "dataset" else action_folder
+        # if action == "dataset" and dataset["method"] != self.constants["dataset"]["URL"]:
+        #     return None
+        # if os.path.isdir(delete_path):
+        #     shutil.rmtree(delete_path)
+        #     if action == "dataset":
+        #         self.index.pop(dataset_id, None)
 
 def is_uuid(id):
     try:

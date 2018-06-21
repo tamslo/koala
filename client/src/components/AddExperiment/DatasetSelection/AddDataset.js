@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import uuid from "uuid/v4";
 import Dialog from "../../mui-wrappers/Dialog";
 import DatasetInputs from "./DatasetInputs";
-import * as constants from "./constants";
+import constants from "../../../constants.json";
 
 export default class extends Component {
   constructor(props) {
@@ -14,15 +14,16 @@ export default class extends Component {
     return {
       id: uuid(),
       name: "New Data Set",
-      layout: constants.PAIRED,
+      layout: constants.dataset.PAIRED,
       readLength: 200,
-      method: "file",
+      method: constants.dataset.FILE,
       content: {}
     };
   }
 
   canAdd() {
-    const contentLength = this.state.layout === constants.PAIRED ? 2 : 1;
+    const contentLength =
+      this.state.layout === constants.dataset.PAIRED ? 2 : 1;
     return (
       this.state.name !== "" &&
       Object.keys(this.state.content).length === contentLength &&
@@ -41,9 +42,9 @@ export default class extends Component {
     let content = this.state.content;
 
     // Remove reverse file from content if layout changes to single end
-    if (layout === constants.SINGLE) {
-      content = content[constants.FORWARD]
-        ? { [constants.FORWARD]: content[constants.FORWARD] }
+    if (layout === constants.dataset.SINGLE) {
+      content = content[constants.dataset.FORWARD]
+        ? { [constants.dataset.FORWARD]: content[constants.dataset.FORWARD] }
         : this.initialState().content;
     }
 
@@ -62,11 +63,11 @@ export default class extends Component {
 
   changeContent = key => event => {
     const value =
-      this.state.method === "file"
+      this.state.method === constants.dataset.FILE
         ? event.target.files[0]
         : { name: event.target.value };
     const removeKey =
-      this.state.method === "file"
+      this.state.method === constants.dataset.FILE
         ? event.target.files.length === 0
         : event.target.value === "";
     const contentWithoutKey = Object.keys(this.state.content).reduce(

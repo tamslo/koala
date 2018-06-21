@@ -1,0 +1,14 @@
+{
+  "actions": {
+    "DATASET": "dataset",
+    "ALIGNMENT": "alignment"
+  },
+  "dataset": {
+    "FORWARD": "forward",
+    "REVERSE": "reverse",
+    "PAIRED": "reverse",
+    "SINGLE": "single",
+    "URL": "url",
+    "FILE": "file"
+  }
+}

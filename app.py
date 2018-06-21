@@ -10,13 +10,16 @@ from modules.downloader import Downloader
 app = Flask(__name__)
 CORS(app)
 
-services = json.load(open("services.json", "r"), object_pairs_hook=OrderedDict)
+with open("services.json", "r") as services_file:
+    services = json.load(services_file, object_pairs_hook=OrderedDict)
+with open("constants.json", "r") as constants_file:
+    constants = json.load(constants_file)
 data_directory = "data/"
 download_directory = "data/tmp/"
 
-datasets = Datasets(data_directory)
+datasets = Datasets(data_directory, constants)
 experiments = Experiments(data_directory)
-runner = Runner(datasets, experiments, data_directory)
+runner = Runner(datasets, experiments, data_directory, constants)
 downloader = Downloader(download_directory)
 
 @app.route("/ping")
@@ -120,7 +123,7 @@ def clean_up():
                 except Exception as error:
                     app.logger.error("Manual cleanup of datasets needed for {} {} ({})".format(
                         action,
-                        id,
+                        experiment["dataset_id"],
                         error
                     ))
 
