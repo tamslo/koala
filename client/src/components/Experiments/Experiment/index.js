@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import IconButton from "@material-ui/core/IconButton";
 import DownloadIcon from "@material-ui/icons/CloudDownload";
-import { SERVER_URL } from "../../api";
 import Log from "./Log";
 
 export default class extends Component {
@@ -31,7 +30,7 @@ export default class extends Component {
     return path ? (
       <StyledIconButton
         aria-label={"Download"}
-        href={SERVER_URL + "/export?path=" + path}
+        href={this.props.SERVER_URL + "/export?path=" + path}
       >
         <DownloadIcon />
       </StyledIconButton>

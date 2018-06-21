@@ -14,7 +14,7 @@ import ExpandLessIcon from "@material-ui/icons/ExpandLess";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import DownloadIcon from "@material-ui/icons/CloudDownload";
 import Experiment from "./Experiment";
-import { SERVER_URL } from "../api";
+import { SERVER_URL } from "../../api";
 
 class Experiments extends Component {
   constructor(props) {
@@ -50,6 +50,7 @@ class Experiments extends Component {
     const experimentProps = {
       services,
       datasets,
+      SERVER_URL,
       ...experiment
     };
     return (
