@@ -1,4 +1,5 @@
-import urllib, docker, yaml, traceback
+import docker, yaml, traceback
+from modules.file_handler import FileHandler
 
 class Runner:
     def __init__(self, datasets, experiments, data_directory, constants):
@@ -9,6 +10,7 @@ class Runner:
             self.action_names["DATASET"]: self.__get_dataset,
             self.action_names["ALIGNMENT"]: self.__align
         }
+        self.file_handler = FileHandler()
         self.docker_client = docker.from_env()
         with open("config.yml", "r") as config_file:
             config = yaml.load(config_file)
@@ -41,13 +43,10 @@ class Runner:
         dataset = self.datasets.select(dataset_id)
         dataset_folder = self.datasets.dataset_folder(dataset_id)
         for file in dataset["content"]:
-            path = dataset["content"][file]["path"]
-            name = dataset["content"][file]["name"]
             if dataset["method"] == self.constants["dataset"]["URL"]:
-                urllib.request.urlretrieve(
-                    name,
-                    path
-                )
+                destination = dataset["content"][file]["path"]
+                url = dataset["content"][file]["name"]
+                file_handler.download(url, destination)
         return dataset_folder
 
     def __align(self, experiment):

@@ -1,10 +1,11 @@
-import json, atexit, zipfile, time, os, optparse, shutil
+import json, zipfile, time, os, optparse
 from flask import Flask, request, send_file, send_from_directory
 from flask_cors import CORS
 from collections import OrderedDict
 from modules.constants import Constants
-from modules.datasets import Datasets
-from modules.experiments import Experiments
+from modules.data.datasets import Datasets
+from modules.data.experiments import Experiments
+from modules.data.reference_genomes import ReferenceGenomes
 from modules.runner import Runner
 from modules.exporter import Exporter
 
@@ -15,14 +16,14 @@ with open("services.json", "r") as services_file:
     services = json.load(services_file, object_pairs_hook=OrderedDict)
 
 data_directory = "data/"
-export_directory = "data/tmp/"
 root_directory = os.path.dirname(os.path.abspath(__file__))
 
 constants = Constants(root_directory)
 datasets = Datasets(data_directory, constants)
 experiments = Experiments(data_directory)
 runner = Runner(datasets, experiments, data_directory, constants)
-exporter = Exporter(export_directory)
+exporter = Exporter(data_directory)
+reference_genomes = ReferenceGenomes(data_directory)
 
 @app.route("/ping")
 def ping():
@@ -104,10 +105,8 @@ def servejs(path):
 def servemedia(path):
     return send_from_directory("client/build/static/media/", path)
 
-
 def clean_up():
-    shutil.rmtree(export_directory)
-    # Not working properly if debug=True, see https://stackoverflow.com/questions/37064595/handling-atexit-for-multiple-app-objects-with-flask-dev-server-reloader
+    exporter.clean_up()
     for experiment_id, experiment in experiments.all().items():
         last_log_entry = experiment["log"][-1]
         if (
@@ -129,10 +128,11 @@ def clean_up():
                         error
                     ))
 
-atexit.register(clean_up)
-
 if __name__ == "__main__":
-    parser = optparse.OptionParser()
-    parser.add_option("-d", "--debug", action="store_true", dest="debug", help=optparse.SUPPRESS_HELP)
-    options, _ = parser.parse_args()
-    app.run(host="0.0.0.0", port="5000", debug=bool(options.debug))
+    try:
+        parser = optparse.OptionParser()
+        parser.add_option("-d", "--debug", action="store_true", dest="debug", help=optparse.SUPPRESS_HELP)
+        options, _ = parser.parse_args()
+        app.run(host="0.0.0.0", port="5000", debug=bool(options.debug))
+    finally:
+        clean_up()

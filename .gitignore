@@ -1,6 +1,7 @@
 data/tmp/
 data/datasets/
 data/experiments/
+data/references/
 config.yml
 client/src/constants.json
 

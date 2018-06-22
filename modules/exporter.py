@@ -1,8 +1,8 @@
-import os, zipfile
+import os, zipfile, shutil
 
 class Exporter:
-    def __init__(self, export_directory):
-        self.directory = export_directory
+    def __init__(self, data_directory):
+        self.directory = data_directory + "tmp/"
         self.__setup()
 
     def __setup(self):
@@ -21,3 +21,6 @@ class Exporter:
             archive.write(path, file_name)
         archive.close()
         return archive_path, archive_name
+
+    def clean_up(self):
+        shutil.rmtree(self.directory)
