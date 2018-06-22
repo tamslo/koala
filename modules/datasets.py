@@ -6,7 +6,7 @@ class Datasets:
         self.directory = data_directory + "datasets/"
         self.file_handler = FileHandler(self.directory)
         self.index_path = self.directory + "index.json"
-        self.constants = constants
+        self.constants = constants.dataset
         self.__setup()
         with open(self.index_path) as index_file:
             self.index = json.load(index_file)
@@ -74,7 +74,7 @@ class Datasets:
         # dataset_folder = self.dataset_folder(dataset_id)
         # action_folder = dataset_folder + experiment[action]
         # delete_path = dataset_folder if action == "dataset" else action_folder
-        # if action == "dataset" and dataset["method"] != self.constants["dataset"]["URL"]:
+        # if action == "dataset" and dataset["method"] != self.constants["URL"]:
         #     return None
         # if os.path.isdir(delete_path):
         #     shutil.rmtree(delete_path)

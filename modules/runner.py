@@ -4,10 +4,10 @@ class Runner:
     def __init__(self, datasets, experiments, data_directory, constants):
         self.datasets = datasets
         self.experiments = experiments
-        self.constants = constants
+        self.action_names = constants.actions
         self.actions = {
-            self.constants["actions"]["DATASET"]: self.__get_dataset,
-            self.constants["actions"]["ALIGNMENT"]: self.__align
+            self.action_names["DATASET"]: self.__get_dataset,
+            self.action_names["ALIGNMENT"]: self.__align
         }
         self.docker_client = docker.from_env()
         with open("config.yml", "r") as config_file:
@@ -37,7 +37,7 @@ class Runner:
         return experiment
 
     def __get_dataset(self, experiment):
-        dataset_id = experiment[self.constants["actions"]["DATASET"]]
+        dataset_id = experiment[self.action_names["DATASET"]]
         dataset = self.datasets.select(dataset_id)
         dataset_folder = self.datasets.dataset_folder(dataset_id)
         for file in dataset["content"]:
@@ -54,9 +54,9 @@ class Runner:
         file_ending = "bam"
         alignment_path = self.datasets.create_path(
             experiment,
-            self.constants["actions"]["ALIGNMENT"]
+            self.action_names["ALIGNMENT"]
         )
-        aligner = experiment[self.constants["actions"]["ALIGNMENT"]]
+        aligner = experiment[self.action_names["ALIGNMENT"]]
         self.docker_client.containers.run(
             aligner,
             "touch {}/dummy.bam".format(alignment_path),

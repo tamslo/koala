@@ -2,6 +2,7 @@ import json, atexit, zipfile, time, os, optparse, shutil
 from flask import Flask, request, send_file, send_from_directory
 from flask_cors import CORS
 from collections import OrderedDict
+from modules.constants import Constants
 from modules.datasets import Datasets
 from modules.experiments import Experiments
 from modules.runner import Runner
@@ -12,11 +13,12 @@ CORS(app)
 
 with open("services.json", "r") as services_file:
     services = json.load(services_file, object_pairs_hook=OrderedDict)
-with open("constants.json", "r") as constants_file:
-    constants = json.load(constants_file)
+
 data_directory = "data/"
 export_directory = "data/tmp/"
+root_directory = os.path.dirname(os.path.abspath(__file__))
 
+constants = Constants(root_directory)
 datasets = Datasets(data_directory, constants)
 experiments = Experiments(data_directory)
 runner = Runner(datasets, experiments, data_directory, constants)
