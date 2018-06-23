@@ -1,5 +1,5 @@
 import docker, yaml, traceback
-from modules.file_handler import FileHandler
+import modules.file_utils as file_utils
 
 class Runner:
     def __init__(self, datasets, experiments, data_directory, constants):
@@ -10,7 +10,6 @@ class Runner:
             self.action_names["DATASET"]: self.__get_dataset,
             self.action_names["ALIGNMENT"]: self.__align
         }
-        self.file_handler = FileHandler()
         self.docker_client = docker.from_env()
         with open("config.yml", "r") as config_file:
             config = yaml.load(config_file)
@@ -46,7 +45,7 @@ class Runner:
             if dataset["method"] == self.constants["dataset"]["URL"]:
                 destination = dataset["content"][file]["path"]
                 url = dataset["content"][file]["name"]
-                file_handler.download(url, destination)
+                file_utils.download(url, destination)
         return dataset_folder
 
     def __align(self, experiment):

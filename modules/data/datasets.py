@@ -1,10 +1,9 @@
 import os, json, uuid, shutil
-from modules.file_handler import FileHandler
+import modules.file_utils as file_utils
 
 class Datasets:
     def __init__(self, data_directory, constants):
         self.directory = data_directory + "datasets/"
-        self.file_handler = FileHandler(self.directory)
         self.index_path = self.directory + "index.json"
         self.constants = constants.dataset
         self.__setup()
@@ -12,9 +11,9 @@ class Datasets:
             self.index = json.load(index_file)
 
     def __setup(self):
+        file_utils.create_directory(self.directory)
         if not os.path.exists(self.index_path):
-            with open(self.index_path, "w") as index_file:
-                index_file.write(json.dumps({}));
+            file_utils.write(self.index_path, json.dumps({}))
 
     def __write_index(self):
         with open(self.index_path, "w") as index_file:

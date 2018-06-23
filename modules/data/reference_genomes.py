@@ -1,5 +1,5 @@
 import os, urllib
-from modules.file_handler import FileHandler
+import modules.file_utils as file_utils
 
 class ReferenceGenomes:
     """
@@ -14,7 +14,7 @@ class ReferenceGenomes:
 
     def __init__(self, data_directory):
         self.directory = data_directory + "references/"
-        self.file_handler = FileHandler(self.directory)
+        file_utils.create_directory(self.directory)
         self.reference_genomes = {
             "hg19": self.__get_human_genome,
             "hg38": self.__get_human_genome,
@@ -59,7 +59,7 @@ class ReferenceGenomes:
         url += "{0}/bigZips/{0}.2bit".format(genome_name)
         two_bit_path = genome_path + ".2bit"
         self.started_tasks.append(two_bit_path)
-        self.file_handler.download(url, two_bit_path)
+        file_utils.download(url, two_bit_path)
         self.finished_tasks.append(two_bit_path)
         # Convert .2bit file to .fa
         # TODO log start and end of tasks
@@ -68,12 +68,12 @@ class ReferenceGenomes:
         #     two_bit_path,
         #     genome_path
         # ))
-        # self.file_handler.delete(two_bit_path)
+        # file_utils.delete(two_bit_path)
 
     def __get_p_falciparum(self, genome_name, genome_path):
         # url = http://bp1.s3.amazonaws.com/malaria.tar.bz2
         # download_path = self.directory + "malaria.tar.bz2"
-        # self.file_handler.download(url, )
+        # file_utils.download(url, )
         # Extract right file from tarball
         # file_name = genome_sequence_pfal.fa
         # TODO extract
@@ -85,4 +85,4 @@ class ReferenceGenomes:
     def clean_up(self):
         for path in self.started_tasks:
             if not path in self.finished_tasks:
-                self.file_handler.delete(path)
+                file_utils.delete(path)
