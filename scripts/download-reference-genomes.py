@@ -25,7 +25,7 @@ def get_human_genome(genome_name, file_path):
     file_utils.download(url, two_bit_path)
     finished_tasks.append(two_bit_path)
     # Convert .2bit file to .fa
-    print("Extracting {} from 2bit file...".format(genome_name))
+    print("Extracting {} from 2bit file...".format(genome_name), flush=True)
     os.system("chmod +x {0}twoBitToFa && {0}twoBitToFa {1} {2}".format(
         directory,
         two_bit_path,
@@ -78,8 +78,12 @@ def get_genomes():
             genome_options["getter"](genome_name, file_path)
             log_task_end(genome_name, file_path)
 
+print("", flush=True)
 print("Downloading reference genomes", flush=True)
+print("", flush=True)
+
 file_utils.create_directory(directory)
+
 try:
     get_tools()
     get_genomes()

@@ -1,9 +1,6 @@
 # Install Python requirements
 pip install -r requirements.txt --no-cache-dir
 
-# Download data
-python scripts/download-reference-genomes.py
-
 # Install Node requirements
 cd client
 npm install
@@ -16,3 +13,6 @@ for dockerfile in ./Dockerfile.*; do
   docker build -t $image_name -f $dockerfile .
 done
 cd ..
+
+# Download data
+python scripts/download-reference-genomes.py
