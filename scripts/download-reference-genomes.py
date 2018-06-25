@@ -6,6 +6,17 @@ sys.path.append(
 
 import modules.file_utils as file_utils
 
+# Add new tools needed to download reference genomes here
+tools = ["twoBitToFa"]
+
+# Constants
+directory = "data/references/"
+fasta_file_ending = ".fa"
+rsync_uri = "rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/"
+
+started_tasks = []
+finished_tasks = []
+
 def get_human_genome(genome_name, file_path):
     url = "http://hgdownload.soe.ucsc.edu/goldenPath/"
     url += "{0}/bigZips/{0}.2bit".format(genome_name)
@@ -14,8 +25,8 @@ def get_human_genome(genome_name, file_path):
     file_utils.download(url, two_bit_path)
     finished_tasks.append(two_bit_path)
     # Convert .2bit file to .fa
-    os.system("touch {0} && chmod +x {0}".format(file_path))
-    os.system("cd {} && chmod +x twoBitToFa && ./twoBitToFa {} {}".format(
+    # os.system("touch {0} && chmod +x {0}".format(file_path))
+    os.system("chmod +x {0}twoBitToFa && {0}twoBitToFa {1} {2}".format(
         directory,
         two_bit_path,
         file_path
@@ -37,17 +48,6 @@ reference_genomes = {
     # "hg38": {"getter": get_human_genome, "name": "Human (hg38)"},
     # "pfal": {"getter": get_p_falciparum, "name": "Malaria"}
 }
-
-# Add new tools needed to download reference genomes here
-tools = ["twoBitToFa"]
-
-# Constants
-directory = "data/references/"
-fasta_file_ending = ".fa"
-rsync_uri = "rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/"
-
-started_tasks = []
-finished_tasks = []
 
 def log_task_start(item, path):
     started_tasks.append(path)
