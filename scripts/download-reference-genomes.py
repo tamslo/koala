@@ -25,13 +25,13 @@ def get_human_genome(genome_name, file_path):
     file_utils.download(url, two_bit_path)
     finished_tasks.append(two_bit_path)
     # Convert .2bit file to .fa
-    # os.system("touch {0} && chmod +x {0}".format(file_path))
+    print("Extracting {} from 2bit file...".format(genome_name))
     os.system("chmod +x {0}twoBitToFa && {0}twoBitToFa {1} {2}".format(
         directory,
         two_bit_path,
         file_path
     ))
-    # file_utils.delete(two_bit_path)
+    file_utils.delete(two_bit_path)
 
 def get_p_falciparum(genome_name, file_path):
     # url = http://bp1.s3.amazonaws.com/malaria.tar.bz2
@@ -43,9 +43,10 @@ def get_p_falciparum(genome_name, file_path):
     return None
 
 # Add new reference genomes with options here
+# TODO make array with id and name, add map with getters
 reference_genomes = {
     "hg19": {"getter": get_human_genome, "name": "Human (hg19)"},
-    # "hg38": {"getter": get_human_genome, "name": "Human (hg38)"},
+    "hg38": {"getter": get_human_genome, "name": "Human (hg38)"},
     # "pfal": {"getter": get_p_falciparum, "name": "Malaria"}
 }
 
