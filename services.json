@@ -1,4 +1,7 @@
 [
+  { "id": "hg19", "name": "Human (hg19)", "type": "reference" },
+  { "id": "hg38", "name": "Human (hg38)", "type": "reference" },
+  { "id": "pfal", "name": "Malaria", "type": "reference" },
   { "id": "test", "name": "Test", "type": "aligner" },
   { "id": "star", "name": "STAR", "type": "aligner" }
 ]

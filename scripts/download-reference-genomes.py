@@ -43,11 +43,10 @@ def get_p_falciparum(genome_name, file_path):
     return None
 
 # Add new reference genomes with options here
-# TODO make array with id and name, add map with getters
-reference_genomes = {
-    "hg19": {"getter": get_human_genome, "name": "Human (hg19)"},
-    "hg38": {"getter": get_human_genome, "name": "Human (hg38)"},
-    # "pfal": {"getter": get_p_falciparum, "name": "Malaria"}
+genome_getters = {
+    "hg19": get_human_genome,
+    "hg38": get_human_genome,
+    "pfal": get_p_falciparum
 }
 
 def log_task_start(item, path):
@@ -71,11 +70,11 @@ def genome_path(genome_name):
     return directory + genome_name + fasta_file_ending
 
 def get_genomes():
-    for genome_name, genome_options in reference_genomes.items():
+    for genome_name, genome_getter in genome_getters.items():
         file_path = genome_path(genome_name)
         if not os.path.exists(file_path):
             log_task_start(genome_name, file_path)
-            genome_options["getter"](genome_name, file_path)
+            genome_getter(genome_name, file_path)
             log_task_end(genome_name, file_path)
 
 print("", flush=True)
