@@ -42,7 +42,6 @@ def get_p_falciparum(genome_name, file_path):
     os.rename(unzipped_directory + "/genome_sequence_pfal.fa", file_path)
     file_utils.delete(download_path)
     file_utils.delete(unzipped_directory)
-    return None
 
 # Add new reference genomes with options here
 genome_getters = {

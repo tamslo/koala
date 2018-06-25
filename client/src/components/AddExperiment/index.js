@@ -17,9 +17,19 @@ export default class extends Component {
     return {
       id: uuid(),
       name: "New Experiment",
-      aligner: "",
-      dataset: ""
+      reference: "",
+      dataset: "",
+      alignment: ""
     };
+  }
+
+  canRun() {
+    return (
+      this.state.name !== "" &&
+      this.state.reference !== "" &&
+      this.state.dataset !== "" &&
+      this.state.alignment !== ""
+    );
   }
 
   handleChange = name => event => {
@@ -37,6 +47,20 @@ export default class extends Component {
           onChange={this.handleChange("name")}
         />
 
+        <Select
+          label="Reference Genome"
+          value={this.state.reference || ""}
+          onChange={this.handleChange("reference")}
+        >
+          {this.props.services
+            .filter(service => service.type === "reference")
+            .map(genome => (
+              <MenuItem key={genome.id} value={genome.id}>
+                {genome.name}
+              </MenuItem>
+            ))}
+        </Select>
+
         <DatasetSelection
           datasets={this.props.datasets}
           dataset={this.state.dataset}
@@ -46,8 +70,8 @@ export default class extends Component {
 
         <Select
           label="Aligner"
-          value={this.state.aligner || ""}
-          onChange={this.handleChange("aligner")}
+          value={this.state.alignment || ""}
+          onChange={this.handleChange("alignment")}
         >
           {this.props.services
             .filter(service => service.type === "aligner")
@@ -72,14 +96,9 @@ export default class extends Component {
   }
 
   addExperiment() {
-    this.setState(
-      this.initialState(),
-      this.props.addExperiment({
-        id: this.state.id,
-        name: this.state.name,
-        dataset: this.props.datasets[this.state.dataset].id,
-        alignment: this.state.aligner
-      })
+    const experiment = this.state;
+    this.setState(this.initialState(), () =>
+      this.props.addExperiment(experiment)
     );
   }
 
@@ -91,14 +110,6 @@ export default class extends Component {
 
   setDataset(dataset) {
     this.setState({ dataset });
-  }
-
-  canRun() {
-    return (
-      this.state.name !== "" &&
-      this.state.dataset !== "" &&
-      this.state.aligner !== ""
-    );
   }
 }
 
