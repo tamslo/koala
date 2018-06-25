@@ -5,7 +5,6 @@ from collections import OrderedDict
 from modules.constants import Constants
 from modules.data.datasets import Datasets
 from modules.data.experiments import Experiments
-from modules.data.reference_genomes import ReferenceGenomes
 from modules.runner import Runner
 from modules.exporter import Exporter
 
@@ -23,7 +22,6 @@ datasets = Datasets(data_directory, constants)
 experiments = Experiments(data_directory)
 runner = Runner(datasets, experiments, data_directory, constants)
 exporter = Exporter(data_directory)
-reference_genomes = ReferenceGenomes(data_directory)
 
 @app.route("/ping")
 def ping():

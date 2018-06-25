@@ -1,6 +1,9 @@
 # Install Python requirements
 pip install -r requirements.txt --no-cache-dir
 
+# Download data
+python scripts/download-reference-genomes.py
+
 # Install Node requirements
 cd client
 npm install
