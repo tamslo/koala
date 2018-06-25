@@ -34,12 +34,14 @@ def get_human_genome(genome_name, file_path):
     file_utils.delete(two_bit_path)
 
 def get_p_falciparum(genome_name, file_path):
-    # url = http://bp1.s3.amazonaws.com/malaria.tar.bz2
-    # download_path = directory + "malaria.tar.bz2"
-    # file_utils.download(url, )
-    # Extract right file from tarball
-    # file_name = genome_sequence_pfal.fa
-    # TODO extract
+    url = "http://bp1.s3.amazonaws.com/malaria.tar.bz2"
+    download_path = directory + "malaria.tar.bz2"
+    file_utils.download(url, download_path)
+    print("Unzipping {}...".format(genome_name), flush=True)
+    unzipped_directory = file_utils.unzip(download_path)
+    os.rename(unzipped_directory + "/genome_sequence_pfal.fa", file_path)
+    file_utils.delete(download_path)
+    file_utils.delete(unzipped_directory)
     return None
 
 # Add new reference genomes with options here
@@ -76,6 +78,8 @@ def get_genomes():
             log_task_start(genome_name, file_path)
             genome_getter(genome_name, file_path)
             log_task_end(genome_name, file_path)
+        else:
+            print("{} already present".format(genome_name))
 
 print("", flush=True)
 print("Downloading reference genomes", flush=True)
