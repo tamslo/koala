@@ -6,11 +6,11 @@ An extensible platform to run and evaluate RNA-Seq analysis pipelines. The curre
 
 Make sure you have the following programs installed, versions given are those used for development:
 
-* node (10.2.1)
-* npm (5.6.0)
-* python (3.5.2)
-* pip (8.1.1)
-* docker (17.12.1-ce)
+- node (10.2.1)
+- npm (5.6.0)
+- python (3.5.2)
+- pip (8.1.1)
+- docker (17.12.1-ce)
 
 Install requirements by running `./scripts/install.sh`, rename the `config.example.yml` to `config.yml`, and adapt the absolute path to the repository (keep the trailing dash).
 
@@ -19,8 +19,6 @@ To start the app in development mode, run `./scripts/dev-start.sh`, the app is a
 To start the app in production mode, run `./scripts/prod-start.sh`, the app is accessible under https://localhost:5000.
 
 ## Deployment
-
-**TODO**: Needs to be set up
 
 The deployment server is `vm-slosarek-01.eaalab.hpi.uni-potsdam.de` (192.168.31.121).
 

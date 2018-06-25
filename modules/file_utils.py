@@ -4,6 +4,10 @@ def create_directory(path):
     if not os.path.isdir(path):
         os.makedirs(path)
 
+def create_file(path):
+    with open(path, "w") as file:
+        return None
+
 def write(content, path):
     with open(path, "w") as file:
         file.write(content)

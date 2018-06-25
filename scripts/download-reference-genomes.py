@@ -14,6 +14,7 @@ def get_human_genome(genome_name, file_path):
     file_utils.download(url, two_bit_path)
     finished_tasks.append(two_bit_path)
     # Convert .2bit file to .fa
+    file_utils.create_file(file_path)
     os.system("cd {} && chmod +x twoBitToFa && ./twoBitToFa {} {}".format(
         directory,
         two_bit_path,
