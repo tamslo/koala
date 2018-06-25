@@ -1,4 +1,4 @@
-import os, json, urllib
+import os, json, urllib.request
 
 def create_directory(path):
     if not os.path.isdir(path):
@@ -15,7 +15,17 @@ def delete(path):
         pass
 
 def download(url, destination):
+    def progress(count, block_size, total_size):
+        size = block_size * (count + 1)
+        if size >= total_size:
+            # Delete last progress if finished
+            print("                ", end="\r", flush=True)
+        else:
+            percent = str(size / total_size * 100)[:4]
+            print("Progress: {}%".format(percent), end="\r", flush=True)
+
     urllib.request.urlretrieve(
         url,
-        destination
+        destination,
+        progress
     )
