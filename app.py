@@ -96,7 +96,7 @@ def servefav():
     return send_from_directory("client/build/", "koala.ico")
 
 @app.route("/index.css")
-def servefav():
+def servecss():
     return send_from_directory("client/build/", "index.css")
 
 @app.route("/static/js/<path:path>")
