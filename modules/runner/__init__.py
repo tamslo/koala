@@ -53,5 +53,5 @@ class Runner:
             self.action_names["ALIGNMENT"]
         )
         aligner = experiment[self.action_names["ALIGNMENT"]]
-        align(self.docker_client, aligner, alignment_path)
+        align(self.docker_client, aligner, alignment_path, experiment)
         return alignment_path
