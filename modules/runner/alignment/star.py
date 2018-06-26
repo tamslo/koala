@@ -28,4 +28,6 @@ def build_genome_index(docker_client, genome_index_path, preamble, reference):
         )
 
 def run(docker_client, destination, options):
+    # --readFilesIn /data/datasets/... [/data/datasets/...]
+    # --outFileNamePrefix /data/datasets/...
     return None
