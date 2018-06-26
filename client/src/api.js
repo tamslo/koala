@@ -1,5 +1,13 @@
-const hostname = window && window.location && window.location.hostname;
-export const SERVER_URL = "http://" + hostname + ":5000";
+const buildServerUrl = () => {
+  const hostname = window && window.location && window.location.hostname;
+  let serverUrl = "http://" + hostname;
+  if (process.env.NODE_ENV === "development") {
+    serverUrl += ":5000";
+  }
+  return serverUrl;
+};
+
+export const SERVER_URL = buildServerUrl();
 
 export const getJson = route => {
   const request = buildRequest({ route });
