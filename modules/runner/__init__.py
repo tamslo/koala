@@ -1,5 +1,7 @@
-import docker, yaml, traceback
+import traceback
 import modules.file_utils as file_utils
+from .docker import Docker
+from .alignment import align
 
 class Runner:
     def __init__(self, datasets, experiments, data_directory, constants):
@@ -10,10 +12,7 @@ class Runner:
             self.action_names["DATASET"]: self.__get_dataset,
             self.action_names["ALIGNMENT"]: self.__align
         }
-        self.docker_client = docker.from_env()
-        with open("config.yml", "r") as config_file:
-            config = yaml.load(config_file)
-            self.absolute_data_path = config["absolute_repo_path"] + data_directory
+        self.docker_client = Docker(data_directory)
 
     def execute(self, action, experiment_id):
         try:
@@ -49,21 +48,10 @@ class Runner:
         return dataset_folder
 
     def __align(self, experiment):
-        file_ending = "bam"
         alignment_path = self.datasets.create_path(
             experiment,
             self.action_names["ALIGNMENT"]
         )
         aligner = experiment[self.action_names["ALIGNMENT"]]
-        self.docker_client.containers.run(
-            aligner,
-            "touch {}/dummy.bam".format(alignment_path),
-            volumes={
-                self.absolute_data_path: {
-                    "bind": "/data",
-                    "mode": "rw"
-                }
-            },
-            auto_remove=True
-        )
+        align(self.docker_client, aligner, alignment_path)
         return alignment_path

@@ -25,9 +25,11 @@ export default class extends Component {
   render() {
     const { addingDataset, datasetInfo } = this.state;
     const { dataset, datasets } = this.props;
+    const loadingText =
+      "Adding data set, this can take a while for big files...";
     return (
       <div>
-        {datasets.areLoading && <Loading content={"Adding data set..."} />}
+        {datasets.areLoading && <Loading content={loadingText} />}
         <AddDataset
           addDataset={this.addDataset.bind(this)}
           cancel={this.cancelAddingDataset.bind(this)}
