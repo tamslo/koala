@@ -39,17 +39,6 @@ export default class extends Component {
   };
 
   render() {
-    // Make sure status indicators such as isLoading are not dispayed
-    const datasets = Object.keys(this.props.datasets).reduce(
-      (actualDatasets, datasetId) => {
-        // Dummy test for uuid
-        return datasetId.split("-").length === 5
-          ? { ...actualDatasets, [datasetId]: this.props.datasets[datasetId] }
-          : actualDatasets;
-      },
-      {}
-    );
-
     return (
       <Container>
         <TextField
@@ -73,7 +62,7 @@ export default class extends Component {
         </Select>
 
         <DatasetSelection
-          datasets={datasets}
+          datasets={this.props.datasets}
           dataset={this.state.dataset}
           addDataset={this.addDataset.bind(this)}
           setDataset={this.setDataset.bind(this)}
