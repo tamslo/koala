@@ -1,4 +1,4 @@
 #!/bin/bash
 
-rm -r data
-git checkout data
+rm -r data/datasets
+rm -r data/experiments
