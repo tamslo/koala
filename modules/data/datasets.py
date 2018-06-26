@@ -13,7 +13,7 @@ class Datasets:
     def __setup(self):
         file_utils.create_directory(self.directory)
         if not os.path.exists(self.index_path):
-            file_utils.write(self.index_path, json.dumps({}))
+            file_utils.write(json.dumps({}), self.index_path)
 
     def __write_index(self):
         with open(self.index_path, "w") as index_file:

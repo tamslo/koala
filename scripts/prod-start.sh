@@ -1,4 +1,4 @@
-killall python3
+killall python
 
 cd client
 npm run build
