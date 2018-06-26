@@ -1,40 +1,20 @@
-# NGS STAR IMAGE
-# Based on https://github.com/AveraSD/ngs-docker-star
-# MIT License
+# Inspired by https://github.com/AveraSD/ngs-docker-star
+FROM ubuntu:16.04
 
-# base image
-FROM ubuntu:14.04
+ENV STAR_VERSION 2.6.0c
 
-# Maintainer
-MAINTAINER Tobias Meissner "meissner.t@googlemail.com"
+# From https://github.com/alexdobin/STAR/blob/master/doc/STARmanual.pdf
+RUN apt-get update
+RUN apt-get install -y g++
+RUN apt-get install make
 
-# update system
-RUN apt-get update &&  apt-get upgrade -y && apt-get dist-upgrade -y
+# Other required packages
+RUN apt-get install -y wget
+RUN apt-get install zlib1g-dev
 
-# install some system tools
-RUN apt-get install -y g++ make wget zlib1g-dev
-
-#--------------STAR ALIGNER ----------------------------------------------------------------------------------------------#
-# https://github.com/alexdobin/STAR
-
-RUN cd /opt && \
-    wget -c -P /opt/star https://github.com/alexdobin/STAR/archive/STAR_2.4.2a.tar.gz && \
-    tar -xzf /opt/star/STAR_2.4.2a.tar.gz -C /opt/star && \
-    make STAR -C /opt/star/STAR-STAR_2.4.2a/source
-
-#---------------------------------------------------------------------
-#Cleanup the temp dir
-RUN rm -rvf /tmp/*
-
-# Use baseimage-docker's bash.
-CMD ["/bin/bash"]
-
-#Clean up APT when done.
-RUN apt-get clean && \
-    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* && \
-    apt-get autoclean && \
-    apt-get autoremove -y && \
-    rm -rf /var/lib/{apt,dpkg,cache,log}/
+RUN wget -P /opt/star https://github.com/alexdobin/STAR/archive/$STAR_VERSION.tar.gz
+RUN tar -xzf /opt/star/$STAR_VERSION.tar.gz -C /opt/star
+RUN make STAR -C /opt/star/STAR-$STAR_VERSION/source
 
 #Add star to PATH
-ENV PATH /opt/star/STAR-STAR_2.4.2a/bin/Linux_x86_64:$PATH
+ENV PATH /opt/star/STAR-$STAR_VERSION/bin/Linux_x86_64:$PATH
