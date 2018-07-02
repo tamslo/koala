@@ -19,6 +19,7 @@ def star(docker_client, destination, experiment):
 
 def build_genome_index(docker_client, genome_index_path, preamble, reference):
     if not os.path.isdir(genome_index_path):
+        os.makedirs(genome_index_path)
         reference_path = "/data/references/{}.fa".format(reference)
         command = preamble + " --runMode genomeGenerate"
         command += " --genomeFastaFiles {}".format(reference_path)
