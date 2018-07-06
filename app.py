@@ -109,26 +109,17 @@ def servemedia(path):
 
 def clean_up():
     exporter.clean_up()
-    # for experiment_id, experiment in experiments.all().items():
-    #     last_log_entry = experiment["log"][-1]
-    #     if (
-    #         experiment["done"] or
-    #         experiment["error"] or
-    #         last_log_entry["completed"]
-    #     ):
-    #         continue
-    #     else:
-    #         experiments.mark_interrupted(experiment_id)
-    #         action = last_log_entry["action"]
-    #         if action in experiment:
-    #             try:
-    #                 datasets.clean_up(action, experiment)
-    #             except Exception as error:
-    #                 app.logger.error("Manual cleanup of datasets needed for {} {} ({})".format(
-    #                     action,
-    #                     experiment["dataset_id"],
-    #                     error
-    #                 ))
+    # In case of an interruption, clean up experiments and datasets
+    # If an error occurred, the components already handled it
+    for experiment_id, experiment in experiments.all().items():
+        if not experiment["done"] and not experiment["error"]:
+            for action, pipeline_step in experiment["pipeline"].items():
+                print(pipeline_step)
+                started = "started" in pipeline_step and pipeline_step["started"]
+                completed = "completed" in pipeline_step and pipeline_step["completed"]
+                if started and not completed:
+                    experiments.mark_interrupted(experiment_id, action)
+                    datasets.clean_up(action, experiment)
 
 if __name__ == "__main__":
     try:

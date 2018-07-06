@@ -4,8 +4,10 @@ import modules.file_utils as file_utils
 class Datasets:
     def __init__(self, data_directory, constants):
         self.directory = data_directory + "datasets/"
+        self.reference_directory = data_directory + "references/"
         self.index_path = self.directory + "index.json"
         self.constants = constants.dataset
+        self.actions = constants.actions
         self.__setup()
         with open(self.index_path) as index_file:
             self.index = json.load(index_file)
@@ -69,18 +71,20 @@ class Datasets:
         return self.index
 
     def clean_up(self, action, experiment):
-        return None
-        # dataset_id = experiment["pipeline"]["dataset"]["id"]
-        # dataset = self.select(dataset_id)
-        # dataset_folder = self.dataset_folder(dataset_id)
-        # action_folder = dataset_folder + experiment["pipeline"][action]["id"]
-        # delete_path = dataset_folder if action == "dataset" else action_folder
-        # if action == "dataset" and dataset["method"] != self.constants["URL"]:
-        #     return None
-        # if os.path.isdir(delete_path):
-        #     shutil.rmtree(delete_path)
-        #     if action == "dataset":
-        #         self.index.pop(dataset_id, None)
+        action_id = experiment["pipeline"][action]["id"]
+        dataset_id = experiment["pipeline"]["dataset"]["id"]
+        dataset = self.select(dataset_id)
+        dataset_folder = self.dataset_folder(dataset_id)
+        action_folder = dataset_folder + action_id
+        delete_path = dataset_folder if action == "dataset" else action_folder
+        file_utils.delete(delete_path)
+
+        if action == self.actions["DATASET"]:
+            self.index.pop(dataset_id, None)
+        if action == self.actions["ALIGNMENT"] and action_id == "star":
+            reference_index_path_postfix = action_id + "/" + experiment["reference"]
+            reference_index_path = self.reference_directory + reference_index_path_postfix
+            file_utils.delete(reference_index_path)
 
 def is_uuid(id):
     try:

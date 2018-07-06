@@ -62,9 +62,11 @@ class Log extends Component {
       ? action.completed
       : action.error
         ? action.error
-        : action.started
-          ? action.started
-          : null;
+        : action.interrupted
+          ? action.interrupted
+          : action.started
+            ? action.started
+            : null;
   }
 
   actionStatus(action) {

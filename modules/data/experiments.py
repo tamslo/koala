@@ -18,6 +18,11 @@ class Experiments:
         experiment[name] = value
         return self.__write(experiment)
 
+    def log_action_status(self, experiment, action, status):
+        time = localtime()
+        experiment["pipeline"][action][status] = time
+        return self.__write(experiment)
+
     def create(self, experiment):
         time = localtime()
         experiment["created"] = time
@@ -40,11 +45,10 @@ class Experiments:
         return self.__write(experiment)
 
     def start_action(self, experiment, action, cached = False):
-        time = localtime()
-        experiment["pipeline"][action]["started"] = time
+        experiment = self.log_action_status(experiment, action, "started")
         if cached:
             experiment["pipeline"][action]["cached"] = True
-            experiment["pipeline"][action]["completed"] = time
+            experiment = self.complete_action(experiment, action)
         return self.__write(experiment)
 
     def add_download(self, experiment, action, path):
@@ -52,22 +56,16 @@ class Experiments:
         return self.__write(experiment)
 
     def complete_action(self, experiment, action):
-        time = localtime()
-        experiment["pipeline"][action]["completed"] = time
-        return self.__write(experiment)
-
-    def mark_action_error(self, experiment, action):
-        time = localtime()
-        experiment["pipeline"][action]["error"] = time
-        return self.__write(experiment)
+        return self.log_action_status(experiment, action, "completed")
 
     def mark_error(self, experiment_id, action, error):
         experiment = self.select(experiment_id)
-        experiment = self.mark_action_error(experiment, action)
+        experiment = self.log_action_status(experiment, action, "error")
         return self.__set(experiment, "error", str(error))
 
-    def mark_interrupted(self, experiment_id):
+    def mark_interrupted(self, experiment_id, action):
         experiment = self.select(experiment_id)
+        experiment = self.log_action_status(experiment, action, "interrupted")
         return self.__set(experiment, "interrupted", True)
 
     def mark_done(self, experiment_id):

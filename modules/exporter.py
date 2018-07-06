@@ -1,4 +1,5 @@
 import os, zipfile, shutil
+import modules.file_utils as file_utils
 
 class Exporter:
     def __init__(self, data_directory):
@@ -25,4 +26,4 @@ class Exporter:
         return archive_path, archive_name
 
     def clean_up(self):
-        shutil.rmtree(self.directory)
+        file_utils.delete(self.directory)
