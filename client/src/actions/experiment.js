@@ -32,7 +32,7 @@ export const addExperiment = params => {
 
 export const retryExperiment = experiment => {
   return dispatch => {
-    const params = { ...experiment, interrupted: false };
+    const params = resetStatus(experiment);
     putRequest("/experiment", params).then(experiment => {
       dispatch({
         type: types.ADD_EXPERIMENT,
@@ -82,6 +82,19 @@ export const runExperiment = id => {
         });
       });
   };
+};
+
+const resetStatus = experiment => {
+  const pipeline = Object.keys(experiment.pipeline).reduce(
+    (resettedPipeline, action) => {
+      return {
+        ...resettedPipeline,
+        [action]: { id: experiment.pipeline[action].id }
+      };
+    },
+    {}
+  );
+  return { ...experiment, interrupted: false, error: false, pipeline };
 };
 
 const updateExperiment = (experiment, dispatch) => {
