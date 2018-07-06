@@ -34,12 +34,10 @@ export const retryExperiment = experiment => {
   return dispatch => {
     const params = { ...experiment, interrupted: false };
     putRequest("/experiment", params).then(experiment => {
-      if (!experiment.error) {
-        dispatch({
-          type: types.ADD_EXPERIMENT,
-          experiment
-        });
-      }
+      dispatch({
+        type: types.ADD_EXPERIMENT,
+        experiment
+      });
     });
   };
 };

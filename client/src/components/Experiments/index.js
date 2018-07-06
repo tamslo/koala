@@ -85,7 +85,7 @@ class Experiments extends Component {
           secondary={this.secondaryText(experiment.id)}
         />
         <ListItemSecondaryAction>
-          {experiment.interrupted && (
+          {(experiment.interrupted || experiment.error) && (
             <IconButton
               aria-label="Retry"
               onClick={() => retryExperiment(experiment)}
