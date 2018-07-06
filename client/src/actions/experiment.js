@@ -1,6 +1,5 @@
 import * as types from "./actionTypes";
 import { getJson, postRequest, deleteRequest, putRequest } from "../api";
-import constants from "../constants.json";
 
 export const deleteExperiment = id => {
   return dispatch => {
@@ -49,36 +48,22 @@ export const runExperiment = id => {
       id
     });
 
-    // Chain execution steps
-    let latestExperiment = null;
-    const { actions } = constants;
-
-    getJson(`/execute?action=${actions.DATASET}&experiment=${id}`)
+    let result = {};
+    getJson(`/execute?experiment=${id}`)
       .then(experiment => {
-        latestExperiment = experiment;
-        updateExperiment(experiment, dispatch);
-        return getJson(`/execute?action=${actions.ALIGNMENT}&experiment=${id}`);
-      })
-      .then(experiment => {
-        latestExperiment = experiment;
-        updateExperiment(experiment, dispatch);
-        return getJson("/done?experiment=" + id);
-      })
-      .then(experiment => {
-        latestExperiment = experiment;
-        updateExperiment(experiment, dispatch);
-        dispatch({
-          type: types.EXPERIMENT_DONE
-        });
+        result = experiment;
+        if (experiment.error) {
+          throw new Error(experiment.error);
+        }
       })
       .catch(error => {
-        const experiment = { ...latestExperiment, id, error };
+        const experiment = { ...result, id, error };
+        result = experiment;
+      })
+      .finally(() => {
         dispatch({
-          type: types.UPDATE_EXPERIMENT,
-          experiment
-        });
-        dispatch({
-          type: types.EXPERIMENT_DONE
+          type: types.EXPERIMENT_DONE,
+          experiment: result
         });
       });
   };
@@ -95,17 +80,4 @@ const resetStatus = experiment => {
     {}
   );
   return { ...experiment, interrupted: false, error: false, pipeline };
-};
-
-const updateExperiment = (experiment, dispatch) => {
-  if (experiment.error) {
-    throw new Error(experiment.error);
-  }
-
-  dispatch({
-    type: types.UPDATE_EXPERIMENT,
-    experiment
-  });
-
-  return experiment;
 };

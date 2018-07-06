@@ -11,9 +11,10 @@ export default (state = initialState, action = {}) => {
         [experiment.id]: experiment
       };
     case types.UPDATE_EXPERIMENT:
+    case types.EXPERIMENT_DONE:
       return {
         ...state,
-        [experiment.id]: experiment
+        [experiment.id]: { ...state[experiment.id], ...experiment }
       };
     case types.DELETE_EXPERIMENT:
       return Object.keys(state).reduce((experiments, experimentId) => {

@@ -42,9 +42,13 @@ def dataset():
     dataset = datasets.create(params, files)
     return json.dumps(dataset)
 
-@app.route("/experiment", methods=["POST", "PUT", "DELETE"])
+@app.route("/experiment", methods=["GET", "POST", "PUT", "DELETE"])
 def experiment():
-    if request.method == "POST":
+    if request.method == "GET":
+        experiment_id = request.args.get("id")
+        experiment = experiments.select(experiment_id)
+        return json.dumps(experiment)
+    elif request.method == "POST":
         params = request.get_json()
         experiment = experiments.create(params)
         return json.dumps(experiment)
@@ -54,19 +58,14 @@ def experiment():
         return json.dumps(experiment)
     else:
         experiment_id = request.args.get("id")
-        return json.dumps(experiments.delete(experiment_id))
+        experiment = experiments.delete(experiment_id)
+        return json.dumps(experiment)
 
 @app.route("/execute", methods=["GET"])
 def data():
-    action = request.args.get("action")
     experiment_id = request.args.get("experiment")
-    experiment = runner.execute(action, experiment_id)
+    experiment = runner.execute(experiment_id)
     return json.dumps(experiment)
-
-@app.route("/done", methods=["GET"])
-def done():
-    experiment_id = request.args.get("experiment")
-    return json.dumps(experiments.mark_done(experiment_id))
 
 @app.route("/export", methods=["GET"])
 def export():

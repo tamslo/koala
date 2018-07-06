@@ -14,26 +14,34 @@ class Runner:
         }
         self.docker_client = Docker(data_directory)
 
-    def execute(self, action, experiment_id):
+    def execute(self, experiment_id):
+        current_action = ""
+        experiment = self.experiments.select(experiment_id)
         try:
-            experiment = self.experiments.select(experiment_id)
-            file_path = self.datasets.lookup(experiment, action)
-            if file_path:
-                experiment = self.experiments.start_action(
-                    experiment,
-                    action,
-                    cached = True
-                )
-            else:
-                experiment = self.experiments.start_action(experiment, action)
-                file_path = self.actions[action](experiment)
-                experiment = self.experiments.complete_action(experiment, action)
-            experiment = self.experiments.add_download(experiment, action, file_path)
+            for action in experiment["pipeline"]:
+                current_action = action
+                experiment = self.__execute_step(action, experiment)
+            experiment = self.experiments.mark_done(experiment_id)
         except Exception as error:
-            print("Error: {}".format(error), flush=True)
+            print("[Error in {}] {}".format(current_action, error), flush=True)
             traceback.print_exc()
-            experiment = self.experiments.mark_error(experiment_id, action, error)
-            self.datasets.clean_up(action, experiment)
+            experiment = self.experiments.mark_error(experiment_id, current_action, error)
+            self.datasets.clean_up(current_action, experiment)
+        return experiment
+
+    def __execute_step(self, action, experiment):
+        file_path = self.datasets.lookup(experiment, action)
+        if file_path:
+            experiment = self.experiments.start_action(
+                experiment,
+                action,
+                cached = True
+            )
+        else:
+            experiment = self.experiments.start_action(experiment, action)
+            file_path = self.actions[action](experiment)
+            experiment = self.experiments.complete_action(experiment, action)
+        experiment = self.experiments.add_download(experiment, action, file_path)
         return experiment
 
     def __get_dataset(self, experiment):
