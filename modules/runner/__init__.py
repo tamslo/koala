@@ -30,7 +30,7 @@ class Runner:
                 experiment = self.experiments.complete_action(experiment, action)
             experiment = self.experiments.add_download(experiment, action, file_path)
         except Exception as error:
-            print(error, flush=True)
+            print("Error: {}".format(error), flush=True)
             traceback.print_exc()
             experiment = self.experiments.mark_error(experiment_id, action, error)
             self.datasets.clean_up(action, experiment)

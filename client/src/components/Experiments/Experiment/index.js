@@ -33,8 +33,8 @@ export default class extends Component {
     );
   }
 
-  renderDownloadButton(key) {
-    const path = this.props.files[key];
+  renderDownloadButton(action) {
+    const path = this.props.pipeline[action].file;
     return path ? (
       <StyledIconButton
         aria-label={"Download"}

@@ -16,9 +16,11 @@ class Exporter:
         archive_name = experiment["name"] + ".zip"
         archive_path = self.directory + archive_name
         archive = zipfile.ZipFile(archive_path, "w")
-        for key, path in experiment["files"].items():
-            file_name = path.split("/")[-1]
-            archive.write(path, file_name)
+        for key, action in experiment["pipeline"].items():
+            if "file" in action:
+                path = action["file"]
+                file_name = path.split("/")[-1]
+                archive.write(path, file_name)
         archive.close()
         return archive_path, archive_name
 

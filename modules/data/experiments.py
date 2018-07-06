@@ -25,7 +25,6 @@ class Experiments:
         experiment["done"] = False
         experiment["interrupted"] = False
         experiment["report"] = None
-        experiment["files"] = {}
         return self.__write(experiment)
 
     def select(self, experiment_id):
@@ -48,8 +47,8 @@ class Experiments:
             experiment["pipeline"][action]["completed"] = time
         return self.__write(experiment)
 
-    def add_download(self, experiment, key, path):
-        experiment["files"][key] = path
+    def add_download(self, experiment, action, path):
+        experiment["pipeline"][action]["file"] = path
         return self.__write(experiment)
 
     def complete_action(self, experiment, action):
