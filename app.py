@@ -109,26 +109,26 @@ def servemedia(path):
 
 def clean_up():
     exporter.clean_up()
-    for experiment_id, experiment in experiments.all().items():
-        last_log_entry = experiment["log"][-1]
-        if (
-            experiment["done"] or
-            experiment["error"] or
-            last_log_entry["completed"]
-        ):
-            continue
-        else:
-            experiments.mark_interrupted(experiment_id)
-            action = last_log_entry["action"]
-            if action in experiment:
-                try:
-                    datasets.clean_up(action, experiment)
-                except Exception as error:
-                    app.logger.error("Manual cleanup of datasets needed for {} {} ({})".format(
-                        action,
-                        experiment["dataset_id"],
-                        error
-                    ))
+    # for experiment_id, experiment in experiments.all().items():
+    #     last_log_entry = experiment["log"][-1]
+    #     if (
+    #         experiment["done"] or
+    #         experiment["error"] or
+    #         last_log_entry["completed"]
+    #     ):
+    #         continue
+    #     else:
+    #         experiments.mark_interrupted(experiment_id)
+    #         action = last_log_entry["action"]
+    #         if action in experiment:
+    #             try:
+    #                 datasets.clean_up(action, experiment)
+    #             except Exception as error:
+    #                 app.logger.error("Manual cleanup of datasets needed for {} {} ({})".format(
+    #                     action,
+    #                     experiment["dataset_id"],
+    #                     error
+    #                 ))
 
 if __name__ == "__main__":
     try:

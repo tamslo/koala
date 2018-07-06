@@ -18,23 +18,15 @@ class Experiments:
         experiment[name] = value
         return self.__write(experiment)
 
-    def __last_log_entry(self, experiment, action):
-        return [entry for entry in experiment["log"] if entry["action"] == action][-1]
-
-    def __edit_log_entry(self, experiment, action, field):
-        time = localtime()
-        entry = self.__last_log_entry(experiment, action)
-        entry[field] = time
-        return self.__write(experiment)
-
     def create(self, experiment):
+        time = localtime()
+        experiment["created"] = time
         experiment["error"] = False
         experiment["done"] = False
         experiment["interrupted"] = False
         experiment["report"] = None
-        experiment["log"] = []
         experiment["files"] = {}
-        return self.add_log_entry(experiment, "create", one_step = True)
+        return self.__write(experiment)
 
     def select(self, experiment_id):
         with open(self.experiment_path(experiment_id), "r") as file:
@@ -46,36 +38,33 @@ class Experiments:
         return experiment
 
     def update(self, experiment):
-        experiment = self.__write(experiment)
-        return self.add_log_entry(experiment, "update", one_step = True)
+        return self.__write(experiment)
 
-    def add_log_entry(self, experiment, action, one_step = False):
+    def start_action(self, experiment, action, cached = False):
         time = localtime()
-        entry = ({
-            "action": action,
-            "started": time,
-            "completed": False,
-            "error": False
-        })
-        if one_step:
-            entry["completed"] = time
-        experiment["log"].append(entry)
+        experiment["pipeline"][action]["started"] = time
+        if cached:
+            experiment["pipeline"][action]["cached"] = True
+            experiment["pipeline"][action]["completed"] = time
         return self.__write(experiment)
 
     def add_download(self, experiment, key, path):
         experiment["files"][key] = path
         return self.__write(experiment)
 
-    def log_complete(self, experiment, action):
-        return self.__edit_log_entry(experiment, action, "completed")
+    def complete_action(self, experiment, action):
+        time = localtime()
+        experiment["pipeline"][action]["completed"] = time
+        return self.__write(experiment)
 
-    def log_error(self, experiment):
-        action = experiment["log"][-1]["action"]
-        return self.__edit_log_entry(experiment, action, "error")
+    def mark_action_error(self, experiment, action):
+        time = localtime()
+        experiment["pipeline"][action]["error"] = time
+        return self.__write(experiment)
 
-    def mark_error(self, experiment_id, error):
+    def mark_error(self, experiment_id, action, error):
         experiment = self.select(experiment_id)
-        experiment = self.log_error(experiment)
+        experiment = self.mark_action_error(experiment, action)
         return self.__set(experiment, "error", str(error))
 
     def mark_interrupted(self, experiment_id):
@@ -83,9 +72,9 @@ class Experiments:
         return self.__set(experiment, "interrupted", True)
 
     def mark_done(self, experiment_id):
+        time = localtime()
         experiment = self.select(experiment_id)
-        experiment = self.add_log_entry(experiment, "done", one_step = True)
-        return self.__set(experiment, "done", True)
+        return self.__set(experiment, "done", time)
 
     def all(self):
         experiments = {}
@@ -95,7 +84,8 @@ class Experiments:
         return OrderedDict(
             sorted(
                 experiments.items(),
-                key = lambda tuple: self.__last_log_entry(tuple[1], "create")["started"]
+                # tuple[0] is experiment_id, tuple[1] is experiment
+                key = lambda tuple: tuple[1]["created"]
             )
         )
         return experiments

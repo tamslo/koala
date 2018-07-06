@@ -6,50 +6,93 @@ class Log extends Component {
   render() {
     return (
       <Container>
-        {this.props.log.map(this.renderLogEntry.bind(this))}
+        {this.renderEntry(
+          "create",
+          this.props.created,
+          this.statuses("info"),
+          "Experiment created"
+        )}
+        {Object.keys(this.props.pipeline).map(this.renderAction.bind(this))}
+        {this.props.done &&
+          this.renderEntry(
+            "done",
+            this.props.done,
+            this.statuses("info"),
+            "Experiment completed"
+          )}
       </Container>
     );
   }
 
-  renderLogEntry(entry, index) {
-    const { theme } = this.props;
-    const { primary, error, warning, text } = theme.palette;
-    const texts = {
-      create: "Create experiment",
-      dataset: "Download data",
-      update: "Update experiment"
+  statuses(key) {
+    const { primary, grey, error, warning } = this.props.theme.palette;
+    const statuses = {
+      completed: { text: "DONE", color: primary.main },
+      running: { text: "RUNNING", color: warning.main },
+      waiting: { text: "WAITING", color: grey[500] },
+      info: { text: "INFO", color: grey[500] },
+      error: { text: "ERROR", color: error.main },
+      interrupted: { text: "INTERRUPTED", color: warning.main }
     };
+    return statuses[key];
+  }
 
-    const time = entry.completed
-      ? formatTime(entry.completed)
-      : entry.error
-        ? formatTime(entry.error)
-        : formatTime(entry.started);
-
-    const status =
-      entry.action === "done"
-        ? { text: "INFO", color: text.secondary }
-        : entry.error
-          ? { text: "ERROR", color: error.main }
-          : entry.interrupted
-            ? { text: "INTERRUPT", color: warning.main }
-            : { text: "DONE", color: primary.main };
-
-    const content = entry.error
-      ? this.props.error
-      : texts[entry.action] || formatAction(entry.action);
-
+  renderEntry(key, time, status, content) {
     return (
-      <Entry key={`log-entry-${index}`}>
-        {`[${time}] [`}
+      <Entry key={`entry-${key}`}>
+        {`[${formatTime(time)}] `}
         <Status color={status.color}>{status.text}</Status>
-        {`] ${content}`}
+        {` ${content}`}
       </Entry>
     );
+  }
+
+  renderAction(actionName) {
+    const action = this.props.pipeline[actionName];
+    return this.renderEntry(
+      actionName,
+      this.actionTime(action),
+      this.actionStatus(action),
+      this.formatActionContent(action, actionName)
+    );
+  }
+
+  actionTime(action) {
+    return action.completed
+      ? action.completed
+      : action.error
+        ? action.error
+        : action.started
+          ? action.started
+          : null;
+  }
+
+  actionStatus(action) {
+    return action.error
+      ? this.statuses("error")
+      : action.completed
+        ? this.statuses("completed")
+        : action.started
+          ? action.interrupted
+            ? this.statuses("interrupted")
+            : this.statuses("running")
+          : this.statuses("waiting");
+  }
+
+  formatActionContent(action, actionName) {
+    const upperCaseName =
+      actionName.substr(0, 1).toUpperCase() + actionName.substr(1);
+    return action.error
+      ? this.props.error
+      : action.cached
+        ? `Load ${actionName} from disk`
+        : upperCaseName;
   }
 }
 
 const formatTime = time => {
+  const noTime = ["----", "--", "--", "--", "--", "--"];
+  time = time || noTime;
   return `${time[0]}/${pad(time[1])}/${pad(time[2])} ${pad(time[3])}:${pad(
     time[4]
   )}:${pad(time[5])}`;
@@ -58,14 +101,6 @@ const formatTime = time => {
 const pad = number => {
   number = number.toString();
   return number.length === 2 ? number : "0" + number;
-};
-
-const formatAction = string => {
-  if (string.endsWith("_loaded")) {
-    return `Load ${string.split("_")[0]} from disk`;
-  } else {
-    return string.substr(0, 1).toUpperCase() + string.substr(1);
-  }
 };
 
 const Container = styled.div`

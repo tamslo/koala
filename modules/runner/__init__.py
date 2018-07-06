@@ -19,20 +19,20 @@ class Runner:
             experiment = self.experiments.select(experiment_id)
             file_path = self.datasets.lookup(experiment, action)
             if file_path:
-                experiment = self.experiments.add_log_entry(
+                experiment = self.experiments.start_action(
                     experiment,
-                    "{}_loaded".format(action),
-                    one_step = True
+                    action,
+                    cached = True
                 )
             else:
-                experiment = self.experiments.add_log_entry(experiment, action)
+                experiment = self.experiments.start_action(experiment, action)
                 file_path = self.actions[action](experiment)
-                experiment = self.experiments.log_complete(experiment, action)
+                experiment = self.experiments.complete_action(experiment, action)
             experiment = self.experiments.add_download(experiment, action, file_path)
         except Exception as error:
             print(error, flush=True)
             traceback.print_exc()
-            experiment = self.experiments.mark_error(experiment_id, error)
+            experiment = self.experiments.mark_error(experiment_id, action, error)
             self.datasets.clean_up(action, experiment)
         return experiment
 

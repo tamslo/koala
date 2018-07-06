@@ -22,7 +22,13 @@ export default class extends Component {
           }`}
           {this.renderDownloadButton("alignment")}
         </Entry>
-        <Log log={this.props.log} error={this.props.error} />
+        <Log
+          pipeline={this.props.pipeline}
+          error={this.props.error}
+          created={this.props.created}
+          done={this.props.done}
+          interrupted={this.props.interrupted}
+        />
       </div>
     );
   }
