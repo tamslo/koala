@@ -114,7 +114,6 @@ def clean_up():
     for experiment_id, experiment in experiments.all().items():
         if not experiment["done"] and not experiment["error"]:
             for action, pipeline_step in experiment["pipeline"].items():
-                print(pipeline_step)
                 started = "started" in pipeline_step and pipeline_step["started"]
                 completed = "completed" in pipeline_step and pipeline_step["completed"]
                 if started and not completed:
