@@ -9,13 +9,15 @@ export default class extends Component {
     return (
       <div>
         <Entry>
-          {`Data Set: ${this.props.datasets[this.props.dataset].name}`}
+          {`Data Set: ${
+            this.props.datasets[this.props.pipeline.dataset.id].name
+          }`}
           {this.renderDownloadButton("dataset")}
         </Entry>
         <Entry>
           {`Aligner: ${
             this.props.services.find(
-              service => service.id === this.props.alignment
+              service => service.id === this.props.pipeline.alignment.id
             ).name
           }`}
           {this.renderDownloadButton("alignment")}

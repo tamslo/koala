@@ -39,7 +39,7 @@ class Datasets:
         return dataset
 
     def lookup(self, experiment, action):
-        dataset_id = experiment["dataset"]
+        dataset_id = experiment["pipeline"]["dataset"]["id"]
         data_directory = self.dataset_folder(dataset_id)
         if os.path.isdir(data_directory):
             if action == "dataset":
@@ -47,7 +47,8 @@ class Datasets:
                 if len(os.listdir(data_directory)) > 0:
                     return data_directory
             else:
-                action_directory = data_directory + experiment[action]
+                action_id = experiment["pipeline"][action]["id"]
+                action_directory = data_directory + action_id
                 if os.path.isdir(action_directory):
                     return data_directory + "/" + os.listdir(data_directory)[0]
         # Default value
@@ -57,9 +58,10 @@ class Datasets:
         return self.directory + dataset_id + "/"
 
     def create_path(self, experiment, action):
-        dataset_id = experiment["dataset"]
+        dataset_id = experiment["pipeline"]["dataset"]["id"]
+        action_id = experiment["pipeline"][action]["id"]
         data_directory = self.dataset_folder(dataset_id)
-        path = self.dataset_folder(dataset_id) + experiment[action]
+        path = self.dataset_folder(dataset_id) + action_id
         os.makedirs(path)
         return path
 
@@ -68,10 +70,10 @@ class Datasets:
 
     def clean_up(self, action, experiment):
         return None
-        # dataset_id = experiment["dataset"]
+        # dataset_id = experiment["pipeline"]["dataset"]["id"]
         # dataset = self.select(dataset_id)
         # dataset_folder = self.dataset_folder(dataset_id)
-        # action_folder = dataset_folder + experiment[action]
+        # action_folder = dataset_folder + experiment["pipeline"][action]["id"]
         # delete_path = dataset_folder if action == "dataset" else action_folder
         # if action == "dataset" and dataset["method"] != self.constants["URL"]:
         #     return None

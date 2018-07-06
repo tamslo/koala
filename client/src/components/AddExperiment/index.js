@@ -18,8 +18,11 @@ export default class extends Component {
       id: uuid(),
       name: "New Experiment",
       reference: "",
-      dataset: "",
-      alignment: ""
+      // Resembles backend structure
+      pipeline: {
+        dataset: { id: "" },
+        alignment: { id: "" }
+      }
     };
   }
 
@@ -27,8 +30,8 @@ export default class extends Component {
     return (
       this.state.name !== "" &&
       this.state.reference !== "" &&
-      this.state.dataset !== "" &&
-      this.state.alignment !== ""
+      this.state.pipeline.dataset.id !== "" &&
+      this.state.pipeline.alignment.id !== ""
     );
   }
 
@@ -36,6 +39,16 @@ export default class extends Component {
     this.setState({
       [name]: event.target.value
     });
+  };
+
+  handlePipelineChange = name => event => {
+    this.setState({
+      pipeline: this.changePipelineStep(name, event.target.value)
+    });
+  };
+
+  changePipelineStep = (name, value) => {
+    return { ...this.state.pipeline, [name]: { id: value } };
   };
 
   render() {
@@ -63,15 +76,15 @@ export default class extends Component {
 
         <DatasetSelection
           datasets={this.props.datasets}
-          dataset={this.state.dataset}
+          dataset={this.state.pipeline.dataset.id}
           addDataset={this.addDataset.bind(this)}
           setDataset={this.setDataset.bind(this)}
         />
 
         <Select
           label="Aligner"
-          value={this.state.alignment || ""}
-          onChange={this.handleChange("alignment")}
+          value={this.state.pipeline.alignment.id || ""}
+          onChange={this.handlePipelineChange("alignment")}
         >
           {this.props.services
             .filter(service => service.type === "aligner")
@@ -103,13 +116,14 @@ export default class extends Component {
   }
 
   addDataset(dataset) {
-    this.setState({ dataset: dataset.id }, () =>
-      this.props.addDataset(dataset)
+    this.setState(
+      { pipeline: this.changePipelineStep("dataset", dataset.id) },
+      () => this.props.addDataset(dataset)
     );
   }
 
-  setDataset(dataset) {
-    this.setState({ dataset });
+  setDataset(datasetId) {
+    this.setState({ pipeline: this.changePipelineStep("dataset", datasetId) });
   }
 }
 

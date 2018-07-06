@@ -37,7 +37,7 @@ class Runner:
         return experiment
 
     def __get_dataset(self, experiment):
-        dataset_id = experiment[self.action_names["DATASET"]]
+        dataset_id = experiment["pipeline"][self.action_names["DATASET"]]["id"]
         dataset = self.datasets.select(dataset_id)
         dataset_folder = self.datasets.dataset_folder(dataset_id)
         for file in dataset["content"]:
@@ -52,6 +52,6 @@ class Runner:
             experiment,
             self.action_names["ALIGNMENT"]
         )
-        aligner = experiment[self.action_names["ALIGNMENT"]]
+        aligner = experiment["pipeline"][self.action_names["ALIGNMENT"]]["id"]
         align(self.docker_client, aligner, alignment_path, experiment)
         return alignment_path
