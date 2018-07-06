@@ -29,6 +29,17 @@ export const addExperiment = params => {
   };
 };
 
+export const refreshExperiment = experiment_id => {
+  return dispatch => {
+    getJson(`/experiment/id=${experiment_id}`).then(experiment =>
+      dispatch({
+        type: types.UPDATE_EXPERIMENT,
+        experiment
+      })
+    );
+  };
+};
+
 export const retryExperiment = experiment => {
   return dispatch => {
     const params = resetStatus(experiment);
