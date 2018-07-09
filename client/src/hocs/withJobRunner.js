@@ -12,13 +12,13 @@ export default WrappedComponent => {
     }
 
     render() {
-      const { jobs } = this.props;
+      const { jobs, refreshExperiment } = this.props;
       clearInterval(refreshInterval);
 
       if (jobs.running) {
         refreshInterval = setInterval(() => {
-          console.log("FOO");
-        }, 5000);
+          refreshExperiment(jobs.running);
+        }, 3000);
       }
 
       return <WrappedComponent {...this.props} />;

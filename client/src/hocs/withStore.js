@@ -6,7 +6,8 @@ import {
   addExperiment,
   deleteExperiment,
   runExperiment,
-  retryExperiment
+  retryExperiment,
+  refreshExperiment
 } from "../actions/experiment";
 import { addDataset } from "../actions/dataset";
 
@@ -34,6 +35,7 @@ export default WrappedComponent => {
     deleteExperiment,
     runExperiment,
     retryExperiment,
+    refreshExperiment,
     addDataset
   };
 
