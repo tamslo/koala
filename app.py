@@ -3,8 +3,8 @@ from flask import Flask, request, send_file, send_from_directory
 from flask_cors import CORS
 from collections import OrderedDict
 from modules.constants import Constants
-from modules.data.datasets import Datasets
-from modules.data.experiments import Experiments
+from modules.data_handler.datasets import Datasets
+from modules.data_handler.experiments import Experiments
 from modules.runner import Runner
 from modules.exporter import Exporter
 
