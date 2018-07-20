@@ -18,9 +18,9 @@ export default class extends Component {
       id: uuid(),
       name: "New Experiment",
       reference: "",
+      dataset: "",
       // Resembles backend structure
       pipeline: {
-        dataset: { id: "" },
         alignment: { id: "" }
       }
     };
@@ -30,7 +30,7 @@ export default class extends Component {
     return (
       this.state.name !== "" &&
       this.state.reference !== "" &&
-      this.state.pipeline.dataset.id !== "" &&
+      this.state.dataset !== "" &&
       this.state.pipeline.alignment.id !== ""
     );
   }
@@ -76,7 +76,7 @@ export default class extends Component {
 
         <DatasetSelection
           datasets={this.props.datasets}
-          dataset={this.state.pipeline.dataset.id}
+          dataset={this.state.dataset}
           addDataset={this.addDataset.bind(this)}
           setDataset={this.setDataset.bind(this)}
         />
@@ -116,14 +116,13 @@ export default class extends Component {
   }
 
   addDataset(dataset) {
-    this.setState(
-      { pipeline: this.changePipelineStep("dataset", dataset.id) },
-      () => this.props.addDataset(dataset)
+    this.setState({ dataset: dataset.id }, () =>
+      this.props.addDataset(dataset)
     );
   }
 
   setDataset(datasetId) {
-    this.setState({ pipeline: this.changePipelineStep("dataset", datasetId) });
+    this.setState({ dataset: datasetId });
   }
 }
 

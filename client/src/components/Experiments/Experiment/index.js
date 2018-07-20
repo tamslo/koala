@@ -6,13 +6,12 @@ import Log from "./Log";
 
 export default class extends Component {
   render() {
+    const dataset = this.props.datasets[this.props.dataset];
     return (
       <div>
         <Entry>
-          {`Data Set: ${
-            this.props.datasets[this.props.pipeline.dataset.id].name
-          }`}
-          {this.renderDownloadButton("dataset")}
+          {`Data Set: ${dataset.name}`}
+          {this.renderDownloadDatasetButton(dataset)}
         </Entry>
         <Entry>
           {`Aligner: ${
@@ -20,7 +19,7 @@ export default class extends Component {
               service => service.id === this.props.pipeline.alignment.id
             ).name
           }`}
-          {this.renderDownloadButton("alignment")}
+          {this.renderDownloadButton(this.props.pipeline["alignment"].file)}
         </Entry>
         <Log
           pipeline={this.props.pipeline}
@@ -33,8 +32,23 @@ export default class extends Component {
     );
   }
 
-  renderDownloadButton(action) {
-    const path = this.props.pipeline[action].file;
+  renderDownloadDatasetButton(dataset) {
+    const { data } = dataset;
+    const firstFilePath = data[Object.keys(data)[0]].path;
+    let path;
+    if (Object.keys(data).length === 1) {
+      path = firstFilePath;
+    } else {
+      const separator = "/";
+      path = firstFilePath
+        .split(separator)
+        .slice(0, -1)
+        .join(separator);
+    }
+    return this.renderDownloadButton(path);
+  }
+
+  renderDownloadButton(path) {
     return path ? (
       <StyledIconButton
         aria-label={"Download"}

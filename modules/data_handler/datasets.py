@@ -1,94 +1,32 @@
-import os, json, uuid, shutil
+import os
+import json
 import modules.file_utils as file_utils
+from .base_handler import BaseHandler
+from .base_instance import BaseInstance
 
-class Datasets:
-    def __init__(self, data_directory, constants):
-        self.directory = data_directory + "datasets/"
-        self.reference_directory = data_directory + "references/"
-        self.index_path = self.directory + "index.json"
-        self.constants = constants.dataset
-        self.actions = constants.actions
-        self.__setup()
-        with open(self.index_path) as index_file:
-            self.index = json.load(index_file)
+class Datasets(BaseHandler):
+    def __init__(self, directory):
+        super().__init__(directory)
+        self.Instance = BaseInstance
+        with open("modules/constants/constants.json", "r") as constants_file:
+            self.constants = json.load(constants_file)["dataset"]
 
-    def __setup(self):
-        file_utils.create_directory(self.directory)
-        if not os.path.exists(self.index_path):
-            file_utils.write(json.dumps({}), self.index_path)
-
-    def __write_index(self):
-        with open(self.index_path, "w") as index_file:
-            index_file.write(json.dumps(self.index))
-
-    def select(self, dataset_id):
-        return self.index[dataset_id]
-
-    def create(self, dataset, files=None):
-        directory = self.directory + dataset["id"] + "/"
-        os.mkdir(directory)
-        for file_key in dataset["content"]:
-            file_path = directory + file_key + ".fastq"
-            if files:
+    def __store_data(self, content, files):
+        for file_key in content["data"]:
+            file_path = self.directory + content["id"] + "/" + file_key + ".fastq"
+            if content["method"] == self.constants["URL"]:
+                url = content["data"][file_key]["name"]
+                file_utils.download(url, file_path)
+            else:
                 file = files[file_key]
                 name = file.filename
                 file.save(file_path)
-                dataset["content"][file_key]["name"] = name
-            dataset["content"][file_key]["path"] = file_path
+                content["data"][file_key]["name"] = name
+            content["data"][file_key]["path"] = file_path
+        return content
 
-        self.index[dataset["id"]] = dataset
-        self.__write_index()
-        return dataset
-
-    def lookup(self, experiment, action):
-        dataset_id = experiment["pipeline"]["dataset"]["id"]
-        data_directory = self.dataset_folder(dataset_id)
-        if os.path.isdir(data_directory):
-            if action == "dataset":
-                dataset = self.index[dataset_id]
-                if len(os.listdir(data_directory)) > 0:
-                    return data_directory
-            else:
-                action_id = experiment["pipeline"][action]["id"]
-                action_directory = data_directory + action_id
-                if os.path.isdir(action_directory):
-                    return data_directory + "/" + os.listdir(data_directory)[0]
-        # Default value
-        return False
-
-    def dataset_folder(self, dataset_id):
-        return self.directory + dataset_id + "/"
-
-    def create_path(self, experiment, action):
-        dataset_id = experiment["pipeline"]["dataset"]["id"]
-        action_id = experiment["pipeline"][action]["id"]
-        data_directory = self.dataset_folder(dataset_id)
-        path = self.dataset_folder(dataset_id) + action_id
-        os.makedirs(path)
-        return path
-
-    def get_datasets(self):
-        return self.index
-
-    def clean_up(self, action, experiment):
-        action_id = experiment["pipeline"][action]["id"]
-        dataset_id = experiment["pipeline"]["dataset"]["id"]
-        dataset = self.select(dataset_id)
-        dataset_folder = self.dataset_folder(dataset_id)
-        action_folder = dataset_folder + action_id
-        delete_path = dataset_folder if action == "dataset" else action_folder
-        file_utils.delete(delete_path)
-
-        if action == self.actions["DATASET"]:
-            self.index.pop(dataset_id, None)
-        if action == self.actions["ALIGNMENT"] and action_id == "star":
-            reference_index_path_postfix = action_id + "/" + experiment["reference"]
-            reference_index_path = self.reference_directory + reference_index_path_postfix
-            file_utils.delete(reference_index_path)
-
-def is_uuid(id):
-    try:
-        uuid.UUID(dataset_id)
-        return True
-    except ValueError:
-        return False
+    def create(self, content, files=None):
+        directory = self.directory + content["id"] + "/"
+        os.mkdir(directory)
+        content = self.__store_data(content, files)
+        return super().create(content)

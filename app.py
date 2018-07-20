@@ -3,25 +3,21 @@ from flask import Flask, request, send_file, send_from_directory
 from flask_cors import CORS
 from collections import OrderedDict
 from modules.constants import Constants
-from modules.data_handler.datasets import Datasets
-from modules.data_handler.experiments import Experiments
+from modules.data_handler import DataHandler
 from modules.runner import Runner
 from modules.exporter import Exporter
 
 app = Flask(__name__)
 CORS(app)
 
+data_directory = "data/"
+data_handler = DataHandler(data_directory)
+constants = Constants(os.path.dirname(os.path.abspath(__file__)))
+runner = Runner(data_handler, data_directory, constants)
+exporter = Exporter(data_directory)
+
 with open("services.json", "r") as services_file:
     services = json.load(services_file, object_pairs_hook=OrderedDict)
-
-data_directory = "data/"
-root_directory = os.path.dirname(os.path.abspath(__file__))
-
-constants = Constants(root_directory)
-datasets = Datasets(data_directory, constants)
-experiments = Experiments(data_directory)
-runner = Runner(datasets, experiments, data_directory, constants)
-exporter = Exporter(data_directory)
 
 @app.route("/ping")
 def ping():
@@ -29,43 +25,49 @@ def ping():
 
 @app.route("/context", methods=["GET"])
 def get_context():
+    def get_content(instances):
+        content = {}
+        for id, instance in instances.items():
+            content[id] = instance.content
+        return content
+
     return json.dumps({
         "services": services,
-        "experiments": experiments.all(),
-        "datasets": datasets.get_datasets()
+        "experiments": get_content(data_handler.experiments.all()),
+        "datasets": get_content(data_handler.datasets.all())
     })
 
 @app.route("/dataset", methods=["POST"])
 def dataset():
     params = json.loads(request.form["json"])
     files = request.files
-    dataset = datasets.create(params, files)
-    return json.dumps(dataset)
+    dataset = data_handler.datasets.create(params, files)
+    return json.dumps(dataset.content)
 
 @app.route("/experiment", methods=["GET", "POST", "PUT", "DELETE"])
 def experiment():
     if request.method == "GET":
         experiment_id = request.args.get("id")
-        experiment = experiments.select(experiment_id)
-        return json.dumps(experiment)
+        experiment = data_handler.experiments.select(experiment_id)
+        return json.dumps(experiment.content)
     elif request.method == "POST":
         params = request.get_json()
-        experiment = experiments.create(params)
-        return json.dumps(experiment)
+        experiment = data_handler.experiments.create(params)
+        return json.dumps(experiment.content)
     elif request.method == "PUT":
-        params = request.get_json()
-        experiment = experiments.update(params)
-        return json.dumps(experiment)
-    else:
+        content = request.get_json()
+        experiment = data_handler.experiments.update(content)
+        return json.dumps(experiment.content)
+    else: # request.method == "DELETE"
         experiment_id = request.args.get("id")
-        experiment = experiments.delete(experiment_id)
-        return json.dumps(experiment)
+        experiment = data_handler.experiments.delete(experiment_id)
+        return json.dumps(experiment.content)
 
 @app.route("/execute", methods=["GET"])
 def data():
     experiment_id = request.args.get("experiment")
     experiment = runner.execute(experiment_id)
-    return json.dumps(experiment)
+    return json.dumps(experiment.content)
 
 @app.route("/export", methods=["GET"])
 def export():
@@ -75,7 +77,7 @@ def export():
         export_file_path = path
         export_file_name = exporter.file_name(path)
     elif experiment_id != None:
-        experiment = experiments.select(experiment_id)
+        experiment = data_handler.experiments.select(experiment_id)
         export_file_path, export_file_name = exporter.zip(experiment)
     return send_file(
         export_file_path,
@@ -105,19 +107,7 @@ def servejs(path):
 @app.route("/static/media/<path:path>")
 def servemedia(path):
     return send_from_directory("client/build/static/media/", path)
-
-def clean_up():
-    exporter.clean_up()
-    # In case of an interruption, clean up experiments and datasets
-    # If an error occurred, the components already handled it
-    for experiment_id, experiment in experiments.all().items():
-        if not experiment["done"] and not experiment["error"]:
-            for action, pipeline_step in experiment["pipeline"].items():
-                started = "started" in pipeline_step and pipeline_step["started"]
-                completed = "completed" in pipeline_step and pipeline_step["completed"]
-                if started and not completed:
-                    experiments.mark_interrupted(experiment_id, action)
-                    datasets.clean_up(action, experiment)
+    
 
 if __name__ == "__main__":
     try:
@@ -126,4 +116,5 @@ if __name__ == "__main__":
         options, _ = parser.parse_args()
         app.run(host="0.0.0.0", port="5000", debug=bool(options.debug))
     finally:
-        clean_up()
+        exporter.clean_up()
+        data_handler.clean_up()

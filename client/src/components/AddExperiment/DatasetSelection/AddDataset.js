@@ -17,16 +17,15 @@ export default class extends Component {
       layout: constants.dataset.PAIRED,
       readLength: 200,
       method: constants.dataset.FILE,
-      content: {}
+      data: {}
     };
   }
 
   canAdd() {
-    const contentLength =
-      this.state.layout === constants.dataset.PAIRED ? 2 : 1;
+    const dataLength = this.state.layout === constants.dataset.PAIRED ? 2 : 1;
     return (
       this.state.name !== "" &&
-      Object.keys(this.state.content).length === contentLength &&
+      Object.keys(this.state.data).length === dataLength &&
       this.state.readLength !== ""
     );
   }
@@ -39,25 +38,25 @@ export default class extends Component {
 
   changeLayout = event => {
     const layout = event.target.value;
-    let content = this.state.content;
+    let data = this.state.data;
 
-    // Remove reverse file from content if layout changes to single end
+    // Remove reverse file from data if layout changes to single end
     if (layout === constants.dataset.SINGLE) {
-      content = content[constants.dataset.FORWARD]
-        ? { [constants.dataset.FORWARD]: content[constants.dataset.FORWARD] }
-        : this.initialState().content;
+      data = data[constants.dataset.FORWARD]
+        ? { [constants.dataset.FORWARD]: data[constants.dataset.FORWARD] }
+        : this.initialState().data;
     }
 
     this.setState({
       layout,
-      content
+      data
     });
   };
 
   changeMethod = event => {
     this.setState({
       method: event.target.value,
-      content: this.initialState().content
+      data: this.initialState().data
     });
   };
 
@@ -70,19 +69,19 @@ export default class extends Component {
       this.state.method === constants.dataset.FILE
         ? event.target.files.length === 0
         : event.target.value === "";
-    const contentWithoutKey = Object.keys(this.state.content).reduce(
+    const dataWithoutKey = Object.keys(this.state.data).reduce(
       (reducedContent, fileKey) =>
         fileKey === key
           ? reducedContent
-          : { ...reducedContent, [fileKey]: this.state.content[fileKey] },
+          : { ...reducedContent, [fileKey]: this.state.data[fileKey] },
       {}
     );
-    const contentWithNewValue = {
-      ...this.state.content,
+    const dataWithNewValue = {
+      ...this.state.data,
       [key]: value
     };
     this.setState({
-      content: removeKey ? contentWithoutKey : contentWithNewValue
+      data: removeKey ? dataWithoutKey : dataWithNewValue
     });
   };
 

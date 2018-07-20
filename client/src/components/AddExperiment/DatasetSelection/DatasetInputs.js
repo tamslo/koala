@@ -69,9 +69,9 @@ export default class extends Component {
 
   renderSingleDataSelection(key) {
     const value =
-      this.props.content[key] &&
-      typeof this.props.content[key] === "object" &&
-      this.props.content[key].name;
+      this.props.data[key] &&
+      typeof this.props.data[key] === "object" &&
+      this.props.data[key].name;
     return this.props.method === constants.dataset.FILE
       ? this.renderFileUpload(key, value)
       : this.renderUrlInput(key, value);
