@@ -1,5 +1,6 @@
-from .experiments import Experiments
-from .datasets import Datasets
+from .instance_handler import InstanceHandler
+from .instances.experiment import Experiment
+from .instances.dataset import Dataset
 from .cache import Cache
 
 class DataHandler:
@@ -7,8 +8,8 @@ class DataHandler:
         self.experiments_directory = data_directory + "experiments/"
         self.datasets_directory = data_directory + "datasets/"
 
-        self.experiments = Experiments(self.experiments_directory)
-        self.datasets = Datasets(self.datasets_directory)
+        self.experiments = InstanceHandler(self.experiments_directory, Experiment)
+        self.datasets = InstanceHandler(self.datasets_directory, Dataset)
         self.cache = Cache(self.datasets_directory)
 
     def clean_up(self):

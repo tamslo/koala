@@ -3,9 +3,10 @@ import json
 from collections import OrderedDict
 import modules.file_utils as file_utils
 
-class BaseHandler:
-    def __init__(self, directory):
+class InstanceHandler:
+    def __init__(self, directory, Instance):
         self.directory = directory
+        self.Instance = Instance
         file_utils.create_directory(self.directory)
 
     def __instance_path(self, id):

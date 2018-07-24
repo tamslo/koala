@@ -1,5 +1,5 @@
 from time import localtime
-from ..base_instance import BaseInstance
+from .base_instance import BaseInstance
 
 class Experiment(BaseInstance):
     def setup(self):

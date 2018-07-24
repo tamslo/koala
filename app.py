@@ -41,7 +41,8 @@ def get_context():
 def dataset():
     params = json.loads(request.form["json"])
     files = request.files
-    dataset = data_handler.datasets.create(params, files)
+    params["files"] = files
+    dataset = data_handler.datasets.create(params)
     return json.dumps(dataset.content)
 
 @app.route("/experiment", methods=["GET", "POST", "PUT", "DELETE"])
@@ -107,7 +108,7 @@ def servejs(path):
 @app.route("/static/media/<path:path>")
 def servemedia(path):
     return send_from_directory("client/build/static/media/", path)
-    
+
 
 if __name__ == "__main__":
     try:
