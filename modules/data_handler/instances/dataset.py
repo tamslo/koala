@@ -17,6 +17,7 @@ class Dataset(BaseInstance):
                 self.constants = json.load(constants_file)["dataset"]
             os.mkdir(self.directory)
             self.__store_data()
+            super().setup()
             return super().store()
         except Exception as error:
             file_utils.delete(self.directory)

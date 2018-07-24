@@ -24,7 +24,7 @@ class Runner:
             print("[Error in {}] {}".format(current_action, error), flush=True)
             traceback.print_exc()
             experiment.mark_error(current_action, error)
-            self.datasets.clean_up(current_action, experiment)
+            self.data_handler.cache.clean_up(experiment, current_action)
         return experiment
 
     def __execute_step(self, action, experiment):
@@ -47,5 +47,4 @@ class Runner:
             self.action_names["ALIGNMENT"]
         )
         aligner = experiment.get("pipeline")[self.action_names["ALIGNMENT"]]["id"]
-        align(self.docker_client, aligner, alignment_path, experiment)
-        return alignment_path
+        return align(self.docker_client, aligner, alignment_path, experiment)

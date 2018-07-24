@@ -8,9 +8,10 @@ class Cache:
 
     def __cache_path(self, experiment, action):
         dataset_id = experiment.get("dataset")
+        reference_id = experiment.get("reference")
         dataset_directory = self.directory + dataset_id + "/"
         action_id = experiment.action_id(action)
-        action_directory = dataset_directory + action_id
+        action_directory = dataset_directory + reference_id + "/" + action_id
         return action_directory
 
     def lookup(self, experiment, action):

@@ -7,4 +7,4 @@ aligner_actions = {
 }
 
 def align(docker_client, aligner, destination, experiment):
-    aligner_actions[aligner](docker_client, destination, experiment)
+    return aligner_actions[aligner](docker_client, destination, experiment)

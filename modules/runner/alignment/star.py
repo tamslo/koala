@@ -1,21 +1,23 @@
 import yaml, os
+import modules.file_utils as file_utils
 
 def star(docker_client, destination, experiment):
-    genome_index_path = "data/references/star/" + experiment["reference"]
+    genome_index_path = destination + "/index"
     with open("config.yml", "r") as config_file:
         config = yaml.load(config_file)
         num_threads = int(config["cores"])
 
-    preamble = "STAR --runThreadN {} --genomeDir /{}".format(
+    star_preamble = "STAR --runThreadN {} --genomeDir /{}".format(
         num_threads,
         genome_index_path
     )
     build_genome_index(
         docker_client,
         genome_index_path,
-        preamble,
-        experiment["reference"]
+        star_preamble,
+        experiment.get("reference")
     )
+    return destination;
 
 def build_genome_index(docker_client, genome_index_path, preamble, reference):
     if not os.path.isdir(genome_index_path):
