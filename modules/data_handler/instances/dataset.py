@@ -12,11 +12,17 @@ class Dataset(BaseInstance):
         super().__init__(content, path)
 
     def setup(self):
-        with open("modules/constants/constants.json", "r") as constants_file:
-            self.constants = json.load(constants_file)["dataset"]
-        os.mkdir(self.directory)
-        self.__store_data()
-        return super().store()
+        try:
+            with open("modules/constants/constants.json", "r") as constants_file:
+                self.constants = json.load(constants_file)["dataset"]
+            os.mkdir(self.directory)
+            self.__store_data()
+            return super().store()
+        except Exception as error:
+            file_utils.delete(self.directory)
+            file_utils.delete(self.path)
+            self.content["error"] = True
+            return self
 
     def __store_data(self):
         for file_key in self.content["data"]:

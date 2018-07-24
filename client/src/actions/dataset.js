@@ -13,10 +13,14 @@ export const addDataset = dataset => {
 
     postRequest("/dataset", data, false)
       .then(dataset => {
-        dispatch({
-          type: types.ADDED_DATASET,
-          dataset
-        });
+        if (!dataset.error) {
+          dispatch({
+            type: types.ADDED_DATASET,
+            dataset
+          });
+        } else {
+          dispatch({ type: types.DATASET_ERROR });
+        }
       })
       .catch(error => console.error(error));
   };
