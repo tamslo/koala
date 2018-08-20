@@ -58,7 +58,7 @@ export default class extends Component {
         >
           {Object.keys(datasets).map(datasetId => (
             <DatasetItem key={datasetId} value={datasetId}>
-              {datasets[datasetId].name}
+              <DatasetName>{datasets[datasetId].name}</DatasetName>
               <StyledInfoIcon
                 onClick={this.showDatasetInfo(datasets[datasetId])}
               />
@@ -99,6 +99,7 @@ const StyledInfoIcon = styled(InfoIcon)`
   height: 20px !important;
   width: 20px !important;
   color: #666666;
+  margin-left: 6px;
   &:hover {
     color: #333333;
   }
@@ -106,4 +107,10 @@ const StyledInfoIcon = styled(InfoIcon)`
 
 const DatasetItem = styled(MenuItem)`
   justify-content: space-between !important;
+`;
+
+const DatasetName = styled.div`
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
