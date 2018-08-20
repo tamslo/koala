@@ -7,12 +7,18 @@ class Cache:
         file_utils.create_directory(self.directory)
 
     def __cache_path(self, experiment, action):
-        dataset_id = experiment.get("dataset")
-        reference_id = experiment.get("reference")
-        dataset_directory = self.directory + dataset_id + "/"
+        cache_path = (
+            self.directory +
+            experiment.get("dataset") + "/" +
+            experiment.get("reference") + "/"
+        )
         action_id = experiment.action_id(action)
-        action_directory = dataset_directory + reference_id + "/" + action_id
-        return action_directory
+        for step_name, step in experiment.get("pipeline").items():
+            step_id = step["id"]
+            cache_path += (step_id + "/")
+            if step_id == action_id:
+                break
+        return cache_path
 
     def lookup(self, experiment, action):
         action_path = self.__cache_path(experiment, action)
