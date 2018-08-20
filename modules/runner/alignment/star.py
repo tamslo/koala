@@ -7,9 +7,10 @@ def star(docker_client, destination, experiment):
         config = yaml.load(config_file)
         num_threads = int(config["cores"])
 
-    star_preamble = "STAR --runThreadN {} --genomeDir /{}".format(
+    star_preamble = "STAR --runThreadN {} --genomeDir /{} --outFileNamePrefix {}".format(
         num_threads,
-        genome_index_path
+        genome_index_path,
+        destination
     )
     build_genome_index(
         docker_client,
@@ -32,5 +33,4 @@ def build_genome_index(docker_client, genome_index_path, preamble, reference):
 
 def run(docker_client, destination, options):
     # --readFilesIn /data/datasets/... [/data/datasets/...]
-    # --outFileNamePrefix /data/datasets/...
     return None
