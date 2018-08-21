@@ -31,3 +31,24 @@ Additionally, we forward port 5000 to port 80 with `iptables -t nat -A PREROUTIN
 ## Adding a Service
 
 To add a service, add a Dockerfile named `Dockerfile.servicename` that sets up a service to `/services` and add an entry in `services.json` with `"id": "servicename"`.
+
+## Useful Commands for Testing
+
+### Copy data sets to server
+
+`scp -r data/datasets deploy@192.168.31.121:~/code/data/datasets`
+
+### Run docker container for testing (locally)
+
+`docker run -v /c/Users/Tamara/Repos/koala/data:/data -it test`
+
+### Run docker container for testing (on server)
+
+`docker run -v ~/code/data:/data -it star`
+
+### RUN STAR genome generation
+
+```
+cd /data
+STAR --runThreadN 8 --genomeDir /data/references/star/hg19 --runMode genomeGenerate --genomeFastaFiles /data/references/hg19.fa &>> star.log &
+```
