@@ -18,5 +18,6 @@
     "source": "http://bioinf.itmat.upenn.edu/BEERS/bp1/datasets.php"
   },
   { "id": "test", "name": "Test", "type": "aligner" },
-  { "id": "star", "name": "STAR", "type": "aligner" }
+  { "id": "star", "name": "STAR", "type": "aligner" },
+  { "id": "beers_stats", "name": "Aligner Statistics", "type": "evaluation" }
 ]
