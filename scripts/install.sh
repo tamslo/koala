@@ -15,4 +15,4 @@ done
 cd ..
 
 # Download data
-python scripts/download-reference-genomes.py
+python scripts/download-data.py

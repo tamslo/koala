@@ -1,0 +1,21 @@
+{
+  "id": "prepared-3f76-42bd-b70f-d4e6d1c27f83",
+  "name": "simulated_reads_HG19t2r1",
+  "layout": "reverse",
+  "readLength": "150",
+  "method": "file",
+  "data": {
+    "forward": {
+      "name": "simulated_reads_HG19t2r1.forward.fa",
+      "path":
+        "data/datasets/prepared-3f76-42bd-b70f-d4e6d1c27f83/forward.fastq"
+    },
+    "reverse": {
+      "name": "simulated_reads_HG19t2r1.reverse.fa",
+      "path":
+        "data/datasets/prepared-3f76-42bd-b70f-d4e6d1c27f83/reverse.fastq"
+    }
+  },
+  "created": [2018, 7, 25, 9, 28, 7, 2, 206, 1],
+  "error": false
+}
