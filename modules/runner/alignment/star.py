@@ -14,18 +14,23 @@ def star(docker_client, destination, reference_id, dataset):
         "/" + genome_index_path,
         destination
     )
-    build_genome_index(
-        docker_client,
-        genome_index_path,
-        star_preamble,
-        reference_path
-    )
+
+    try:
+        build_genome_index(
+            docker_client,
+            genome_index_path,
+            star_preamble,
+            reference_path
+        )
+    except:
+        file_utils.delete(genome_index_path)
+        raise
+
     run(docker_client, star_preamble, dataset, destination)
     return destination;
 
 def build_genome_index(docker_client, genome_index_path, preamble, reference_path):
     if not os.path.isdir(genome_index_path):
-        print(genome_index_path, flush=True)
         file_utils.create_directory(genome_index_path)
         command = preamble + " --runMode genomeGenerate"
         command += " --genomeFastaFiles /{}".format(reference_path)
@@ -37,7 +42,7 @@ def build_genome_index(docker_client, genome_index_path, preamble, reference_pat
 def run(docker_client, preamble, dataset, destination):
     file_utils.create_directory(destination)
     command = preamble + " --readFilesIn"
-    for direction, specification in dataset.get("data"):
+    for direction, specification in dataset.get("data").items():
         command += " /{}".format(specification["path"])
     docker_client.run(
         "star",

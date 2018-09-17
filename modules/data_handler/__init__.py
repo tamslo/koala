@@ -7,10 +7,11 @@ class DataHandler:
     def __init__(self, data_directory):
         self.experiments_directory = data_directory + "experiments/"
         self.datasets_directory = data_directory + "datasets/"
+        self.error_directory = data_directory + "errored/"
 
         self.experiments = InstanceHandler(self.experiments_directory, Experiment)
         self.datasets = InstanceHandler(self.datasets_directory, Dataset)
-        self.cache = Cache(self.datasets_directory)
+        self.cache = Cache(self.datasets_directory, self.error_directory)
 
     def clean_up(self):
         # In case of an interruption, clean up experiments and datasets.
