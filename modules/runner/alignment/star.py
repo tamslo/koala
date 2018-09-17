@@ -2,40 +2,43 @@ import yaml, os
 import modules.file_utils as file_utils
 
 def star(docker_client, destination, reference_id, dataset):
-    genome_index_path = destination + "index"
+    reference_directory = "data/references"
+    reference_path = "{}/{}.fa".format(reference_directory, reference_id)
+    genome_index_path = "{}/{}_star_index".format(reference_directory, reference_id)
     with open("config.yml", "r") as config_file:
         config = yaml.load(config_file)
         num_threads = int(config["cores"])
 
     star_preamble = "STAR --runThreadN {} --genomeDir /{} --outFileNamePrefix {}".format(
         num_threads,
-        genome_index_path,
+        "/" + genome_index_path,
         destination
     )
     build_genome_index(
         docker_client,
         genome_index_path,
         star_preamble,
-        reference_id
+        reference_path
     )
-    run(docker_client, star_preamble, dataset)
+    run(docker_client, star_preamble, dataset, destination)
     return destination;
 
-def build_genome_index(docker_client, genome_index_path, preamble, reference):
+def build_genome_index(docker_client, genome_index_path, preamble, reference_path):
     if not os.path.isdir(genome_index_path):
-        os.makedirs(genome_index_path)
-        reference_path = "/data/references/{}.fa".format(reference)
+        print(genome_index_path, flush=True)
+        file_utils.create_directory(genome_index_path)
         command = preamble + " --runMode genomeGenerate"
-        command += " --genomeFastaFiles {}".format(reference_path)
+        command += " --genomeFastaFiles /{}".format(reference_path)
         docker_client.run(
             "star",
             command
         )
 
-def run(docker_client, preamble, dataset):
+def run(docker_client, preamble, dataset, destination):
+    file_utils.create_directory(destination)
     command = preamble + " --readFilesIn"
     for direction, specification in dataset.get("data"):
-        command += " {}".format(specification["path"])
+        command += " /{}".format(specification["path"])
     docker_client.run(
         "star",
         command
