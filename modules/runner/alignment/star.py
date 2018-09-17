@@ -1,8 +1,8 @@
 import yaml, os
 import modules.file_utils as file_utils
 
-def star(docker_client, destination, experiment):
-    genome_index_path = destination + "/index"
+def star(docker_client, destination, reference_id, dataset):
+    genome_index_path = destination + "index"
     with open("config.yml", "r") as config_file:
         config = yaml.load(config_file)
         num_threads = int(config["cores"])
@@ -16,8 +16,9 @@ def star(docker_client, destination, experiment):
         docker_client,
         genome_index_path,
         star_preamble,
-        experiment.get("reference")
+        reference_id
     )
+    run(docker_client, star_preamble, dataset)
     return destination;
 
 def build_genome_index(docker_client, genome_index_path, preamble, reference):
@@ -31,6 +32,11 @@ def build_genome_index(docker_client, genome_index_path, preamble, reference):
             command
         )
 
-def run(docker_client, destination, options):
-    # --readFilesIn /data/datasets/... [/data/datasets/...]
-    return None
+def run(docker_client, preamble, dataset):
+    command = preamble + " --readFilesIn"
+    for direction, specification in dataset.get("data"):
+        command += " {}".format(specification["path"])
+    docker_client.run(
+        "star",
+        command
+    )

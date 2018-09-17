@@ -6,5 +6,5 @@ aligner_actions = {
     "star": star
 }
 
-def align(docker_client, aligner, destination, experiment):
-    return aligner_actions[aligner](docker_client, destination, experiment)
+def align(docker_client, aligner, destination, reference_id, dataset):
+    return aligner_actions[aligner](docker_client, destination, reference_id, dataset)

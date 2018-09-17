@@ -47,4 +47,6 @@ class Runner:
             self.action_names["ALIGNMENT"]
         )
         aligner = experiment.get("pipeline")[self.action_names["ALIGNMENT"]]["id"]
-        return align(self.docker_client, aligner, alignment_path, experiment)
+        reference_id = experiment.get("dataset")
+        dataset = self.data_handler.datasets.select(experiment.get("dataset"))
+        return align(self.docker_client, aligner, alignment_path, reference_id, dataset)
