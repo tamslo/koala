@@ -8,7 +8,7 @@ class Runner:
         self.data_handler = data_handler
         self.action_names = constants.actions
         self.actions = {
-            self.action_names["ALIGNMENT"]: self.__align
+            self.action_names["ALIGNMENT"]: align
         }
         self.docker_client = Docker(data_directory)
 
@@ -36,17 +36,12 @@ class Runner:
             )
         else:
             experiment.start_action(action)
-            file_path = self.actions[action](experiment)
+            file_path = self.actions[action](
+                self.docker_client,
+                self.data_handler,
+                experiment,
+                self.action_names
+            )
             experiment.complete_action(action)
         experiment.add_download(action, file_path)
         return experiment
-
-    def __align(self, experiment):
-        alignment_path = self.data_handler.cache.create_path(
-            experiment,
-            self.action_names["ALIGNMENT"]
-        )
-        aligner = experiment.get("pipeline")[self.action_names["ALIGNMENT"]]["id"]
-        reference_id = experiment.get("reference")
-        dataset = self.data_handler.datasets.select(experiment.get("dataset"))
-        return align(self.docker_client, aligner, alignment_path, reference_id, dataset)

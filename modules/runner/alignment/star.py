@@ -1,7 +1,9 @@
 import yaml, os
 import modules.file_utils as file_utils
 
-def star(docker_client, destination, reference_id, dataset):
+def star(docker_client, destination, data_handler, experiment):
+    reference_id = experiment.get("reference")
+    dataset = data_handler.datasets.select(experiment.get("dataset"))
     reference_directory = "data/references"
     reference_path = "{}/{}.fa".format(reference_directory, reference_id)
     genome_index_path = "{}/{}_star_index".format(reference_directory, reference_id)

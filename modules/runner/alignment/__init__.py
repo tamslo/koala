@@ -5,8 +5,13 @@ from .test import test
 aligner_actions = {
     "test": test,
     "star": star,
-    "novoalign": novoalign,
+    "novoalign": novoalign
 }
 
-def align(docker_client, aligner, destination, reference_id, dataset):
-    return aligner_actions[aligner](docker_client, destination, reference_id, dataset)
+def align(docker_client, data_handler, experiment, action_names):
+    alignment_path = data_handler.cache.create_path(
+        experiment,
+        action_names["ALIGNMENT"]
+    )
+    aligner = experiment.get("pipeline")[action_names["ALIGNMENT"]]["id"]
+    return aligner_actions[aligner](docker_client, alignment_path, data_handler, experiment)

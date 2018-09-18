@@ -1,4 +1,4 @@
-def test(docker_client, destination, reference_id, dataset):
+def test(docker_client, destination, data_handler, experiment):
     path = destination + "/dummy.bam"
     docker_client.run(
         "test",
