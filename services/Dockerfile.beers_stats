@@ -3,4 +3,4 @@ FROM ubuntu:16.04
 RUN apt-get update
 RUN git clone https://github.com/khayer/aligner_benchmark.git
 
-COPY ./scripts/run-beers-stats.sh .
+COPY ./content/run-beers-stats.sh .
