@@ -8,10 +8,19 @@ class DataHandler:
         self.experiments_directory = data_directory + "experiments/"
         self.datasets_directory = data_directory + "datasets/"
         self.error_directory = data_directory + "errored/"
+        self.reference_directory = data_directory + "references/"
 
         self.experiments = InstanceHandler(self.experiments_directory, Experiment)
         self.datasets = InstanceHandler(self.datasets_directory, Dataset)
         self.cache = Cache(self.datasets_directory, self.error_directory)
+
+    def reference_path(self, experiment):
+        reference_id = experiment.get("reference")
+        return self.reference_directory + "{}.fa".format(reference_id)
+
+    def genome_index_path(self, experiment, aligner):
+        reference_id = experiment.get("reference")
+        return self.reference_directory + "{}_{}_index".format(reference_id, aligner)
 
     def clean_up(self):
         # In case of an interruption, clean up experiments and datasets.
