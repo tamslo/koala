@@ -19,5 +19,6 @@
   },
   { "id": "test", "name": "Test", "type": "aligner" },
   { "id": "star", "name": "STAR", "type": "aligner" },
+  { "id": "novoalign", "name": "Novoalign", "type": "aligner" },
   { "id": "beers_stats", "name": "Aligner Statistics", "type": "evaluation" }
 ]
