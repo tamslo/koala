@@ -29,9 +29,9 @@ export const addExperiment = params => {
   };
 };
 
-export const updateExperiment = experiment_id => {
+export const updateRunningExperiment = () => {
   return dispatch => {
-    getJson(`/experiment?id=${experiment_id}`).then(experiment =>
+    getJson("/running").then(experiment =>
       dispatch({
         type: types.UPDATE_EXPERIMENT,
         experiment

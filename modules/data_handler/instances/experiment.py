@@ -5,6 +5,7 @@ class Experiment(BaseInstance):
     def setup(self):
         self.content["done"] = False
         self.content["interrupted"] = False
+        self.content["running"] = False
         super().setup()
 
     def action_id(self, action):
@@ -35,6 +36,10 @@ class Experiment(BaseInstance):
         self.content["interrupted"] = True
         self.log_action_status(action, "interrupted")
 
-    def mark_done(self, experiment_id):
+    def mark_done(self):
         self.content["done"] = localtime()
+        super().store()
+
+    def mark_running(self):
+        self.content["running"] = localtime()
         super().store()

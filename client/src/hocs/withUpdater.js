@@ -10,23 +10,24 @@ export default WrappedComponent => {
       clearInterval(refreshInterval);
 
       if (this.props.context !== null) {
-        this.updateExperiment();
+        this.updateRunningExperiment();
       }
 
       return <WrappedComponent {...this.props} />;
     }
 
-    updateExperiment() {
-      const { context, updateExperiment } = this.props;
-      const runningExperimentIndex = Object.values(
-        context.experiments
-      ).findIndex(experiment => experiment.running);
-      const runningExperiment =
-        runningExperimentIndex >= 0 &&
-        Object.keys(context.experiments)[runningExperimentIndex];
-      if (runningExperiment) {
+    updateRunningExperiment() {
+      const { context, updateRunningExperiment } = this.props;
+      const shouldUpdate = Object.values(context.experiments).some(
+        experiment => {
+          const experimentWaiting =
+            !experiment.done && !experiment.error && !experiment.interrupted;
+          return experiment.running || experimentWaiting;
+        }
+      );
+      if (shouldUpdate) {
         refreshInterval = setInterval(() => {
-          updateExperiment(runningExperiment);
+          updateRunningExperiment();
         }, INTERVAL);
       }
     }

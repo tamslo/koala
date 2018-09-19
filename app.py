@@ -1,7 +1,8 @@
-import json, zipfile, time, os, optparse
+import json, zipfile, time, os, optparse, atexit, logging
 from flask import Flask, request, send_file, send_from_directory
 from flask_cors import CORS
 from collections import OrderedDict
+from apscheduler.schedulers.background import BackgroundScheduler
 from modules.constants import Constants
 from modules.data_handler import DataHandler
 from modules.runner import Runner
@@ -18,6 +19,11 @@ exporter = Exporter(data_directory)
 
 with open("services.json", "r") as services_file:
     services = json.load(services_file, object_pairs_hook=OrderedDict)
+
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=runner.run, trigger="interval", seconds=5, timezone="Europe/Berlin")
+scheduler.start()
+logging.getLogger('apscheduler').setLevel("ERROR")
 
 @app.route("/ping")
 def ping():
@@ -54,20 +60,25 @@ def experiment():
     elif request.method == "POST":
         params = request.get_json()
         experiment = data_handler.experiments.create(params)
+        runner.add_task(experiment.get("id"))
         return json.dumps(experiment.content)
     elif request.method == "PUT":
         content = request.get_json()
         experiment = data_handler.experiments.update(content)
+        runner.add_task(experiment.get("id"))
         return json.dumps(experiment.content)
     else: # request.method == "DELETE"
         experiment_id = request.args.get("id")
         experiment = data_handler.experiments.delete(experiment_id)
+        runner.remove_task(experiment_id)
         return json.dumps(experiment.content)
 
-@app.route("/execute", methods=["GET"])
-def data():
-    experiment_id = request.args.get("experiment")
-    experiment = runner.execute(experiment_id)
+@app.route("/running", methods=["GET"])
+def running():
+    experiment_id = runner.current_task
+    if experiment_id == None:
+        return None
+    experiment = data_handler.experiments.select(experiment_id)
     return json.dumps(experiment.content)
 
 @app.route("/export", methods=["GET"])
@@ -115,7 +126,8 @@ if __name__ == "__main__":
         parser = optparse.OptionParser()
         parser.add_option("-d", "--debug", action="store_true", dest="debug", help=optparse.SUPPRESS_HELP)
         options, _ = parser.parse_args()
-        app.run(host="0.0.0.0", port="5000", debug=bool(options.debug))
+        app.run(host="0.0.0.0", port="5000", debug=bool(options.debug), threaded=True)
     finally:
         exporter.clean_up()
         data_handler.clean_up()
+        scheduler.shutdown()

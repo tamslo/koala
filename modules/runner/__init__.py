@@ -11,15 +11,28 @@ class Runner:
             self.action_names["ALIGNMENT"]: align
         }
         self.docker_client = Docker(data_directory)
+        self.tasks = []
+        self.current_task = None
 
-    def execute(self, experiment_id):
+    def add_task(self, experiment_id):
+        self.tasks.append(experiment_id)
+
+    def remove_task(self, experiment_id):
+        experiment_id in self.tasks and self.tasks.remove(experiment_id)
+
+    def run(self):
+        if len(self.tasks) > 0:
+            self.__execute_next_task()
+
+    def __execute_next_task(self):
+        self.current_task = self.tasks.pop(0)
         current_action = ""
-        experiment = self.data_handler.experiments.select(experiment_id)
+        experiment = self.data_handler.experiments.select(self.current_task)
         try:
             for action in experiment.get("pipeline"):
                 current_action = action
                 experiment = self.__execute_step(action, experiment)
-            experiment.mark_done(experiment_id)
+            experiment.mark_done()
         except Exception as error:
             print("[Error in {}] {}".format(current_action, error), flush=True)
             traceback.print_exc()
