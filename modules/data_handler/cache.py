@@ -30,7 +30,9 @@ class Cache:
     def lookup(self, experiment, action):
         action_path = self.__cache_path(experiment, action)
         if os.path.isdir(action_path):
-            return os.listdir(action_path)[0]
+            directory_content = os.listdir(action_path)
+            file_name = len(directory_content) > 0 and directory_content[0]
+            return file_name and os.path.join(action_path, file_name)
 
     def create_path(self, experiment, action):
         action_path = self.__cache_path(experiment, action)
