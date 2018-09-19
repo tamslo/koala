@@ -5,9 +5,8 @@ import { fetchContext } from "../actions";
 import {
   addExperiment,
   deleteExperiment,
-  runExperiment,
   retryExperiment,
-  refreshExperiment
+  updateExperiment
 } from "../actions/experiment";
 import { addDataset } from "../actions/dataset";
 
@@ -24,8 +23,7 @@ export default WrappedComponent => {
 
   const mapStateToProps = state => {
     return {
-      context: state.context,
-      jobs: state.jobs
+      context: state.context
     };
   };
 
@@ -33,9 +31,8 @@ export default WrappedComponent => {
     fetchContext,
     addExperiment,
     deleteExperiment,
-    runExperiment,
     retryExperiment,
-    refreshExperiment,
+    updateExperiment,
     addDataset
   };
 

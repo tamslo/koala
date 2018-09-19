@@ -29,7 +29,7 @@ export const addExperiment = params => {
   };
 };
 
-export const refreshExperiment = experiment_id => {
+export const updateExperiment = experiment_id => {
   return dispatch => {
     getJson(`/experiment?id=${experiment_id}`).then(experiment =>
       dispatch({
@@ -49,34 +49,6 @@ export const retryExperiment = experiment => {
         experiment
       });
     });
-  };
-};
-
-export const runExperiment = id => {
-  return dispatch => {
-    dispatch({
-      type: types.RUN_EXPERIMENT,
-      id
-    });
-
-    let result = {};
-    getJson(`/execute?experiment=${id}`)
-      .then(experiment => {
-        result = experiment;
-        if (experiment.error) {
-          throw new Error(experiment.error);
-        }
-      })
-      .catch(error => {
-        const experiment = { ...result, id, error };
-        result = experiment;
-      })
-      .finally(() => {
-        dispatch({
-          type: types.EXPERIMENT_DONE,
-          experiment: result
-        });
-      });
   };
 };
 

@@ -1,4 +1,4 @@
-import * as types from "../../actions/actionTypes";
+import * as types from "../actions/actionTypes";
 
 const initialState = {};
 
@@ -11,7 +11,6 @@ export default (state = initialState, action = {}) => {
         [experiment.id]: experiment
       };
     case types.UPDATE_EXPERIMENT:
-    case types.EXPERIMENT_DONE:
       return {
         ...state,
         [experiment.id]: { ...state[experiment.id], ...experiment }

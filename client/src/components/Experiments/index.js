@@ -70,7 +70,7 @@ class Experiments extends Component {
   }
 
   renderListItem(experiment) {
-    const { deleteExperiment, retryExperiment, jobs } = this.props;
+    const { deleteExperiment, retryExperiment } = this.props;
     return (
       <StyledListItem
         key={experiment.id}
@@ -81,8 +81,8 @@ class Experiments extends Component {
         disableGutters
       >
         <ListItemText
-          primary={this.primaryText(experiment.id)}
-          secondary={this.secondaryText(experiment.id)}
+          primary={this.primaryText(experiment)}
+          secondary={this.secondaryText(experiment)}
         />
         <ListItemSecondaryAction>
           {(experiment.interrupted || experiment.error) && (
@@ -104,7 +104,7 @@ class Experiments extends Component {
           <IconButton
             aria-label="Delete"
             onClick={() => deleteExperiment(experiment.id)}
-            disabled={experiment.id === jobs.running}
+            disabled={experiment.running}
           >
             <DeleteIcon />
           </IconButton>
@@ -123,31 +123,26 @@ class Experiments extends Component {
     );
   }
 
-  primaryText(experimentId) {
-    const experiment = this.props.experiments[experimentId];
+  primaryText(experiment) {
     return experiment["name"];
   }
 
-  statusColor(experimentId) {
-    const { jobs, experiments } = this.props;
-    const experiment = experiments[experimentId];
+  statusColor(experiment) {
     const { primary, error, warning } = this.props.theme.palette;
     return experiment.error
       ? error.main
       : experiment.interrupted
         ? warning.main
-        : experiment.done || jobs.waiting.includes(experiment.id)
+        : experiment.done || experiment.waiting
           ? "inherit"
           : primary.main;
   }
 
-  secondaryText(experimentId) {
-    const { jobs, experiments } = this.props;
-    const experiment = experiments[experimentId];
+  secondaryText(experiment) {
     return (
-      <Status color={this.statusColor(experimentId)}>
+      <Status color={this.statusColor(experiment)}>
         {!experiment.error
-          ? jobs.waiting.includes(experiment.id)
+          ? experiment.waiting
             ? "Waiting"
             : experiment.done
               ? "Done"

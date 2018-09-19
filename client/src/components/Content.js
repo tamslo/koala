@@ -11,8 +11,7 @@ export default class extends Component {
       addExperiment,
       deleteExperiment,
       retryExperiment,
-      addDataset,
-      jobs
+      addDataset
     } = this.props;
 
     if (context === null) {
@@ -45,7 +44,6 @@ export default class extends Component {
             datasets={context.datasets}
             deleteExperiment={deleteExperiment}
             retryExperiment={retryExperiment}
-            jobs={jobs}
           />
         )}
       </Container>
