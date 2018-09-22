@@ -1,9 +1,8 @@
-import json, zipfile, time, os, optparse, atexit, logging
+import json, zipfile, time, os, optparse, atexit, logging, yaml
 from flask import Flask, request, send_file, send_from_directory
 from flask_cors import CORS
 from collections import OrderedDict
 from apscheduler.schedulers.background import BackgroundScheduler
-from modules.constants import Constants
 from modules.data_handler import DataHandler
 from modules.runner import Runner
 from modules.exporter import Exporter
@@ -11,9 +10,16 @@ from modules.exporter import Exporter
 app = Flask(__name__)
 CORS(app)
 
+# Create constants.json for same constants in back- and frontend
+with open("constants.yml", "r") as constants_file:
+    constants = yaml.load(constants_file)
+root_directory = os.path.dirname(os.path.abspath(__file__))
+frontend_path = os.path.join(root_directory, "client/src/constants.json")
+with open(frontend_path, "w") as constants_file:
+    constants_file.write(json.dumps(constants))
+
 data_directory = "data/"
 data_handler = DataHandler(data_directory)
-constants = Constants(os.path.dirname(os.path.abspath(__file__)))
 runner = Runner(data_handler, data_directory, constants)
 exporter = Exporter(data_directory)
 

@@ -6,7 +6,7 @@ from .alignment import align
 class Runner:
     def __init__(self, data_handler, data_directory, constants):
         self.data_handler = data_handler
-        self.action_names = constants.actions
+        self.action_names = constants["actions"]
         self.actions = {
             self.action_names["ALIGNMENT"]: align
         }

@@ -1,5 +1,5 @@
 import os
-import json
+import yaml
 import modules.file_utils as file_utils
 from .base_instance import BaseInstance
 
@@ -13,8 +13,8 @@ class Dataset(BaseInstance):
 
     def setup(self):
         try:
-            with open("modules/constants/constants.json", "r") as constants_file:
-                self.constants = json.load(constants_file)["dataset"]
+            with open("constants.yml", "r") as constants_file:
+                self.constants = yaml.load(constants_file)["dataset"]
             os.mkdir(self.directory)
             self.__store_data()
             super().setup()
