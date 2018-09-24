@@ -12,7 +12,7 @@ for dataset_json in *.json; do
       [ "$directory_name" == "hg19" ] && is_hg19=true || is_hg19=false
       [ "$directory_name" == "hg38" ] && is_hg38=true || is_hg38=false
       if $is_pfal || $is_hg19 || $is_hg38; then
-        rm -r $cache_directory
+        rm -rf $cache_directory
       fi
     done
   else
