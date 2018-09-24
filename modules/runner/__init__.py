@@ -15,7 +15,13 @@ class Runner:
         self.current_task = None
 
     def add_task(self, experiment_id):
-        self.tasks.append(experiment_id)
+        experiment = self.data_handler.experiments.select(experiment_id)
+        if (
+            not experiment.get("done") and
+            not experiment.get("running") and
+            not experiment_id in self.tasks
+        ):
+            self.tasks.append(experiment_id)
 
     def remove_task(self, experiment_id):
         experiment_id in self.tasks and self.tasks.remove(experiment_id)

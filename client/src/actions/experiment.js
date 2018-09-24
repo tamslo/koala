@@ -31,11 +31,13 @@ export const addExperiment = params => {
 
 export const updateRunningExperiment = () => {
   return dispatch => {
-    getJson("/running").then(experiment =>
-      dispatch({
-        type: types.UPDATE_EXPERIMENT,
-        experiment
-      })
+    getJson("/running").then(
+      experiment =>
+        experiment.id &&
+        dispatch({
+          type: types.UPDATE_EXPERIMENT,
+          experiment
+        })
     );
   };
 };

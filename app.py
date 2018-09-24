@@ -81,10 +81,11 @@ def experiment():
 
 @app.route("/running", methods=["GET"])
 def running():
-    experiment_id = runner.current_task
+    experiment_id = runner.current_task or len(runner.tasks) and runner.tasks[0]
     if experiment_id == None:
-        return None
-    experiment = data_handler.experiments.select(experiment_id)
+        experiment = {}
+    else:
+        experiment = data_handler.experiments.select(experiment_id)
     return json.dumps(experiment.content)
 
 @app.route("/export", methods=["GET"])
