@@ -2,23 +2,28 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import IconButton from "@material-ui/core/IconButton";
 import DownloadIcon from "@material-ui/icons/CloudDownload";
+import LinkIcon from "@material-ui/icons/Link";
 import Log from "./Log";
 
 export default class extends Component {
   render() {
     const dataset = this.props.datasets[this.props.dataset];
+    const reference = this.getService(this.props.reference);
+    const aligner = this.getService(this.props.pipeline.alignment.id);
     return (
       <div>
+        <Entry>
+          {`Reference Genome: ${reference.name}`}
+          <StyledIconButton aria-label={"Source"} href={reference.source}>
+            <LinkIcon />
+          </StyledIconButton>
+        </Entry>
         <Entry>
           {`Data Set: ${dataset.name}`}
           {this.renderDownloadDatasetButton(dataset)}
         </Entry>
         <Entry>
-          {`Aligner: ${
-            this.props.services.find(
-              service => service.id === this.props.pipeline.alignment.id
-            ).name
-          }`}
+          {`Aligner: ${aligner.name}`}
           {this.renderDownloadButton(this.props.pipeline["alignment"].file)}
         </Entry>
         <Log
@@ -46,6 +51,10 @@ export default class extends Component {
         .join(separator);
     }
     return this.renderDownloadButton(path);
+  }
+
+  getService(serviceId) {
+    return this.props.services.find(service => service.id === serviceId);
   }
 
   renderDownloadButton(path) {
