@@ -12,9 +12,11 @@ export default class extends Component {
       <Dialog open={this.props.open} aria-labelledby="dialog-title">
         <DialogTitle id="dialog-title">{this.props.title}</DialogTitle>
         <StyledDialogContent>{this.props.children}</StyledDialogContent>
-        <DialogActions>
-          {this.props.actions.map(this.renderAction)}
-        </DialogActions>
+        {this.props.actions && (
+          <DialogActions>
+            {this.props.actions.map(this.renderAction)}
+          </DialogActions>
+        )}
       </Dialog>
     );
   }

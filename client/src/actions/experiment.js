@@ -31,26 +31,37 @@ export const addExperiment = params => {
 
 export const updateRunningExperiment = () => {
   return dispatch => {
-    getJson("/running").then(
-      experiment =>
-        experiment.id &&
-        dispatch({
-          type: types.UPDATE_EXPERIMENT,
-          experiment
-        })
-    );
+    getJson("/running")
+      .then(
+        experiment =>
+          experiment.id &&
+          dispatch({
+            type: types.UPDATE_EXPERIMENT,
+            experiment
+          })
+      )
+      .catch(error => {
+        console.error(error);
+        if (error.toString() === "TypeError: Failed to fetch") {
+          dispatch({
+            type: types.SERVER_UNRESPONSIVE
+          });
+        }
+      });
   };
 };
 
 export const retryExperiment = experiment => {
   return dispatch => {
     const params = resetStatus(experiment);
-    putRequest("/experiment", params).then(experiment => {
-      dispatch({
-        type: types.ADD_EXPERIMENT,
-        experiment
-      });
-    });
+    putRequest("/experiment", params)
+      .then(experiment => {
+        dispatch({
+          type: types.ADD_EXPERIMENT,
+          experiment
+        });
+      })
+      .catch(error => console.error(error));
   };
 };
 

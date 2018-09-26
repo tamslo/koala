@@ -23,7 +23,8 @@ export default WrappedComponent => {
 
   const mapStateToProps = state => {
     return {
-      context: state.context
+      context: state.context,
+      serverUnresponsive: state.serverUnresponsive
     };
   };
 

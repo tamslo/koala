@@ -3,6 +3,8 @@ import styled from "styled-components";
 import Loading from "./Loading";
 import AddExperiment from "./AddExperiment";
 import Experiments from "./Experiments";
+import Dialog from "./mui-wrappers/Dialog";
+import DialogContentText from "@material-ui/core/DialogContentText";
 
 export default class extends Component {
   render() {
@@ -11,8 +13,19 @@ export default class extends Component {
       addExperiment,
       deleteExperiment,
       retryExperiment,
-      addDataset
+      addDataset,
+      serverUnresponsive
     } = this.props;
+
+    if (serverUnresponsive) {
+      return (
+        <Dialog open={true} title={"We're sorry"}>
+          <DialogContentText id="alert-dialog-description">
+            {"The server is not responding, please try again later"}
+          </DialogContentText>
+        </Dialog>
+      );
+    }
 
     if (context === null) {
       return <Loading content={"Setting everything up..."} />;

@@ -18,15 +18,21 @@ export default WrappedComponent => {
     }
 
     updateRunningExperiment() {
-      const { context, updateRunningExperiment } = this.props;
-      const shouldUpdate = Object.values(context.experiments).some(
-        experiment => {
+      const {
+        context,
+        serverUnresponsive,
+        updateRunningExperiment
+      } = this.props;
+
+      const shouldUpdate =
+        !serverUnresponsive &&
+        Object.values(context.experiments).some(experiment => {
           return (
             experiment.status === constants.experiment.RUNNING ||
             experiment.status === constants.experiment.WAITING
           );
-        }
-      );
+        });
+
       if (shouldUpdate) {
         refreshInterval = setInterval(() => {
           updateRunningExperiment();
