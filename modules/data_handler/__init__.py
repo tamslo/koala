@@ -25,17 +25,22 @@ class DataHandler:
         return self.reference_directory + "{}_{}_index".format(reference_id, aligner)
 
     def clean_up(self):
-        # In case of an interruption, clean up experiments, references, and
-        # datasets.
-        # If an error occurred, the components already handled it.
+        # In case of an server stop, clean up references and experiments
         for reference in os.listdir(self.reference_directory):
             if reference.endswith(".running"):
                 file_utils.delete(os.path.join(self.reference_directory, reference))
+
         for experiment_id, experiment in self.experiments.all().items():
-            if not experiment.get("done") and not experiment.get("error"):
-                for action, pipeline_step in experiment.get("pipeline").items():
+            status = experiment.get("status")
+            pipeline = experiment.get("pipeline").items()
+            error_message = "Server stopped unexpectedly"
+            if status == "WAITING":
+                action = list(pipeline.keys())[0]
+                experiment.mark_error(action, error_message)
+            if status == "RUNNING":
+                for action, pipeline_step in pipeline:
                     started = "started" in pipeline_step and pipeline_step["started"]
                     completed = "completed" in pipeline_step and pipeline_step["completed"]
                     if started and not completed:
-                        experiment.mark_interrupted(action)
+                        experiment.mark_error(action, error_message)
                         self.cache.clean_up(experiment, action)

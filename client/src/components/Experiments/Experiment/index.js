@@ -28,10 +28,8 @@ export default class extends Component {
         </Entry>
         <Log
           pipeline={this.props.pipeline}
-          error={this.props.error}
           created={this.props.created}
-          done={this.props.done}
-          interrupted={this.props.interrupted}
+          status={this.props.status}
         />
       </div>
     );

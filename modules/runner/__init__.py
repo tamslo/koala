@@ -10,16 +10,20 @@ class Runner:
         self.actions = {
             self.action_names["ALIGNMENT"]: align
         }
+        self.experiment_statuses = constants["experiment"]
         self.docker_client = Docker(data_directory)
         self.tasks = []
         self.current_task = None
 
     def add_task(self, experiment_id):
         experiment = self.data_handler.experiments.select(experiment_id)
+        hampering_statuses = [
+            self.experiment_statuses["DONE"],
+            self.experiment_statuses["RUNNING"]
+        ]
         if (
-            not experiment.get("done") and
-            not experiment.get("running") and
-            not experiment_id in self.tasks
+            not experiment.get("status") in hampering_statuses and
+            not experiment.get("id") in self.tasks
         ):
             self.tasks.append(experiment_id)
 
@@ -36,6 +40,7 @@ class Runner:
         experiment = self.data_handler.experiments.select(self.current_task)
         if experiment != None:
             try:
+                experiment.mark_running()
                 for action in experiment.get("pipeline"):
                     current_action = action
                     experiment = self.__execute_step(action, experiment)

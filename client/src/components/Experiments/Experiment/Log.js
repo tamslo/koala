@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import { withTheme } from "@material-ui/core/styles";
+import constants from "../../../constants.json";
 
 class Log extends Component {
   render() {
@@ -13,15 +14,21 @@ class Log extends Component {
           "Experiment created"
         )}
         {Object.keys(this.props.pipeline).map(this.renderAction.bind(this))}
-        {this.props.done &&
+        {this.props.status === constants.experiment.DONE &&
           this.renderEntry(
             "done",
-            this.props.done,
+            this.doneTime(),
             this.statuses("info"),
             "Experiment completed"
           )}
       </Container>
     );
+  }
+
+  doneTime() {
+    const pipelineActions = Object.values(this.props.pipeline);
+    const lastAction = pipelineActions[pipelineActions.length - 1];
+    return this.actionTime(lastAction);
   }
 
   statuses(key) {
@@ -31,8 +38,7 @@ class Log extends Component {
       running: { text: "RUNNING", color: warning.main },
       waiting: { text: "WAITING", color: grey[500] },
       info: { text: "INFO", color: grey[500] },
-      error: { text: "ERROR", color: error.main },
-      interrupted: { text: "INTERRUPTED", color: warning.main }
+      error: { text: "ERROR", color: error.main }
     };
     return statuses[key];
   }
@@ -85,7 +91,7 @@ class Log extends Component {
     const upperCaseName =
       actionName.substr(0, 1).toUpperCase() + actionName.substr(1);
     return action.error
-      ? this.props.error
+      ? action.message
       : action.cached
         ? `Load ${actionName} from disk`
         : upperCaseName;

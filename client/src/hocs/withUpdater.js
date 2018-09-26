@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+import constants from "../constants.json";
 
 const INTERVAL = 3000;
 
@@ -20,9 +21,10 @@ export default WrappedComponent => {
       const { context, updateRunningExperiment } = this.props;
       const shouldUpdate = Object.values(context.experiments).some(
         experiment => {
-          const experimentWaiting =
-            !experiment.done && !experiment.error && !experiment.interrupted;
-          return experiment.running || experimentWaiting;
+          return (
+            experiment.status === constants.experiment.RUNNING ||
+            experiment.status === constants.experiment.WAITING
+          );
         }
       );
       if (shouldUpdate) {

@@ -15,6 +15,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import DownloadIcon from "@material-ui/icons/CloudDownload";
 import Experiment from "./Experiment";
 import { SERVER_URL } from "../../api";
+import constants from "../../constants.json";
 
 class Experiments extends Component {
   constructor(props) {
@@ -85,7 +86,7 @@ class Experiments extends Component {
           secondary={this.secondaryText(experiment)}
         />
         <ListItemSecondaryAction>
-          {(experiment.interrupted || experiment.error) && (
+          {experiment.status === constants.experiment.ERROR && (
             <IconButton
               aria-label="Retry"
               onClick={() => retryExperiment(experiment)}
@@ -93,7 +94,7 @@ class Experiments extends Component {
               <RefreshIcon />
             </IconButton>
           )}
-          {experiment.done && (
+          {experiment.status === constants.experiment.DONE && (
             <IconButton
               aria-label="Download"
               href={SERVER_URL + "/export?experiment=" + experiment.id}
@@ -128,32 +129,25 @@ class Experiments extends Component {
   }
 
   statusColor(experiment) {
-    const { primary, error, warning } = this.props.theme.palette;
-    return experiment.error
+    const { primary, error } = this.props.theme.palette;
+    const { status } = experiment;
+    return status === constants.experiment.ERROR
       ? error.main
-      : experiment.interrupted
-        ? warning.main
-        : experiment.done || experiment.waiting
-          ? "inherit"
-          : primary.main;
+      : status === constants.experiment.RUNNING
+        ? primary.main
+        : "inherit";
   }
 
   secondaryText(experiment) {
     return (
       <Status color={this.statusColor(experiment)}>
-        {!experiment.error
-          ? experiment.waiting
-            ? "Waiting"
-            : experiment.done
-              ? "Done"
-              : experiment.interrupted
-                ? "Interrupted"
-                : "Running"
-          : "Error"}
+        {capitalize(experiment.status)}
       </Status>
     );
   }
 }
+
+const capitalize = string => string.charAt(0).toUpperCase() + string.substr(1);
 
 const Status = styled.span`
   color: ${props => props.color};

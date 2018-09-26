@@ -3,9 +3,7 @@ from .base_instance import BaseInstance
 
 class Experiment(BaseInstance):
     def setup(self):
-        self.content["done"] = False
-        self.content["interrupted"] = False
-        self.content["running"] = False
+        self.content["status"] = self.constants["experiment"]["WAITING"]
         super().setup()
 
     def action_id(self, action):
@@ -29,17 +27,18 @@ class Experiment(BaseInstance):
         self.log_action_status(action, "completed")
 
     def mark_error(self, action, error):
-        self.content["error"] = str(error)
+        self.content["status"] = self.constants["experiment"]["ERROR"]
+        self.content["pipeline"][action]["message"] = str(error)
         self.log_action_status(action, "error")
 
-    def mark_interrupted(self, action):
-        self.content["interrupted"] = True
-        self.log_action_status(action, "interrupted")
-
     def mark_done(self):
-        self.content["done"] = localtime()
+        self.content["status"] = self.constants["experiment"]["DONE"]
         super().store()
 
     def mark_running(self):
-        self.content["running"] = localtime()
+        self.content["status"] = self.constants["experiment"]["RUNNING"]
+        super().store()
+
+    def mark_waiting(self):
+        self.content["status"] = self.constants["experiment"]["WAITING"]
         super().store()

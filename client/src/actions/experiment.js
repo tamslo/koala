@@ -10,7 +10,7 @@ export const deleteExperiment = id => {
           experiment
         });
       })
-      .catch(error => console.log(error));
+      .catch(error => console.error(error));
   };
 };
 
@@ -18,12 +18,11 @@ export const addExperiment = params => {
   return dispatch => {
     postRequest("/experiment", params)
       .then(experiment => {
-        if (!experiment.error) {
+        experiment.id &&
           dispatch({
             type: types.ADD_EXPERIMENT,
             experiment
           });
-        }
       })
       .catch(error => ({ error }));
   };

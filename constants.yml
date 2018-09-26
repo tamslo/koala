@@ -9,5 +9,11 @@
     "SINGLE": "single",
     "URL": "url",
     "FILE": "file"
+  },
+  "experiment": {
+    "WAITING": "waiting",
+    "RUNNING": "running",
+    "DONE": "done",
+    "ERROR": "error"
   }
 }
