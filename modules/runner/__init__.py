@@ -34,17 +34,18 @@ class Runner:
         self.current_task = self.tasks.pop(0)
         current_action = ""
         experiment = self.data_handler.experiments.select(self.current_task)
-        try:
-            for action in experiment.get("pipeline"):
-                current_action = action
-                experiment = self.__execute_step(action, experiment)
-            experiment.mark_done()
-        except Exception as error:
-            print("[Error in {}] {}".format(current_action, error), flush=True)
-            traceback.print_exc()
-            experiment.mark_error(current_action, error)
-            self.data_handler.cache.clean_up(experiment, current_action)
-        return experiment
+        if experiment != None:
+            try:
+                for action in experiment.get("pipeline"):
+                    current_action = action
+                    experiment = self.__execute_step(action, experiment)
+                experiment.mark_done()
+            except Exception as error:
+                print("[Error in {}] {}".format(current_action, error), flush=True)
+                traceback.print_exc()
+                experiment.mark_error(current_action, error)
+                self.data_handler.cache.clean_up(experiment, current_action)
+            return experiment
 
     def __execute_step(self, action, experiment):
         file_path = self.data_handler.cache.lookup(experiment, action)

@@ -40,9 +40,12 @@ class InstanceHandler:
 
     def select(self, id):
         path = self.__instance_path(id)
-        with open(path, "r") as file:
-            content = json.load(file, object_pairs_hook=OrderedDict)
-        return self.Instance(content, self.__instance_path(content["id"]))
+        if os.path.exists(path):
+            with open(path, "r") as file:
+                content = json.load(file, object_pairs_hook=OrderedDict)
+            return self.Instance(content, self.__instance_path(content["id"]))
+        else:
+            return None
 
     def delete(self, id):
         instance = self.select(id)
