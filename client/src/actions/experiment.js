@@ -1,5 +1,6 @@
 import * as types from "./actionTypes";
 import { getJson, postRequest, deleteRequest, putRequest } from "../api";
+import constants from "../constants";
 
 export const deleteExperiment = id => {
   return dispatch => {
@@ -63,5 +64,5 @@ const resetStatus = experiment => {
     },
     {}
   );
-  return { ...experiment, interrupted: false, error: false, pipeline };
+  return { ...experiment, status: constants.experiment.WAITING, pipeline };
 };
