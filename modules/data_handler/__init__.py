@@ -1,4 +1,5 @@
 import os
+import yaml
 import modules.file_utils as file_utils
 from .instance_handler import InstanceHandler
 from .instances.experiment import Experiment
@@ -15,6 +16,8 @@ class DataHandler:
         self.experiments = InstanceHandler(self.experiments_directory, Experiment)
         self.datasets = InstanceHandler(self.datasets_directory, Dataset)
         self.cache = Cache(self.datasets_directory, self.error_directory)
+        with open("constants.yml", "r") as constants_file:
+            self.constants = yaml.load(constants_file)
 
     def reference_path(self, experiment):
         reference_id = experiment.get("reference")
@@ -32,15 +35,16 @@ class DataHandler:
 
         for experiment_id, experiment in self.experiments.all().items():
             status = experiment.get("status")
-            pipeline = experiment.get("pipeline").items()
+            pipeline = experiment.get("pipeline")
             error_message = "Server stopped unexpectedly"
-            if status == "WAITING":
-                action = list(pipeline.keys())[0]
-                experiment.mark_error(action, error_message)
-            if status == "RUNNING":
-                for action, pipeline_step in pipeline:
+            errored_action = list(pipeline.keys())[0]
+            if status == self.constants["experiment"]["WAITING"]:
+                experiment.mark_error(errored_action, error_message)
+            if status == self.constants["experiment"]["RUNNING"]:
+                for action, pipeline_step in pipeline.items():
                     started = "started" in pipeline_step and pipeline_step["started"]
                     completed = "completed" in pipeline_step and pipeline_step["completed"]
                     if started and not completed:
-                        experiment.mark_error(action, error_message)
+                        errored_action = action
                         self.cache.clean_up(experiment, action)
+                experiment.mark_error(errored_action, error_message)
