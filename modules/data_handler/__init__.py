@@ -1,3 +1,5 @@
+import os
+import modules.file_utils as file_utils
 from .instance_handler import InstanceHandler
 from .instances.experiment import Experiment
 from .instances.dataset import Dataset
@@ -23,8 +25,12 @@ class DataHandler:
         return self.reference_directory + "{}_{}_index".format(reference_id, aligner)
 
     def clean_up(self):
-        # In case of an interruption, clean up experiments and datasets.
+        # In case of an interruption, clean up experiments, references, and
+        # datasets.
         # If an error occurred, the components already handled it.
+        for reference in os.listdir(self.reference_directory):
+            if reference.endswith(".running"):
+                file_utils.delete(os.path.join(self.reference_directory, reference))
         for experiment_id, experiment in self.experiments.all().items():
             if not experiment.get("done") and not experiment.get("error"):
                 for action, pipeline_step in experiment.get("pipeline").items():
@@ -32,5 +38,4 @@ class DataHandler:
                     completed = "completed" in pipeline_step and pipeline_step["completed"]
                     if started and not completed:
                         experiment.mark_interrupted(action)
-                        self.experiments.store(experiment)
-                        self.cache.clean_up(action, experiment)
+                        self.cache.clean_up(experiment, action)

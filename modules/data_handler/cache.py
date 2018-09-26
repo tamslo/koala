@@ -24,8 +24,8 @@ class Cache:
 
     def __error_path(self, experiment, action):
         action_id = experiment.action_id(action)
-        timestamp = int(time.time())
-        return self.error_directory + action_id + "-" + str(timestamp)
+        timestamp = time.strftime("%Y%m%dT%H%M%S", time.localtime())
+        return self.error_directory + action_id + "-" + timestamp
 
     def lookup(self, experiment, action):
         action_path = self.__cache_path(experiment, action)
@@ -39,8 +39,8 @@ class Cache:
         os.makedirs(action_path)
         return action_path
 
-    def clean_up(self, action, experiment):
-        action_path = self.__cache_path(action, experiment)
-        error_path = self.__error_path(action, experiment)
+    def clean_up(self, experiment, action):
+        action_path = self.__cache_path(experiment, action)
+        error_path = self.__error_path(experiment, action)
         shutil.copytree(action_path, error_path)
         file_utils.delete(action_path)
