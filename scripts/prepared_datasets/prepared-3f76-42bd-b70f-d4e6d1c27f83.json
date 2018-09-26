@@ -8,12 +8,12 @@
     "forward": {
       "name": "simulated_reads_HG19t2r1.forward.fa",
       "path":
-        "data/datasets/prepared-3f76-42bd-b70f-d4e6d1c27f83/forward.fastq"
+        "data/datasets/prepared-3f76-42bd-b70f-d4e6d1c27f83/forward.fq"
     },
     "reverse": {
       "name": "simulated_reads_HG19t2r1.reverse.fa",
       "path":
-        "data/datasets/prepared-3f76-42bd-b70f-d4e6d1c27f83/reverse.fastq"
+        "data/datasets/prepared-3f76-42bd-b70f-d4e6d1c27f83/reverse.fq"
     }
   },
   "created": [2018, 7, 25, 9, 28, 7, 2, 206, 1],

@@ -7,11 +7,11 @@
   "data": {
     "forward": {
       "name": "simulated_reads_HG19t1r1.forward.fa",
-      "path": "data/datasets/prepared-3f76-42bd-b70f-d4e6d1c27f80/forward.fastq"
+      "path": "data/datasets/prepared-3f76-42bd-b70f-d4e6d1c27f80/forward.fq"
     },
     "reverse": {
       "name": "simulated_reads_HG19t1r1.reverse.fa",
-      "path": "data/datasets/prepared-3f76-42bd-b70f-d4e6d1c27f80/reverse.fastq"
+      "path": "data/datasets/prepared-3f76-42bd-b70f-d4e6d1c27f80/reverse.fq"
     }
   },
   "created": [2018, 7, 25, 9, 28, 7, 2, 206, 1],
