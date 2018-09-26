@@ -11,7 +11,8 @@ def novoalign(docker_client, destination, data_handler, experiment):
             docker_client,
             temp_genome_index_path,
             data_handler,
-            experiment
+            experiment,
+            destination
         )
     except:
         file_utils.delete(temp_genome_index_path)
@@ -22,11 +23,13 @@ def novoalign(docker_client, destination, data_handler, experiment):
     run(docker_client, dataset, genome_index_path, destination)
     return destination;
 
-def build_genome_index(docker_client, genome_index_path, data_handler, experiment):
+def build_genome_index(docker_client, genome_index_path, data_handler, experiment, destination):
     if not os.path.exists(genome_index_path):
         reference_id = experiment.get("reference")
         reference_path = data_handler.reference_path(experiment)
         command = "novoindex -n {} {} {}".format(reference_id, genome_index_path, reference_path)
+        with open(os.path.join(destination, "Commands.txt"), "a") as command_file:
+            command_file.write(command)
         docker_client.run(
             "novoalign",
             command
@@ -40,6 +43,8 @@ def run(docker_client, dataset, genome_index_path, destination):
         command += " /{}".format(specification["path"])
     command += " -d {}".format(genome_index_path)
     command += " > {} 2> {}".format(out_file_path, log_file_path)
+    with open(os.path.join(destination, "Commands.txt"), "a") as command_file:
+        command_file.write(command)
     docker_client.run(
         "novoalign",
         command
