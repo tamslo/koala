@@ -105,7 +105,7 @@ class Experiments extends Component {
           <IconButton
             aria-label="Delete"
             onClick={() => deleteExperiment(experiment.id)}
-            disabled={experiment.running}
+            disabled={experiment.status === constants.experiment.RUNNING}
           >
             <DeleteIcon />
           </IconButton>
