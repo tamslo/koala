@@ -1,20 +1,22 @@
-import yaml, os
+import os
 import modules.file_utils as file_utils
 
 def novoalign(docker_client, destination, data_handler, experiment):
     file_utils.create_directory(destination)
     genome_index_path = data_handler.genome_index_path(experiment, "novoalign")
+    temp_genome_index_path = genome_index_path + ".running"
 
     try:
         build_genome_index(
             docker_client,
-            genome_index_path,
+            temp_genome_index_path,
             data_handler,
             experiment
         )
     except:
-        file_utils.delete(genome_index_path)
+        file_utils.delete(temp_genome_index_path)
         raise
+    os.rename(temp_genome_index_path, genome_index_path)
 
     dataset = data_handler.datasets.select(experiment.get("dataset"))
     run(docker_client, dataset, genome_index_path, destination)
@@ -31,10 +33,13 @@ def build_genome_index(docker_client, genome_index_path, data_handler, experimen
         )
 
 def run(docker_client, dataset, genome_index_path, destination):
-    command = "novoalign -f "
+    out_file_path = os.path.join(destination, "Out.sam")
+    log_file_path = os.path.join(destination, "Out.log")
+    command = "novoalign -o SAM -f "
     for direction, specification in dataset.get("data").items():
         command += " /{}".format(specification["path"])
     command += " -d {}".format(genome_index_path)
+    command += " > {} 2> {}".format(out_file_path, log_file_path)
     docker_client.run(
         "novoalign",
         command
