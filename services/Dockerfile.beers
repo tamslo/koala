@@ -1,0 +1,24 @@
+# Downloads beers_simulator, execute with `reads_simulator.pl [options]`
+
+FROM ubuntu:16.04
+
+RUN apt-get update
+RUN apt-get install -y git
+RUN apt-get install -y g++
+RUN apt-get install -y make
+RUN apt-get install -y libswitch-perl
+
+RUN cpan Math::Random
+
+# Install simulator
+ENV DST=/opt/beers_simulator
+RUN git clone https://github.com/itmat/beers_simulator.git $DST
+COPY ./assets/make_config_files_for_subset_of_gene_ids.pl $DST
+RUN chmod a+x $DST/reads_simulator.pl
+
+ENV PATH $DST:$PATH
+
+ENV DST=/opt/beers_evaluation
+# Install evaluation scripts
+RUN git clone https://github.com/khayer/aligner_benchmark.git $DST
+# TODO install script dependencies 

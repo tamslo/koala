@@ -4,7 +4,7 @@ ENV NOVO_FILE novocraftV3.09.00.Linux3.10.0.tar.gz
 ENV NOVO_PATH /opt/novocraft
 
 RUN mkdir $NOVO_PATH
-COPY ./content/$NOVO_FILE .
+COPY ./assets/$NOVO_FILE .
 RUN tar -xzf $NOVO_FILE -C /opt
 
 # Add to PATH
