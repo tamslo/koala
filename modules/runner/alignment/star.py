@@ -40,7 +40,7 @@ def build_genome_index(docker_client, genome_index_path, data_handler, experimen
     command = __preamble(destination, genome_index_path) + " --runMode genomeGenerate"
     command += " --genomeFastaFiles /{}".format(reference_path)
     with open(os.path.join(destination, "Commands.txt"), "a") as command_file:
-        command_file.write(command)
+        command_file.write("{}\n".format(command))
     docker_client.run(
         "star",
         command
@@ -51,7 +51,7 @@ def run(docker_client, dataset, genome_index_path, destination):
     for direction, specification in dataset.get("data").items():
         command += " /{}".format(specification["path"])
     with open(os.path.join(destination, "Commands.txt"), "a") as command_file:
-        command_file.write(command)
+        command_file.write("{}\n".format(command))
     docker_client.run(
         "star",
         command

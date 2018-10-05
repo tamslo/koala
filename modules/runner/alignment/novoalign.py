@@ -29,7 +29,7 @@ def build_genome_index(docker_client, genome_index_path, data_handler, experimen
     reference_path = data_handler.reference_path(experiment)
     command = "novoindex -n {} {} {}".format(reference_id, genome_index_path, reference_path)
     with open(os.path.join(destination, "Commands.txt"), "a") as command_file:
-        command_file.write(command)
+        command_file.write("{}\n".format(command))
     docker_client.run(
         "novoalign",
         command
@@ -44,7 +44,7 @@ def run(docker_client, dataset, genome_index_path, destination):
     command += " -d {}".format(genome_index_path)
     command += " > {} 2> {}".format(out_file_path, log_file_path)
     with open(os.path.join(destination, "Commands.txt"), "a") as command_file:
-        command_file.write(command)
+        command_file.write("{}\n".format(command))
     docker_client.run(
         "novoalign",
         command
