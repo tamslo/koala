@@ -1,3 +1,6 @@
+# See https://github.com/khayer/aligner_benchmark/blob/master/templates/star.sh
+# See https://github.com/khayer/aligner_benchmark/blob/master/templates/novoalign.sh
+
 # Convert BAM to sorted SAM if needed
 # samtools view merged.bam | sort -t'.' -k 2n > output.sam
 
