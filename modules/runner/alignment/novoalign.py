@@ -36,16 +36,24 @@ def build_genome_index(docker_client, genome_index_path, data_handler, experimen
     )
 
 def run(docker_client, dataset, genome_index_path, destination):
-    out_file_path = os.path.join(destination, "Out.sam")
-    log_file_path = os.path.join(destination, "Out.log")
     command = "novoalign -o SAM -f "
     for direction, specification in dataset.get("data").items():
         command += " /{}".format(specification["path"])
     command += " -d /{}".format(genome_index_path)
-    command += " > /{} 2> /{}".format(out_file_path, log_file_path)
     with open(os.path.join(destination, "Commands.txt"), "a") as command_file:
         command_file.write("{}\n".format(command))
-    docker_client.run(
+
+    output = docker_client.run(
         "novoalign",
-        command
+        command,
+        log_config={"type": "json-file"},
+        detach=False,
+        stdout=True,
+        stderr=True
     )
+    print(output, flush=True)
+    out_file_path = os.path.join(destination, "Out.sam")
+    # open(out_file_path, "w").close()
+    log_file_path = os.path.join(destination, "Out.log")
+    # open(log_file_path, "w").close()
+    raise Exception("Testing NovoAlign, still needs to be implemented")

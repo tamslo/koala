@@ -7,8 +7,8 @@ class Docker:
             config = yaml.load(config_file)
             self.absolute_data_path = config["absolute_repo_path"] + data_directory
 
-    def run(self, container, command):
-        self.docker_client.containers.run(
+    def run(self, container, command, auto_remove=True, **kwargs):
+        return self.docker_client.containers.run(
             container,
             command,
             volumes={
@@ -17,5 +17,6 @@ class Docker:
                     "mode": "rw"
                 }
             },
-            auto_remove=True
+            auto_remove=auto_remove,
+            **kwargs
         )
