@@ -1,10 +1,10 @@
 # Install Python requirements
-# pip install -r requirements.txt --no-cache-dir
+pip install -r requirements.txt --no-cache-dir
 
 # Install Node requirements
-# cd client
-# npm install
-# cd ..
+cd client
+npm install
+cd ..
 
 # Build services as Docker images
 for service in services/*; do
@@ -13,4 +13,4 @@ for service in services/*; do
 done
 
 # Download data
-# python scripts/download-data.py
+python scripts/download-data.py
