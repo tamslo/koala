@@ -15,5 +15,5 @@ RUN chmod a+x $DST/reads_simulator.pl
 ENV PATH $DST:$PATH
 
 # Install evaluation
-gem install erubis
+RUN gem install erubis
 RUN git clone https://github.com/khayer/aligner_benchmark.git
