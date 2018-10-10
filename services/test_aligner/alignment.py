@@ -1,4 +1,4 @@
-import os
+import os, time
 
 def build_genome_index(container_name, docker_client, genome_index_path, data_handler, experiment, destination):
     reference_path = data_handler.reference_path(experiment)
@@ -9,20 +9,26 @@ def build_genome_index(container_name, docker_client, genome_index_path, data_ha
     )
 
 def run(container_name, docker_client, dataset, genome_index_path, destination):
-    print("Container name: {}".format(container_name))
     command = "bash ./echo.sh"
-    output = docker_client.run(
+    container = docker_client.run(
         container_name,
         command,
-        log_config={"type": "json-file"},
         stderr=True,
-        stdout=False
+        detach=True,
+        auto_remove=False
     )
-    print(output, flush=True)
+
+    while(container.status != "exited"):
+        container.reload()
+
     out_file_path = os.path.join(destination, "Out.sam")
-    with open(out_file_path, "w") as out_file:
-        out_file.write(str(output))
+    with open(out_file_path, "wb") as out_file:
+        output = container.logs(stdout=True, stderr=False)
+        out_file.write(output)
+
     log_file_path = os.path.join(destination, "Out.log")
-    with open(log_file_path, "w") as log_file:
-        log_file.write(str(output))
-    raise Exception("Enabling re-run without deleting everything")
+    with open(log_file_path, "wb") as log_file:
+        output = container.logs(stderr=True, stdout=False)
+        log_file.write(output)
+
+    container.remove()

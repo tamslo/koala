@@ -1,4 +1,5 @@
 #!/bin/bash
 
-echo "STDOUT output" > /dev/stdout
-echo "STDERR output" > /dev/stderr
+sleep 10
+echo -e "STDOUT output\twith Tab" > /dev/stdout
+echo -e "STDERR output\nWith newline" > /dev/stderr

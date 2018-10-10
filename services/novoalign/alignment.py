@@ -21,15 +21,25 @@ def run(container_name, docker_client, dataset, genome_index_path, destination):
     with open(os.path.join(destination, "Commands.txt"), "a") as command_file:
         command_file.write("{}\n".format(command))
 
-    output = docker_client.run(
+    container = docker_client.run(
         container_name,
         command,
-        log_config={"type": "json-file"},
-        stderr=True
+        stderr=True,
+        detach=True,
+        auto_remove=False
     )
-    print(output, flush=True)
+
+    while(container.status != "exited"):
+        container.reload()
+
     out_file_path = os.path.join(destination, "Out.sam")
-    # open(out_file_path, "w").close()
+    with open(out_file_path, "wb") as out_file:
+        output = container.logs(stdout=True, stderr=False)
+        out_file.write(output)
+
     log_file_path = os.path.join(destination, "Out.log")
-    # open(log_file_path, "w").close()
-    raise Exception("Testing NovoAlign, still needs to be implemented")
+    with open(log_file_path, "wb") as log_file:
+        output = container.logs(stderr=True, stdout=False)
+        log_file.write(output)
+
+    container.remove()
