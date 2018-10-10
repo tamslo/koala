@@ -1,4 +1,6 @@
 import os
+import time
+import datetime
 import modules.file_utils as file_utils
 import services.star.alignment as star
 import services.novoalign.alignment as novoalign
@@ -21,11 +23,15 @@ def align(docker_client, data_handler, experiment, action_names):
     aligner = aligners[aligner_id]
 
     file_utils.create_directory(destination)
+    runtime_log_path = os.path.join(destination, "Runtime.log")
+    open(runtime_log_path, "w").close() # Create log file
+
     genome_index_path = data_handler.genome_index_path(experiment, aligner_id)
     temp_genome_index_path = genome_index_path + ".running"
 
     if not os.path.exists(genome_index_path):
         try:
+            build_genome_index_start = time.time()
             aligner.build_genome_index(
                 aligner_id,
                 docker_client,
@@ -34,11 +40,18 @@ def align(docker_client, data_handler, experiment, action_names):
                 experiment,
                 destination
             )
+            with open(runtime_log_path, "a") as runtime_log:
+                runtime = str(datetime.timedelta(seconds=time.time() - build_genome_index_start))
+                runtime_log.write("Index generation: {}\n".format(runtime))
         except:
             file_utils.delete(temp_genome_index_path)
             raise
         os.rename(temp_genome_index_path, genome_index_path)
 
     dataset = data_handler.datasets.select(experiment.get("dataset"))
+    run_start = time.time()
     aligner.run(aligner_id, docker_client, dataset, genome_index_path, destination)
+    with open(runtime_log_path, "a") as runtime_log:
+        runtime = str(datetime.timedelta(seconds=time.time() - run_start))
+        runtime_log.write("Alignment: {}\n".format(runtime))
     return destination
