@@ -5,7 +5,7 @@
   "dataset": {
     "FORWARD": "forward",
     "REVERSE": "reverse",
-    "PAIRED": "reverse",
+    "PAIRED": "paired",
     "SINGLE": "single",
     "URL": "url",
     "FILE": "file"
