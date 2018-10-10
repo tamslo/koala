@@ -56,6 +56,7 @@ export default class extends Component {
             experiments={context.experiments}
             services={context.services}
             datasets={context.datasets}
+            references={context.references}
             deleteExperiment={deleteExperiment}
             retryExperiment={retryExperiment}
           />

@@ -8,8 +8,14 @@ import Log from "./Log";
 export default class extends Component {
   render() {
     const dataset = this.props.datasets[this.props.dataset];
-    const reference = this.getService(this.props.reference);
-    const aligner = this.getService(this.props.pipeline.alignment.id);
+    const reference = this.getWithId(
+      this.props.references,
+      this.props.reference
+    );
+    const aligner = this.getWithId(
+      this.props.services,
+      this.props.pipeline.alignment.id
+    );
     return (
       <div>
         <Entry>
@@ -51,8 +57,8 @@ export default class extends Component {
     return this.renderDownloadButton(path);
   }
 
-  getService(serviceId) {
-    return this.props.services.find(service => service.id === serviceId);
+  getWithId(collection, id) {
+    return collection.find(item => item.id === id);
   }
 
   renderDownloadButton(path) {

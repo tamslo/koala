@@ -46,11 +46,12 @@ class Experiments extends Component {
   }
 
   renderExperiment(experimentId) {
-    const { experiments, services, datasets } = this.props;
+    const { experiments, services, datasets, references } = this.props;
     const experiment = experiments[experimentId];
     const experimentProps = {
       services,
       datasets,
+      references,
       SERVER_URL,
       ...experiment
     };
