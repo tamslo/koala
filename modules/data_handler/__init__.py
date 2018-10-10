@@ -1,5 +1,6 @@
 import os
 import yaml
+import json
 import modules.file_utils as file_utils
 from .instance_handler import InstanceHandler
 from .instances.experiment import Experiment
@@ -22,6 +23,10 @@ class DataHandler:
     def reference_path(self, experiment):
         reference_id = experiment.get("reference")
         return self.reference_directory + "{}.fa".format(reference_id)
+
+    def get_references(self):
+        with open(self.reference_directory + "references.json") as references_file:
+            return json.load(references_file)
 
     def genome_index_path(self, experiment, aligner):
         reference_id = experiment.get("reference")

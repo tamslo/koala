@@ -43,10 +43,18 @@ def get_context():
             content[id] = instance.content
         return content
 
+    services = []
+    for service in os.listdir("services"):
+        service_yaml_path = "services/{}/service.yml".format(service)
+        if os.path.exists(service_yaml_path):
+            with open(service_yaml_path, "r") as service_yaml:
+                services.append(yaml.load(service_yaml))
+
     return json.dumps({
+        "references": data_handler.get_references(),
+        "datasets": get_content(data_handler.datasets.all()),
         "services": services,
-        "experiments": get_content(data_handler.experiments.all()),
-        "datasets": get_content(data_handler.datasets.all())
+        "experiments": get_content(data_handler.experiments.all())
     })
 
 @app.route("/dataset", methods=["POST"])

@@ -47,6 +47,7 @@ export default class extends Component {
           services={context.services}
           addExperiment={addExperiment}
           datasets={context.datasets}
+          references={context.references}
           addDataset={addDataset}
         />
         <Spacer />

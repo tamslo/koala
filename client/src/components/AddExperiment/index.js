@@ -65,13 +65,11 @@ export default class extends Component {
           value={this.state.reference || ""}
           onChange={this.handleChange("reference")}
         >
-          {this.props.services
-            .filter(service => service.type === "reference")
-            .map(genome => (
-              <MenuItem key={genome.id} value={genome.id}>
-                {genome.name}
-              </MenuItem>
-            ))}
+          {this.props.references.map(genome => (
+            <MenuItem key={genome.id} value={genome.id}>
+              {genome.name}
+            </MenuItem>
+          ))}
         </Select>
 
         <DatasetSelection

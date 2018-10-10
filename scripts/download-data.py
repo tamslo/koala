@@ -36,15 +36,15 @@ rsync_uri = "rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/"
 started_tasks = []
 finished_tasks = []
 
-def get_human_genome(genome_name, file_path):
+def get_human_genome(genome_id, file_path):
     url = "http://hgdownload.soe.ucsc.edu/goldenPath/"
-    url += "{0}/bigZips/{0}.2bit".format(genome_name)
+    url += "{0}/bigZips/{0}.2bit".format(genome_id)
     two_bit_path = file_path + ".2bit"
     started_tasks.append(two_bit_path)
     file_utils.download(url, two_bit_path)
     finished_tasks.append(two_bit_path)
     # Convert .2bit file to .fa
-    print("Extracting {} from 2bit file...".format(genome_name), flush=True)
+    print("Extracting {} from 2bit file...".format(genome_id), flush=True)
     os.system("chmod +x {0}twoBitToFa && {0}twoBitToFa {1} {2}".format(
         reference_directory,
         two_bit_path,
@@ -52,21 +52,33 @@ def get_human_genome(genome_name, file_path):
     ))
     file_utils.delete(two_bit_path)
 
-def get_p_falciparum(genome_name, file_path):
+def get_p_falciparum(genome_id, file_path):
     url = "http://bp1.s3.amazonaws.com/malaria.tar.bz2"
     download_path = reference_directory + "malaria.tar.bz2"
     file_utils.download(url, download_path)
-    print("Unzipping {}...".format(genome_name), flush=True)
+    print("Unzipping {}...".format(genome_id), flush=True)
     unzipped_directory = file_utils.unzip(download_path)
     os.rename(unzipped_directory + "/genome_sequence_pfal.fa", file_path)
     file_utils.delete(download_path)
     file_utils.delete(unzipped_directory)
 
 # Add new reference genomes with options here
-genome_getters = {
-    "hg19": get_human_genome,
-    "hg38": get_human_genome,
-    "pfal": get_p_falciparum
+genomes = {
+    "hg19": {
+        "getter": get_human_genome,
+        "name": "Human (hg19)",
+        "source": "http://hgdownload.cse.ucsc.edu/downloads.html#human"
+    },
+    "hg38": {
+        "getter": get_human_genome,
+        "name": "Human (hg38)",
+        "source": "http://hgdownload.cse.ucsc.edu/downloads.html#human"
+    },
+    "pfal": {
+        "getter": get_p_falciparum,
+        "name": "Malaria",
+        "source": "http://bioinf.itmat.upenn.edu/BEERS/bp1/datasets.php"
+    }
 }
 
 def get_tools():
@@ -80,18 +92,33 @@ def get_tools():
         else:
             log_data_present(tool_name)
 
-def genome_path(genome_name):
-    return reference_directory + genome_name + fasta_file_ending
+def genome_path(genome_id):
+    return reference_directory + genome_id + fasta_file_ending
 
 def get_genomes():
-    for genome_name, genome_getter in genome_getters.items():
-        file_path = genome_path(genome_name)
+    genome_infos_path = os.path.join(reference_directory, "references.json")
+    genome_infos = []
+    if os.path.exists(genome_infos_path):
+        with open(genome_infos_path, "r") as genome_infos_file:
+            genome_infos = json.load(genome_infos_file)
+
+    for genome_id, genome_specification in genomes.items():
+        file_path = genome_path(genome_id)
+        info_path = file_path.split(fasta_file_ending)[0] + ".yml"
+        genome_getter = genome_specification["getter"]
         if not os.path.exists(file_path):
-            log_task_start(genome_name, file_path)
-            genome_getter(genome_name, file_path)
-            log_task_end(genome_name, file_path)
+            log_task_start(genome_id, file_path)
+            genome_getter(genome_id, file_path)
+            genome_infos.append({
+                "id": genome_id,
+                "name": genome_specification["name"],
+                "source": genome_specification["source"]
+            })
+            with open(genome_infos_path, "w") as genome_infos_file:
+                genome_infos_file.write(json.dumps(genome_infos))
+            log_task_end(genome_id, file_path)
         else:
-            log_data_present(genome_name)
+            log_data_present(genome_id)
 
 ###################
 # RNASEQ DATA SETS
@@ -124,19 +151,20 @@ def get_baruzzo(dataset, directory):
 
     file_utils.delete(download_path)
 
+# IDs must match IDs in prepared_datasets
 rna_seq_data = [
     {
-        "id": "prepared-3f76-42bd-b70f-d4e6d1c27f80",
+        "id": "simulated_reads_HG19t1r1",
         "getter": get_baruzzo,
         "name": "human_t1r1"
     },
     {
-        "id": "prepared-3f76-42bd-b70f-d4e6d1c27f83",
+        "id": "simulated_reads_HG19t2r1",
         "getter": get_baruzzo,
         "name": "human_t2r1"
     },
     {
-        "id": "prepared-3f76-42bd-b70f-d4e6d1c27f89",
+        "id": "simulated_reads_PFALt1r1",
         "getter": get_baruzzo,
         "name": "malaria_t1r1"
     }
