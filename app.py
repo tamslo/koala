@@ -38,7 +38,7 @@ def ping():
 @app.route("/context", methods=["GET"])
 def get_context():
     def get_content(instances):
-        content = {}
+        content = OrderedDict()
         for id, instance in instances.items():
             content[id] = instance.content
         return content

@@ -24,17 +24,7 @@ export default class extends Component {
 
   render() {
     const { addingDataset, datasetInfo } = this.state;
-    const { dataset } = this.props;
-    // Make sure status indicators such as isLoading are not dispayed
-    const datasets = Object.keys(this.props.datasets).reduce(
-      (actualDatasets, datasetId) => {
-        // Dummy test for uuid
-        return datasetId.split("-").length === 5
-          ? { ...actualDatasets, [datasetId]: this.props.datasets[datasetId] }
-          : actualDatasets;
-      },
-      {}
-    );
+    const { datasets, dataset } = this.props;
 
     const loadingText =
       "Adding data set, this can take a while for big files...";

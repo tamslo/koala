@@ -25,7 +25,7 @@ class InstanceHandler:
     def all(self):
         instances = {}
         for path in os.listdir(self.directory):
-            if not os.path.isdir(path):
+            if not os.path.isdir(os.path.join(self.directory, path)):
                 id = path.split(".json")[0]
                 instance = self.select(id)
                 instances[instance.get("id")] = instance
