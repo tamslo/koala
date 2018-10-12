@@ -40,6 +40,8 @@ def run(container_name, docker_client, dataset, genome_index_path, destination):
     log_file_path = os.path.join(destination, "Out.log")
     with open(log_file_path, "wb") as log_file:
         output = container.logs(stderr=True, stdout=False)
+        print("NovoAlign STDERR output is: {}".format(str(output)))
         log_file.write(output)
 
+    container.kill()
     container.remove()
