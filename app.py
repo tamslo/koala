@@ -23,9 +23,6 @@ data_handler = DataHandler(data_directory)
 runner = Runner(data_handler, data_directory, constants)
 exporter = Exporter(data_directory)
 
-with open("services.json", "r") as services_file:
-    services = json.load(services_file, object_pairs_hook=OrderedDict)
-
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=runner.run, trigger="interval", seconds=5, timezone="Europe/Berlin")
 scheduler.start()
