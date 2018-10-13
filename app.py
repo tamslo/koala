@@ -44,14 +44,7 @@ def get_context():
     return json.dumps({
         "references": data_handler.get_references(),
         "datasets": get_content(data_handler.datasets.all()),
-        "services": list(map(
-            lambda service: {
-                "id": service["id"],
-                "name": service["name"],
-                "type": service["type"]
-            },
-            services
-        )),
+        "services": list(map(lambda Service: Service.frontend_information(), services)),
         "experiments": get_content(data_handler.experiments.all())
     })
 

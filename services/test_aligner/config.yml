@@ -1,0 +1,5 @@
+id: test_aligner
+name: Test
+type: aligner
+reference_is_directory: false
+creates_output_files: false

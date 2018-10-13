@@ -1,11 +1,16 @@
 import os
 import yaml
+from .base_service import BaseService
+
+ServiceClasses = {}
 
 services = []
 for service in os.listdir("services"):
     service_directory = "services/{}/".format(service)
-    if os.path.isdir(service_directory):
-        service_yaml_path = service_directory + "service.yml"
-        if os.path.exists(service_yaml_path):
-            with open(service_yaml_path, "r") as service_yaml:
-                services.append(yaml.load(service_yaml))
+    config_path = service_directory + "config.yml"
+    if os.path.isdir(service_directory) and os.path.exists(config_path):
+        if service in ServiceClasses:
+            ServiceClass = ServiceClasses["service"]
+        else:
+            ServiceClass = BaseService
+        services.append(ServiceClass(config_path))

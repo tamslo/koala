@@ -3,7 +3,7 @@ data/datasets/
 data/experiments/
 data/references/
 data/errored/
-config.yml
+/config.yml
 client/src/constants.json
 
 # Byte-compiled / optimized / DLL files
