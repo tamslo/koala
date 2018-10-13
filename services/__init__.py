@@ -2,7 +2,15 @@ import os
 import yaml
 from .base_service import BaseService
 
-ServiceClasses = {}
+# Register services with functionality
+from .test_aligner.aligner import TestAligner
+from .star.aligner import Star
+from .novoalign.aligner import NovoAlign
+ServiceClasses = {
+    "test_aligner": TestAligner,
+    "star": Star,
+    "novoalign": NovoAlign
+}
 
 services = []
 for service in os.listdir("services"):
@@ -10,7 +18,7 @@ for service in os.listdir("services"):
     config_path = service_directory + "config.yml"
     if os.path.isdir(service_directory) and os.path.exists(config_path):
         if service in ServiceClasses:
-            ServiceClass = ServiceClasses["service"]
+            ServiceClass = ServiceClasses[service]
         else:
             ServiceClass = BaseService
-        services.append(ServiceClass(config_path))
+        services.append(ServiceClass(config_path, service))

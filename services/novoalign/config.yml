@@ -1,4 +1,3 @@
-id: novoalign
 name: NovoAlign
 type: aligner
 reference_is_directory: false
