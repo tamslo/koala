@@ -16,4 +16,6 @@ ENV PATH $DST:$PATH
 
 # Install evaluation
 RUN gem install erubis
-RUN git clone https://github.com/khayer/aligner_benchmark.git
+ENV DST=/opt/beers_evaluation
+RUN git clone https://github.com/khayer/aligner_benchmark.git $DST
+ENV PATH $DST:$PATH

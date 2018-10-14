@@ -7,12 +7,7 @@ alignment_directory="$2"
 truth_file="$3"
 cd $alignment_directory
 
-# Default parameters
-start=""
-nummer=""
-cut_bases=""
-
 grep -v "^@" ./*Aligned.out.sam | sort -t'.' -k 2n > output.sam
-ruby fix_sam.rb $start $nummer output.sam > fixed.sam
-ruby compare2truth_multi_mappers.rb $cut_bases $read_length $truth_file fixed.sam > comp_res_multi_mappers.txt
-ruby compare2truth.rb $cut_bases $read_length $truth_file fixed.sam > comp_res.txt
+ruby fix_sam.rb -r $read_length output.sam > fixed.sam
+ruby compare2truth_multi_mappers.rb -r $read_length $truth_file fixed.sam > comp_res_multi_mappers.txt
+ruby compare2truth.rb -r $read_length $truth_file fixed.sam > comp_res.txt
