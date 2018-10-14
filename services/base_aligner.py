@@ -37,22 +37,25 @@ class BaseAligner(BaseService):
             auto_remove=False
         )
 
-        while(container.status != "exited"):
-            container.reload()
+        # while(container.status != "exited"):
+        #     container.reload()
 
         out_file_path = os.path.join(destination, "Out.sam")
-        with open(out_file_path, "wb") as out_file:
-            output = container.logs(stdout=True, stderr=False)
-            out_file.write(output)
+        out_file = open(out_file_path, "wb")
+        for line in container.logs(stdout=True, stderr=False, stream=True):
+            print("STDIN (.sam)", flush=True)
+            print(line, flush=True)
+            out_file.write(line)
+        out_file.close()
 
         log_file_path = os.path.join(destination, "Out.log")
-        with open(log_file_path, "wb") as log_file:
-            output = container.logs(stderr=True, stdout=False)
-            if self.id == "novoalign":
-                print("NovoAlign STDERR output is: {}".format(str(output)))
-            log_file.write(output)
+        log_file = open(log_file_path, "wb")
+        for line in container.logs(stdout=False, stderr=True, stream=True):
+            print("STDERR (.log)", flush=True)
+            print(line, flush=True)
+            log_file.write(line)
+        log_file.close()
 
-        # TODO fix for NovoAlign, maybe with container.kill()
         container.remove()
 
     def build_genome_index(self, parameters):
