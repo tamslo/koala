@@ -37,22 +37,15 @@ class BaseAligner(BaseService):
             auto_remove=False
         )
 
-        # while(container.status != "exited"):
-        #     container.reload()
-
         out_file_path = os.path.join(destination, "Out.sam")
         out_file = open(out_file_path, "wb")
         for line in container.logs(stdout=True, stderr=False, stream=True):
-            print("STDIN (.sam)", flush=True)
-            print(line, flush=True)
             out_file.write(line)
         out_file.close()
 
         log_file_path = os.path.join(destination, "Out.log")
         log_file = open(log_file_path, "wb")
         for line in container.logs(stdout=False, stderr=True, stream=True):
-            print("STDERR (.log)", flush=True)
-            print(line, flush=True)
             log_file.write(line)
         log_file.close()
 
