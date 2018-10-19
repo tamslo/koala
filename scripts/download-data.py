@@ -1,4 +1,5 @@
-import sys, os, shutil, json
+import sys, os, shutil, json, yaml
+from time import localtime
 
 # Make import from parent directory possible
 sys.path.append(
@@ -6,10 +7,12 @@ sys.path.append(
 
 import modules.file_utils as file_utils
 
+with open("constants.yml", "r") as constants_file:
+    constants = yaml.load(constants_file)
+
 # Directory Paths
 reference_directory = "data/references/"
 datasets_directory = "data/datasets/"
-dataset_jsons_directory = "scripts/prepared_datasets/"
 
 def log_task_start(item, path):
     started_tasks.append(path)
@@ -125,7 +128,7 @@ def get_genomes():
 ###################
 
 def get_baruzzo(dataset, directory):
-    zip_name = "{}.tar.bz2".format(dataset["name"])
+    zip_name = "{}.tar.bz2".format(dataset["file_name"])
     url = "http://bp1.s3.amazonaws.com/{}".format(zip_name)
     download_path = directory + "/" + zip_name
     file_utils.download(url, download_path)
@@ -142,50 +145,162 @@ def get_baruzzo(dataset, directory):
             shutil.move(file_path, beers_directory + file_name)
 
     # Move FASTA files to root and rename
-    dataset_info_path = dataset_jsons_directory + dataset["id"] + ".json"
-    with open(dataset_info_path, "r") as dataset_info_file:
-        dataset_info = json.load(dataset_info_file)
-    for direction, file_specification in dataset_info["data"].items():
-        downloaded_file_path = beers_directory + file_specification["name"]
-        os.rename(downloaded_file_path, file_specification["path"])
+    def setup_file(direction):
+        file_name = "{}.{}.fa".format(dataset["id"], direction)
+        file_origin = beers_directory + file_name
+        file_destination = "{}/{}.fq".format(directory, direction)
+        os.rename(file_origin, file_destination)
+        return file_name, file_destination
 
+    forward_file_name, forward_file_path = setup_file(constants["dataset"]["FORWARD"])
+    reverse_file_name, reverse_file_path = setup_file(constants["dataset"]["REVERSE"])
     file_utils.delete(download_path)
 
-# IDs must match IDs in prepared_datasets
+    # Write JSON file
+    dataset_info_path = datasets_directory + dataset["id"] + ".json"
+    with open(dataset_info_path, "w") as dataset_info_file:
+        json.dump({
+            "id": dataset["id"],
+            "name": dataset["name"],
+            "layout": constants["dataset"]["PAIRED"],
+            "readLength": "100",
+            "method": constants["dataset"]["FILE"],
+            "data": {
+                "forward": {
+                    "name": forward_file_name,
+                    "path": forward_file_path,
+                },
+                "reverse": {
+                    "name": reverse_file_name,
+                    "path": reverse_file_path,
+                }
+            },
+            "created": localtime(),
+            "error": False
+        }, dataset_info_file)
+
+# Baruzzo Data Sets
+# * id is prefix of unzipped FASTA files
+# * file_name is zip name given in download url
 rna_seq_data = [
     {
         "id": "simulated_reads_HG19t1r1",
         "getter": get_baruzzo,
-        "name": "human_t1r1"
+        "file_name": "human_t1r1",
+        "name": "Simulated Human T1R1"
     },
+    # {
+    #     "id": "simulated_reads_HG19t1r2",
+    #     "getter": get_baruzzo,
+    #     "file_name": "human_t1r2",
+    #     "name": "Simulated Human T1R2"
+    # },
+    # {
+    #     "id": "simulated_reads_HG19t1r3",
+    #     "getter": get_baruzzo,
+    #     "file_name": "human_t1r3",
+    #     "name": "Simulated Human T1R3"
+    # },
     {
         "id": "simulated_reads_HG19t2r1",
         "getter": get_baruzzo,
-        "name": "human_t2r1"
+        "file_name": "human_t2r1",
+        "name": "Simulated Human T2R1"
     },
+    # {
+    #     "id": "simulated_reads_HG19t2r2",
+    #     "getter": get_baruzzo,
+    #     "file_name": "human_t2r2",
+    #     "name": "Simulated Human T2R2"
+    # },
+    # {
+    #     "id": "simulated_reads_HG19t2r3",
+    #     "getter": get_baruzzo,
+    #     "file_name": "human_t2r3",
+    #     "name": "Simulated Human T2R3"
+    # },
+    # {
+    #     "id": "simulated_reads_HG19t3r1",
+    #     "getter": get_baruzzo,
+    #     "file_name": "human_t3r1",
+    #     "name": "Simulated Human T3R1"
+    # },
+    # {
+    #     "id": "simulated_reads_HG19t3r2",
+    #     "getter": get_baruzzo,
+    #     "file_name": "human_t3r2",
+    #     "name": "Simulated Human T3R2"
+    # },
+    # {
+    #     "id": "simulated_reads_HG19t3r3",
+    #     "getter": get_baruzzo,
+    #     "file_name": "human_t3r3",
+    #     "name": "Simulated Human T3R3"
+    # },
     {
         "id": "simulated_reads_PFALt1r1",
         "getter": get_baruzzo,
-        "name": "malaria_t1r1"
-    }
+        "file_name": "malaria_t1r1",
+        "name": "Simulated Malaria T1R1"
+    },
+    # {
+    #     "id": "simulated_reads_PFALt1r2",
+    #     "getter": get_baruzzo,
+    #     "file_name": "malaria_t1r2",
+    #     "name": "Simulated Malaria T1R2"
+    # },
+    # {
+    #     "id": "simulated_reads_PFALt1r3",
+    #     "getter": get_baruzzo,
+    #     "file_name": "malaria_t1r3",
+    #     "name": "Simulated Malaria T1R3"
+    # },
+    {
+        "id": "simulated_reads_PFALt2r1",
+        "getter": get_baruzzo,
+        "file_name": "malaria_t2r1",
+        "name": "Simulated Malaria T2R1"
+    }#,
+    # {
+    #     "id": "simulated_reads_PFALt2r2",
+    #     "getter": get_baruzzo,
+    #     "file_name": "malaria_t2r2",
+    #     "name": "Simulated Malaria T2R2"
+    # },
+    # {
+    #     "id": "simulated_reads_PFALt2r3",
+    #     "getter": get_baruzzo,
+    #     "file_name": "malaria_t2r3",
+    #     "name": "Simulated Malaria T2R3"
+    # },
+    # {
+    #     "id": "simulated_reads_PFALt3r1",
+    #     "getter": get_baruzzo,
+    #     "file_name": "malaria_t3r1",
+    #     "name": "Simulated Malaria T3R1"
+    # },
+    # {
+    #     "id": "simulated_reads_PFALt3r2",
+    #     "getter": get_baruzzo,
+    #     "file_name": "malaria_t3r2",
+    #     "name": "Simulated Malaria T3R2"
+    # },
+    # {
+    #     "id": "simulated_reads_PFALt3r3",
+    #     "getter": get_baruzzo,
+    #     "file_name": "malaria_t3r3",
+    #     "name": "Simulated Malaria T3R3"
+    # }
 ]
-
-
-rna_seq_getters = {
-    "baruzzo": get_baruzzo
-}
 
 def get_datasets():
     for dataset in rna_seq_data:
         dataset_directory = datasets_directory + dataset["id"]
-        dataset_json_origin = dataset_jsons_directory + dataset["id"] + ".json"
-        dataset_json_destination = datasets_directory + dataset["id"] + ".json"
         dataset_getter = dataset["getter"]
         if not os.path.isdir(dataset_directory):
             file_utils.create_directory(dataset_directory)
             log_task_start(dataset["name"], dataset_directory)
             dataset_getter(dataset, dataset_directory)
-            shutil.copyfile(dataset_json_origin, dataset_json_destination)
             log_task_end(dataset["name"], dataset_directory)
         else:
             log_data_present(dataset["name"])
