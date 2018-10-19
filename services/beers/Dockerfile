@@ -1,4 +1,5 @@
-# Downloads beers_simulator, execute with `reads_simulator.pl [options]`
+# Execute BEERS simulator with `reads_simulator.pl [options]`
+# Execute evaluation with `./evaluate_alignment.sh [options]`
 
 FROM ubuntu:16.04
 
@@ -18,4 +19,7 @@ ENV PATH $DST:$PATH
 RUN gem install erubis
 ENV DST=/opt/beers_evaluation
 RUN git clone https://github.com/khayer/aligner_benchmark.git $DST
-ENV PATH $DST:$PATH
+
+# Add evaluation script
+COPY ./assets/evaluate_alignment.sh ./evaluate_alignment.sh
+RUN chmod a+x ./evaluate_alignment.sh
