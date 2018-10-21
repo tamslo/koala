@@ -57,7 +57,8 @@ def align(docker_client, data_handler, experiment, action_names):
         "docker_client": docker_client,
         "destination": destination,
         "genome_index_path": genome_index_path,
-        "dataset": data_handler.datasets.select(experiment.get("dataset"))
+        "dataset": data_handler.datasets.select(experiment.get("dataset")),
+        "out_file_name": "Out.sam"
     }
     run_start = time.time()
     aligner.align(alignment_parameters)
