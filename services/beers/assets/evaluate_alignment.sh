@@ -6,7 +6,7 @@ alignment_tool_directory="/opt/beers_evaluation"
 
 read_length="$1"
 alignment_directory="$2"
-truth_file="$3"
+truth_file="$3" # path needs to be absolute
 cd $alignment_directory
 
 grep -v "^@" ./Out.sam | sort -t'.' -k 2n > Sorted.sam

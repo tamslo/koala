@@ -37,4 +37,4 @@ To add a service, add a directory in services, its name will be the `service_id`
 - Run docker locally: `docker run -v /c/Users/Tamara/Repos/koala/data:/data -it <container_name>`
 - Run docker on VM: `docker run -v ~/code/data:/data -it <container_name>`
 - Build test image: `docker build -t test_aligner services/test_aligner`
-- Run BEERS evaluation in Docker container: `./evaluate_alignment.sh 100 data/datasets/simulated_reads_HG19t1r1/hg19/novoalign data/datasets/simulated_reads_HG19t1r1/beers/simulated_reads_HG19t1r1.cig`
+- Run BEERS evaluation in Docker container: `./evaluate_alignment.sh 100 data/datasets/simulated_reads_HG19t1r1/hg19/novoalign /data/datasets/simulated_reads_HG19t1r1/beers/simulated_reads_HG19t1r1.cig`
