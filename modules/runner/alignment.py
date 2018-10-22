@@ -53,17 +53,27 @@ def align(docker_client, data_handler, experiment, action_names):
             runtime_log.write("Index already present\n")
 
     # Run alignment
+    out_file_name = "Out.sam"
     alignment_parameters = {
         "docker_client": docker_client,
         "destination": destination,
         "genome_index_path": genome_index_path,
         "dataset": data_handler.datasets.select(experiment.get("dataset")),
-        "out_file_name": "Out.sam"
+        "out_file_name": out_file_name
     }
     run_start = time.time()
     aligner.align(alignment_parameters)
     with open(runtime_log_path, "a") as runtime_log:
         runtime = str(datetime.timedelta(seconds=time.time() - run_start))
         runtime_log.write("Alignment: {}\n".format(runtime))
+
+    # Create BAM file from SAM file
+    sam_path = destination + out_file_name
+    bam_path = destination + "Out.bam"
+    docker_client.run_and_write_logs(
+        "gatk",
+        "samtools view -Sb /{}".format(sam_path),
+        bam_path
+    )
 
     return destination
