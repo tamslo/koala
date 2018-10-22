@@ -1,4 +1,4 @@
-name: Test (like STAR)
+name: Test (writes file)
 type: aligner
 reference_is_directory: true
 creates_output_files: true
