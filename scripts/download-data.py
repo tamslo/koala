@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import sys, os, shutil, json, yaml
 from time import localtime
 
@@ -34,6 +36,7 @@ tools = ["twoBitToFa"]
 
 # Constants
 fasta_file_ending = ".fa"
+fastq_file_ending = ".fq"
 rsync_uri = "rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/"
 
 started_tasks = []
@@ -127,6 +130,15 @@ def get_genomes():
 # RNASEQ DATA SETS
 ###################
 
+def write_dataset_json(info):
+    dataset_info_path = datasets_directory + info["id"] + ".json"
+    info["method"] = constants["dataset"]["FILE"]
+    info["layout"] = constants["dataset"]["PAIRED"]
+    info["created"] = localtime()
+    info["error"] = False
+    with open(dataset_info_path, "w") as dataset_info_file:
+        json.dump(info, dataset_info_file)
+
 def get_baruzzo(dataset, directory):
     zip_name = "{}.tar.bz2".format(dataset["file_name"])
     url = "http://bp1.s3.amazonaws.com/{}".format(zip_name)
@@ -148,7 +160,7 @@ def get_baruzzo(dataset, directory):
     def setup_file(direction):
         file_name = "{}.{}.fa".format(dataset["id"], direction)
         file_origin = beers_directory + file_name
-        file_destination = "{}/{}.fq".format(directory, direction)
+        file_destination = "{}/{}{}".format(directory, direction, fastq_file_ending)
         os.rename(file_origin, file_destination)
         return file_name, file_destination
 
@@ -156,33 +168,72 @@ def get_baruzzo(dataset, directory):
     reverse_file_name, reverse_file_path = setup_file(constants["dataset"]["REVERSE"])
     file_utils.delete(download_path)
 
-    # Write JSON file
-    dataset_info_path = datasets_directory + dataset["id"] + ".json"
-    with open(dataset_info_path, "w") as dataset_info_file:
-        json.dump({
-            "id": dataset["id"],
-            "name": dataset["name"],
-            "layout": constants["dataset"]["PAIRED"],
-            "readLength": "100",
-            "method": constants["dataset"]["FILE"],
-            "data": {
-                "forward": {
-                    "name": forward_file_name,
-                    "path": forward_file_path,
-                },
-                "reverse": {
-                    "name": reverse_file_name,
-                    "path": reverse_file_path,
-                }
+    write_dataset_json({
+        "id": dataset["id"],
+        "name": dataset["name"],
+        "readLength": "100",
+        "data": {
+            constants["dataset"]["FORWARD"]: {
+                "name": forward_file_name,
+                "path": forward_file_path,
             },
-            "created": localtime(),
-            "error": False
-        }, dataset_info_file)
+            constants["dataset"]["REVERSE"]: {
+                "name": reverse_file_name,
+                "path": reverse_file_path,
+            }
+        },
+    })
+
+def get_from_encode(dataset, directory):
+    dataset_info = {
+        "id": dataset["id"],
+        "name": dataset["name"],
+        "readLength": "76",
+        "data": {
+            constants["dataset"]["FORWARD"]: {},
+            constants["dataset"]["REVERSE"]: {}
+        }
+    }
+
+    def get_file(file_id, direction, directory):
+        print("Downloading {} file...".format(direction), flush=True)
+        zip_name = "{}.fastq.gz".format(file_id)
+        url = "https://www.encodeproject.org/files/{}/@@download/{}".format(
+            file_id,
+            zip_name
+        )
+        download_path = directory + "/" + zip_name
+        file_utils.download(url, download_path)
+        print("Unzipping {} file...".format(direction), flush=True)
+        file_utils.unzip(download_path)
+        file_utils.delete(download_path)
+
+        original_name = "{}.fastq".format(file_id)
+        file_origin = "{}/{}".format(directory, original_name)
+        file_destination = "{}/{}{}".format(directory, direction, fastq_file_ending)
+        os.rename(file_origin, file_destination)
+        return original_name, file_destination
+
+    for direction, file_id in dataset["files"].items():
+        original_name, file_destination = get_file(file_id, direction, directory)
+        dataset_info["data"][direction]["name"] = original_name
+        dataset_info["data"][direction]["path"] = file_destination
+
+    write_dataset_json(dataset_info)
 
 # Baruzzo Data Sets
 # * id is prefix of unzipped FASTA files
 # * file_name is zip name given in download url
 rna_seq_data = [
+    {
+        "id": "GM12878",
+        "name": "GIAB Pilot Genome",
+        "getter": get_from_encode,
+        "files": {
+            constants["dataset"]["FORWARD"]: "ENCFF000EWJ",
+            constants["dataset"]["REVERSE"]: "ENCFF000EWX"
+        }
+    },
     {
         "id": "simulated_reads_HG19t1r1",
         "getter": get_baruzzo,

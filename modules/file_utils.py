@@ -38,16 +38,19 @@ def download(url, destination):
     )
 
 def unzip(path):
-    zip_directory = path.rsplit("/", 1)[0]
-    path_parts = path.split(".", 1)
-    unzipped_path = path_parts[0]
-    zip_type = path_parts[1]
-
-    if zip_type == "tar.bz2":
-        os.system("tar xjC {} -f {}".format(zip_directory, path))
+    directory = path.rsplit("/", 1)[0]
+    if path.endswith(".tar.bz2"):
+        os.system("tar xjC {} -f {}".format(directory, path))
+        unzipped_path = path.replace(".tar.bz2", "")
+    elif path.endswith(".tar.gz"):
+        os.system("tar xzC {} -f {}".format(directory, path))
+        unzipped_path = path.replace(".tar.gz", "")
+    elif path.endswith(".gz"):
+        os.system("gunzip {}".format(path))
+        unzipped_path = path.replace(".gz", "")
     else:
         # Unkown compression
-        print("[file_utils] Unknown compression type: {}".format(zip_type))
+        print("[file_utils] Unknown compression type for {}".format(path))
         return path
 
     return unzipped_path
