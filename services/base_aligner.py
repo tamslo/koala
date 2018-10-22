@@ -13,12 +13,17 @@ class BaseAligner(BaseService):
         return None
 
     def build_genome_index(self, parameters):
-        command = self.build_index_command(parameters)
         if self.reference_is_directory:
             file_utils.create_directory(parameters["genome_index_path"])
-
-        self.run_simple(parameters, command)
+        command = self.build_index_command(parameters)
+        self.run(parameters, command)
 
     def align(self, parameters):
+        write_logs = not self.creates_output_files
         command = self.alignment_command(parameters)
-        self.run_main(parameters, command)
+        self.run(
+            parameters,
+            command,
+            write_logs=write_logs,
+            rename_output=self.creates_output_files
+        )
