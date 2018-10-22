@@ -9,7 +9,7 @@ class TestAlignerWritesLog(BaseAligner):
 
 class TestAlignerWritesFile(BaseAligner):
     def build_index_command(self, parameters):
-        return "touch {}".format(parameters["genome_index_path"])
+        return "touch {}/test".format(parameters["genome_index_path"])
 
     def alignment_command(self, parameters):
         return "cp /example.sam {}/{}".format(parameters["destination"], self.output_file_name)
