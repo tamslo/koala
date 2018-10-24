@@ -14,19 +14,21 @@ ServiceClasses = {
     "novoalign": NovoAlign
 }
 
-services = []
-for directory in os.listdir("services"):
-    service_directory = "services/{}/".format(directory)
-    if os.path.isdir(service_directory):
-        for file in os.listdir(service_directory):
-            if file.endswith("config.yml"):
-                config_path = service_directory + file
-                if file == "config.yml":
-                    service_id = directory
-                else:
-                    service_id = directory + "_" + file.split(".config.yml")[0]
-                if service_id in ServiceClasses:
-                    ServiceClass = ServiceClasses[service_id]
-                else:
-                    ServiceClass = BaseService
-                services.append(ServiceClass(config_path, service_id))
+def getServices():
+    services = []
+    for directory in os.listdir("services"):
+        service_directory = "services/{}/".format(directory)
+        if os.path.isdir(service_directory):
+            for file in os.listdir(service_directory):
+                if file.endswith("config.yml"):
+                    config_path = service_directory + file
+                    if file == "config.yml":
+                        service_id = directory
+                    else:
+                        service_id = directory + "_" + file.split(".config.yml")[0]
+                    if service_id in ServiceClasses:
+                        ServiceClass = ServiceClasses[service_id]
+                    else:
+                        ServiceClass = BaseService
+                    services.append(ServiceClass(config_path, service_id))
+    return services

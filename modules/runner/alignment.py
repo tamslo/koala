@@ -2,10 +2,10 @@ import os
 import time
 import datetime
 import modules.file_utils as file_utils
-from services import services
+from services import getServices
 
 aligners = {}
-for service in services:
+for service in getServices():
     if service.type == "aligner":
         aligners[service.id] = service
 
