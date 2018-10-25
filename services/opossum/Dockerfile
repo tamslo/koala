@@ -7,7 +7,7 @@ RUN apt-get install -y git
 # Install Opossum
 
 ENV DST /opossum
-RUN git clone https://github.com/BSGOxford/Opossum.git $DST
+RUN git clone https://github.com/tamslo/Opossum.git $DST
 RUN mv $DST/* .
 RUN rm -rf $DST
 

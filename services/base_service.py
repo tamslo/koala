@@ -9,9 +9,10 @@ class BaseService:
             for key in config:
                 setattr(self, key, config[key])
 
-    # Needs to be implemented by subclasses
+    # self.command needs to be implemented by subclasses or self.run overwritten
     def run(self, parameters):
-        return None
+        if hasattr(self, "command"):
+            return self.run_docker(parameters, self.command(parameters))
 
     def frontend_information(self):
         return { "id": self.id, "name": self.name, "type": self.type }
@@ -28,22 +29,23 @@ class BaseService:
         else:
             return self.id
 
-    def run_docker(self, parameters, command, write_logs=False, rename_output=False):
+    def run_docker(self, parameters, command, log_to_output=False, rename_output=False):
         self.__log_command(parameters, command)
         docker_client = parameters["docker_client"]
         destination = parameters["destination"]
+        stdout_file_path = os.path.join(destination, "Out.log")
+        stderr_file_path = None
 
-        if write_logs:
-            out_file_path = os.path.join(destination, parameters["out_file_name"])
-            log_file_path = os.path.join(destination, "Out.log")
-            docker_client.run_and_write_logs(
-                self.__image_name(),
-                command,
-                out_file_path,
-                log_file_path
-            )
-        else:
-            docker_client.run(self.__image_name(), command)
+        if log_to_output:
+            stderr_file_path = stdout_file_path # Write logs from stderr
+            stdout_file_path = os.path.join(destination, parameters["out_file_name"])
+
+        docker_client.run_and_write_logs(
+            self.__image_name(),
+            command,
+            stdout_file_path,
+            stderr_file_path
+        )
 
         if rename_output:
             os.rename(

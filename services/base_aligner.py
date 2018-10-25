@@ -69,10 +69,12 @@ class BaseAligner(BaseService):
         # Create BAM file from SAM file
         sam_path = destination + out_file_name
         bam_path = destination + "Out.bam"
+        log_path = destination + "Samtools.log"
         docker_client.run_and_write_logs(
             "gatk",
             "samtools view -Sb /{}".format(sam_path),
-            bam_path
+            bam_path,
+            log_path
         )
 
     def build_genome_index(self, parameters):
@@ -82,11 +84,10 @@ class BaseAligner(BaseService):
         self.run_docker(parameters, command)
 
     def align(self, parameters):
-        write_logs = not self.creates_output_files
         command = self.alignment_command(parameters)
         self.run_docker(
             parameters,
             command,
-            write_logs=write_logs,
-            rename_output=self.creates_output_files
+            log_to_output = not self.creates_output_files,
+            rename_output = self.creates_output_files
         )

@@ -42,3 +42,18 @@ class Experiment(BaseInstance):
     def mark_waiting(self):
         self.content["status"] = self.constants["experiment"]["WAITING"]
         super().store()
+
+    def get_input_directory(self, action_id):
+        pipeline = self.content["pipeline"]
+        step_ids = []
+        step_directories = []
+        for step in list(map(lambda tuple: tuple[1], list(pipeline.items()))):
+            for tuple in list(step.items()):
+                if tuple[0] == "id":
+                    step_ids.append(tuple[1])
+                if tuple[0] == "directory":
+                    step_directories.append(tuple[1])
+        current_index = step_ids.index(action_id)
+        if current_index == 0:
+            raise Exception("The first action does not have a preceding action")
+        return step_directories[current_index - 1]
