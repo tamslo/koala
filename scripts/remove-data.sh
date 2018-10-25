@@ -21,6 +21,6 @@ cd ../references
 for file in ./*; do
   if [[ ($file == *_*) || ($file == *.fai) || ($file == .dict)  ]]
   then
-    rm -r $file
+    rm -rf $file
   fi
 done
