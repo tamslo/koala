@@ -225,21 +225,7 @@ def get_from_encode(dataset, directory):
 # * id is prefix of unzipped FASTA files
 # * file_name is zip name given in download url
 rna_seq_data = [
-    {
-        "id": "GM12878",
-        "name": "GIAB Pilot Genome",
-        "getter": get_from_encode,
-        "files": {
-            constants["dataset"]["FORWARD"]: "ENCFF000EWJ",
-            constants["dataset"]["REVERSE"]: "ENCFF000EWX"
-        }
-    },
-    {
-        "id": "simulated_reads_HG19t1r1",
-        "getter": get_baruzzo,
-        "file_name": "human_t1r1",
-        "name": "Simulated Human T1R1"
-    },
+#
     # {
     #     "id": "simulated_reads_HG19t1r2",
     #     "getter": get_baruzzo,
@@ -252,12 +238,12 @@ rna_seq_data = [
     #     "file_name": "human_t1r3",
     #     "name": "Simulated Human T1R3"
     # },
-    {
-        "id": "simulated_reads_HG19t2r1",
-        "getter": get_baruzzo,
-        "file_name": "human_t2r1",
-        "name": "Simulated Human T2R1"
-    },
+    # {
+    #     "id": "simulated_reads_HG19t2r1",
+    #     "getter": get_baruzzo,
+    #     "file_name": "human_t2r1",
+    #     "name": "Simulated Human T2R1"
+    # },
     # {
     #     "id": "simulated_reads_HG19t2r2",
     #     "getter": get_baruzzo,
@@ -306,12 +292,12 @@ rna_seq_data = [
     #     "file_name": "malaria_t1r3",
     #     "name": "Simulated Malaria T1R3"
     # },
-    {
-        "id": "simulated_reads_PFALt2r1",
-        "getter": get_baruzzo,
-        "file_name": "malaria_t2r1",
-        "name": "Simulated Malaria T2R1"
-    }#,
+    # {
+    #     "id": "simulated_reads_PFALt2r1",
+    #     "getter": get_baruzzo,
+    #     "file_name": "malaria_t2r1",
+    #     "name": "Simulated Malaria T2R1"
+    # },
     # {
     #     "id": "simulated_reads_PFALt2r2",
     #     "getter": get_baruzzo,
@@ -356,6 +342,57 @@ def get_datasets():
         else:
             log_data_present(dataset["name"])
 
+############################
+# GIAB HIGH CONFIDENCE CALLS
+############################
+
+giab_version = "3.3.2"
+confidence_sets = [{
+    "reference": "hg38",
+    "name": "GRCh38",
+    "bed_file_postfix": "_noCENorHET7"
+}, {
+    "reference": "hg19",
+    "name": "GRCh37"
+}]
+
+def get_giab_calls():
+    def get_confidence_set(confidence_set, directory):
+        url = "ftp://ftp-trace.ncbi.nlm.nih.gov/giab/ftp/release/NA12878_HG001" \
+            "/NISTv{}/{}/".format(giab_version, confidence_set["name"])
+        file_prefix = "HG001_{}_GIAB_highconf_CG-IllFB-IllGATKHC-Ion-10X" \
+            "-SOLID_CHROM1-X_v.{}_highconf".format(confidence_set["name"], giab_version)
+
+        vcf_file_url = file_prefix + "_PGandRTGphasetransfer.vcf.gz"
+        bed_file_postfix = ""
+        if "bed_file_postfix" in confidence_set:
+            bed_file_postfix = confidence_set["bed_file_postfix"]
+        bed_file_url = file_prefix + "_nosomaticdel{}.bed".format(bed_file_postfix)
+
+        vcf_zip_name = "confidence_calls.vcf.gz"
+        print("Downloading {}...".format(vcf_zip_name), flush=True)
+        download_path = directory + vcf_zip_name
+        file_utils.download(url + vcf_file_url, download_path)
+        print("Unzipping {}...".format(vcf_zip_name), flush=True)
+        file_utils.unzip(download_path)
+        file_utils.delete(download_path)
+
+        bed_file_name = "confidence_calls.bed"
+        print("Downloading {}...".format(bed_file_name), flush=True)
+        download_path = directory + bed_file_name
+        file_utils.download(url + bed_file_url, download_path)
+
+    for confidence_set in confidence_sets:
+        directory = reference_directory + "giab/" + confidence_set["reference"] + "/"
+        if not os.path.isdir(directory):
+            file_utils.create_directory(directory)
+            log_task_start(confidence_set["name"], directory)
+            get_confidence_set(confidence_set, directory)
+            log_task_end(confidence_set["name"], directory)
+        else:
+            log_data_present(confidence_set["name"])
+
+
 ###################
 # SCRIPT EXECUTION
 ###################
@@ -371,6 +408,7 @@ try:
     get_tools()
     get_genomes()
     get_datasets()
+    get_giab_calls()
 finally:
     for path in started_tasks:
         if not path in finished_tasks:
