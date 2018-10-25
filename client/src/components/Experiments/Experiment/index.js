@@ -45,7 +45,7 @@ export default class extends Component {
     return (
       <Entry key={`pipeline-entry-${actionName}`}>
         {`${handlerName(actionName)}: ${service.name}`}
-        {this.renderDownloadButton(this.props.pipeline[actionName].file)}
+        {this.renderDownloadButton(this.props.pipeline[actionName].directory)}
       </Entry>
     );
   }
@@ -79,9 +79,14 @@ export default class extends Component {
 }
 
 const Entry = styled.div`
-  margin-bottom: 12px;
+  line-height: 32px;
 `;
 
 const StyledIconButton = styled(IconButton)`
   margin-left: 12px !important;
+  width: 32px !important;
+  height: 32px !important;
+  .MuiSvgIcon-root-144 {
+    font-size: 18px !important;
+  }
 `;

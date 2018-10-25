@@ -2,16 +2,22 @@ import os
 import yaml
 from .base_service import BaseService
 
-# Register services with functionality
-from .test.aligner import TestAlignerWritesFile
-from .test.aligner import TestAlignerWritesLog
-from .star.aligner import Star
-from .novoalign.aligner import NovoAlign
+# Register services
+
+from .test import TestAlignerWritesFile
+from .test import TestAlignerWritesLog
+from .star import Star
+from .novoalign import NovoAlign
+from .opossum import Opossum
+from .beers import BeersEvaluator
+
 ServiceClasses = {
     "test_aligner_writes_file": TestAlignerWritesFile,
     "test_aligner_writes_log": TestAlignerWritesLog,
     "star": Star,
-    "novoalign": NovoAlign
+    "novoalign": NovoAlign,
+    "opossum": Opossum,
+    "beers": BeersEvaluator
 }
 
 def getServices():

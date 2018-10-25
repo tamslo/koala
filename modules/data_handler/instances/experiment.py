@@ -14,7 +14,7 @@ class Experiment(BaseInstance):
         super().store()
 
     def add_download(self, action, path):
-        self.content["pipeline"][action]["file"] = path
+        self.content["pipeline"][action]["directory"] = path
         super().store()
 
     def start_action(self, action, cached = False):
