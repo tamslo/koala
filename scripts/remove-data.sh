@@ -19,7 +19,7 @@ done
 
 cd ../references
 for file in ./*; do
-  if [[ ($file == *_*) || ($file == *.fai) || ($file == .dict)  ]]
+  if [[ ($file == *_*) || ($file == *.fai) || ($file == *.dict)  ]]
   then
     rm -rf $file
   fi
