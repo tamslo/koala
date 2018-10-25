@@ -1,4 +1,9 @@
+from ..base_service import BaseService
 from ..base_aligner import BaseAligner
+
+class TestAlignmentFilter(BaseService):
+    def command(self, parameters):
+        return "touch {}".format(parameters["destination"] + "Out.bam")
 
 class TestAlignerWritesLog(BaseAligner):
     def build_index_command(self, parameters):

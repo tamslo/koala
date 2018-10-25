@@ -57,12 +57,6 @@ class Runner:
             (service for service in self.services if service.id == action_handler_id),
             None
         )
-
-        if action_handler == None:
-            raise Exception("No service with ID '{}'".format(
-                action_handler_id
-            ))
-
         file_path = self.data_handler.cache.lookup(experiment, action)
         if file_path: # Step is cached
             experiment.start_action(

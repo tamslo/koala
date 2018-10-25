@@ -24,7 +24,7 @@ class Docker:
             **kwargs
         )
 
-    def run_and_write_logs(self, container, command, stdout_file_path, stderr_file_path=None):
+    def run_and_write_logs(self, container, command, stdout_file_path=None, stderr_file_path=None):
         stderr = stderr_file_path != None
         container = self.run(
             container,
@@ -34,12 +34,13 @@ class Docker:
             auto_remove=False
         )
 
-        out_file = open(stdout_file_path, "wb")
-        for line in container.logs(stdout=True, stderr=False, stream=True):
-            out_file.write(line)
-        out_file.close()
+        if stdout_file_path != None:
+            out_file = open(stdout_file_path, "wb")
+            for line in container.logs(stdout=True, stderr=False, stream=True):
+                out_file.write(line)
+            out_file.close()
 
-        if stderr:
+        if stderr_file_path != None:
             log_file = open(stderr_file_path, "wb")
             for line in container.logs(stdout=False, stderr=True, stream=True):
                 log_file.write(line)
@@ -50,7 +51,9 @@ class Docker:
             container.stop()
         container.remove()
 
-        # If log files are empty, delete them
-        log_file_path = stdout_file_path if not stderr else stderr_file_path
+        # If log file is empty, delete it. If only one file is written it is
+        # expected to be the log file, if both files are written, it is expected
+        # to be stderr_file_path
+        log_file_path = stderr_file_path or stdout_file_path
         if os.stat(log_file_path).st_size == 0:
             os.remove(log_file_path)

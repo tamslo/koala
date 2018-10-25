@@ -6,18 +6,22 @@ from .base_service import BaseService
 
 from .test import TestAlignerWritesFile
 from .test import TestAlignerWritesLog
+from .test import TestAlignmentFilter
 from .star import Star
 from .novoalign import NovoAlign
 from .opossum import Opossum
 from .beers import BeersEvaluator
+from .gatk import HaplotypeCaller
 
 ServiceClasses = {
     "test_aligner_writes_file": TestAlignerWritesFile,
     "test_aligner_writes_log": TestAlignerWritesLog,
+    "test_alignment_filter": TestAlignmentFilter,
     "star": Star,
     "novoalign": NovoAlign,
     "opossum": Opossum,
-    "beers": BeersEvaluator
+    "beers": BeersEvaluator,
+    "gatk_haplotypecaller": HaplotypeCaller
 }
 
 def getServices():
@@ -32,9 +36,6 @@ def getServices():
                         service_id = directory
                     else:
                         service_id = directory + "_" + file.split(".config.yml")[0]
-                    if service_id in ServiceClasses:
-                        ServiceClass = ServiceClasses[service_id]
-                    else:
-                        ServiceClass = BaseService
+                    ServiceClass = ServiceClasses[service_id]
                     services.append(ServiceClass(config_path, service_id))
     return services

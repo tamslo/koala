@@ -20,9 +20,10 @@ class DataHandler:
         with open("constants.yml", "r") as constants_file:
             self.constants = yaml.load(constants_file)
 
-    def reference_path(self, experiment):
+    def reference_path(self, experiment, alternate_file_ending=None):
         reference_id = experiment.get("reference")
-        return self.reference_directory + "{}.fa".format(reference_id)
+        file_ending = alternate_file_ending or ".fa"
+        return self.reference_directory + reference_id + file_ending
 
     def get_references(self):
         with open(self.reference_directory + "references.json") as references_file:

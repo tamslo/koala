@@ -88,6 +88,6 @@ class BaseAligner(BaseService):
         self.run_docker(
             parameters,
             command,
-            log_to_output = not self.creates_output_files,
+            log_is_output = not self.creates_output_files,
             rename_output = self.creates_output_files
         )
