@@ -1,7 +1,4 @@
 {
-  "actions": {
-    "ALIGNMENT": "alignment"
-  },
   "dataset": {
     "FORWARD": "forward",
     "REVERSE": "reverse",

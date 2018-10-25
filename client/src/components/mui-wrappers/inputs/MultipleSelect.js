@@ -20,7 +20,7 @@ export default props => {
       <InputLabel htmlFor="select-multiple-checkbox">{props.label}</InputLabel>
       <Select
         multiple
-        value={props.value}
+        value={props.selected}
         onChange={props.onChange}
         input={<Input id="select-multiple-checkbox" />}
         renderValue={selected =>
@@ -31,7 +31,7 @@ export default props => {
       >
         {props.items.map(item => (
           <MenuItem key={item.id} value={item.id}>
-            <Checkbox checked={itemSelected(props.value, item.id)} />
+            <Checkbox checked={itemSelected(props.selected, item.id)} />
             <ListItemText primary={item.name} />
           </MenuItem>
         ))}

@@ -66,6 +66,8 @@ def experiment():
         params = request.get_json()
         unpacked_pipeline = {}
         for action_name, action in params["pipeline"].items():
+            if action == "":
+                continue
             if isinstance(action, list):
                 for index, action_id in enumerate(action):
                     name = action_name + "_" + str(index)

@@ -7,6 +7,14 @@ import TextField from "../mui-wrappers/inputs/Text";
 import Select from "../mui-wrappers/inputs/Select";
 import MultipleSelect from "../mui-wrappers/inputs/MultipleSelect";
 import DatasetSelection from "./DatasetSelection";
+import {
+  ALIGNMENT,
+  ALIGNMENT_FILTERING,
+  VARIANT_CALLING,
+  serviceTypes,
+  displayNames
+} from "../experimentConstants";
+import { handlerName } from "../experimentUtils";
 
 export default class extends Component {
   constructor(props) {
@@ -21,9 +29,9 @@ export default class extends Component {
       reference: "",
       dataset: "",
       pipeline: {
-        alignment: "",
-        alignment_filter: [],
-        variant_caller: ""
+        [ALIGNMENT]: "",
+        [ALIGNMENT_FILTERING]: [],
+        [VARIANT_CALLING]: ""
       }
     };
   }
@@ -33,7 +41,7 @@ export default class extends Component {
       this.state.name !== "" &&
       this.state.reference !== "" &&
       this.state.dataset !== "" &&
-      this.state.pipeline.alignment !== ""
+      this.state.pipeline[ALIGNMENT] !== ""
     );
   }
 
@@ -59,7 +67,7 @@ export default class extends Component {
         />
 
         <Select
-          label="Reference Genome"
+          label={displayNames.reference}
           value={this.state.reference || ""}
           onChange={this.handleChange("reference")}
         >
@@ -78,12 +86,12 @@ export default class extends Component {
         />
 
         <Select
-          label="Aligner"
-          value={this.state.pipeline.alignment}
-          onChange={this.handlePipelineChange("alignment")}
+          label={handlerName(ALIGNMENT)}
+          value={this.state.pipeline[ALIGNMENT]}
+          onChange={this.handlePipelineChange(ALIGNMENT)}
         >
           {this.props.services
-            .filter(service => service.type === "aligner")
+            .filter(service => service.type === serviceTypes[ALIGNMENT])
             .map(aligner => (
               <MenuItem key={aligner.id} value={aligner.id}>
                 {aligner.name}
@@ -93,24 +101,24 @@ export default class extends Component {
 
         <MultipleSelect
           id="alignment-filters"
-          label="Alignment Filter"
-          value={this.state.pipeline.alignment_filter}
-          onChange={this.handlePipelineChange("alignment_filter")}
+          label={handlerName(ALIGNMENT_FILTERING)}
+          selected={this.state.pipeline[ALIGNMENT_FILTERING]}
+          onChange={this.handlePipelineChange(ALIGNMENT_FILTERING)}
           items={this.props.services.filter(
-            service => service.type === "alignment_filter"
+            service => service.type === serviceTypes[ALIGNMENT_FILTERING]
           )}
         />
 
         <Select
-          label="Variant Caller"
-          value={this.state.pipeline.variant_caller}
-          onChange={this.handlePipelineChange("variant_caller")}
+          label={handlerName(VARIANT_CALLING)}
+          value={this.state.pipeline[VARIANT_CALLING]}
+          onChange={this.handlePipelineChange(VARIANT_CALLING)}
         >
           <MenuItem key="no-caller" value="">
             <em>None</em>
           </MenuItem>
           {this.props.services
-            .filter(service => service.type === "variant_caller")
+            .filter(service => service.type === serviceTypes[VARIANT_CALLING])
             .map(caller => (
               <MenuItem key={caller.id} value={caller.id}>
                 {caller.name}

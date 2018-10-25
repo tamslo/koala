@@ -7,6 +7,7 @@ import Select from "../../mui-wrappers/inputs/Select";
 import Loading from "../../Loading";
 import AddDataset from "./AddDataset";
 import DatasetInfo from "./DatasetInfo";
+import { displayNames } from "../../experimentConstants";
 
 export default class extends Component {
   constructor(props) {
@@ -42,7 +43,7 @@ export default class extends Component {
           dataset={datasetInfo || null}
         />
         <Select
-          label="Data Set"
+          label={displayNames.dataset}
           value={dataset || ""}
           onChange={this.handleChange}
         >

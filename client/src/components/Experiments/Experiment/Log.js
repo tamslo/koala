@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import styled from "styled-components";
 import { withTheme } from "@material-ui/core/styles";
 import constants from "../../../constants.json";
+import { toUpperCase, removeUnderlines } from "../../experimentUtils";
 
 class Log extends Component {
   render() {
@@ -88,13 +89,19 @@ class Log extends Component {
   }
 
   formatActionContent(action, actionName) {
-    const upperCaseName =
-      actionName.substr(0, 1).toUpperCase() + actionName.substr(1);
+    actionName = actionName.replace(/\d$/, () => {
+      return `(${
+        this.props.services.find(
+          service => this.props.pipeline[actionName].id === service.id
+        ).name
+      })`;
+    });
+    actionName = removeUnderlines(actionName);
     return action.error
       ? action.message
       : action.cached
         ? `Load ${actionName} from disk`
-        : upperCaseName;
+        : toUpperCase(actionName);
   }
 }
 
