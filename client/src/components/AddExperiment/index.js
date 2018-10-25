@@ -5,6 +5,7 @@ import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
 import TextField from "../mui-wrappers/inputs/Text";
 import Select from "../mui-wrappers/inputs/Select";
+import MultipleSelect from "../mui-wrappers/inputs/MultipleSelect";
 import DatasetSelection from "./DatasetSelection";
 
 export default class extends Component {
@@ -19,9 +20,10 @@ export default class extends Component {
       name: "New Experiment",
       reference: "",
       dataset: "",
-      // Resembles backend structure
       pipeline: {
-        alignment: { id: "" }
+        alignment: "",
+        alignment_filter: [],
+        variant_caller: ""
       }
     };
   }
@@ -31,7 +33,7 @@ export default class extends Component {
       this.state.name !== "" &&
       this.state.reference !== "" &&
       this.state.dataset !== "" &&
-      this.state.pipeline.alignment.id !== ""
+      this.state.pipeline.alignment !== ""
     );
   }
 
@@ -43,12 +45,8 @@ export default class extends Component {
 
   handlePipelineChange = name => event => {
     this.setState({
-      pipeline: this.changePipelineStep(name, event.target.value)
+      pipeline: { ...this.state.pipeline, [name]: event.target.value }
     });
-  };
-
-  changePipelineStep = (name, value) => {
-    return { ...this.state.pipeline, [name]: { id: value } };
   };
 
   render() {
@@ -81,7 +79,7 @@ export default class extends Component {
 
         <Select
           label="Aligner"
-          value={this.state.pipeline.alignment.id || ""}
+          value={this.state.pipeline.alignment}
           onChange={this.handlePipelineChange("alignment")}
         >
           {this.props.services
@@ -89,6 +87,33 @@ export default class extends Component {
             .map(aligner => (
               <MenuItem key={aligner.id} value={aligner.id}>
                 {aligner.name}
+              </MenuItem>
+            ))}
+        </Select>
+
+        <MultipleSelect
+          id="alignment-filters"
+          label="Alignment Filter"
+          value={this.state.pipeline.alignment_filter}
+          onChange={this.handlePipelineChange("alignment_filter")}
+          items={this.props.services.filter(
+            service => service.type === "alignment_filter"
+          )}
+        />
+
+        <Select
+          label="Variant Caller"
+          value={this.state.pipeline.variant_caller}
+          onChange={this.handlePipelineChange("variant_caller")}
+        >
+          <MenuItem key="no-caller" value="">
+            <em>None</em>
+          </MenuItem>
+          {this.props.services
+            .filter(service => service.type === "variant_caller")
+            .map(caller => (
+              <MenuItem key={caller.id} value={caller.id}>
+                {caller.name}
               </MenuItem>
             ))}
         </Select>

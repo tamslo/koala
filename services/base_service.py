@@ -9,6 +9,10 @@ class BaseService:
             for key in config:
                 setattr(self, key, config[key])
 
+    # Needs to be implemented by subclasses
+    def run(self, parameters):
+        return None
+
     def frontend_information(self):
         return { "id": self.id, "name": self.name, "type": self.type }
 
@@ -24,7 +28,7 @@ class BaseService:
         else:
             return self.id
 
-    def run(self, parameters, command, write_logs=False, rename_output=False):
+    def run_docker(self, parameters, command, write_logs=False, rename_output=False):
         self.__log_command(parameters, command)
         docker_client = parameters["docker_client"]
         destination = parameters["destination"]

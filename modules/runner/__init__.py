@@ -1,19 +1,18 @@
+import os
+import time
 import traceback
 import modules.file_utils as file_utils
 from .docker import Docker
-from .alignment import align
+from services import getServices
 
 class Runner:
     def __init__(self, data_handler, data_directory, constants):
         self.data_handler = data_handler
-        self.action_names = constants["actions"]
-        self.actions = {
-            self.action_names["ALIGNMENT"]: align
-        }
         self.experiment_statuses = constants["experiment"]
         self.docker_client = Docker(data_directory)
         self.tasks = []
         self.current_task = None
+        self.services = getServices()
 
     def add_task(self, experiment_id):
         experiment = self.data_handler.experiments.select(experiment_id)
@@ -36,7 +35,7 @@ class Runner:
 
     def __execute_next_task(self):
         self.current_task = self.tasks.pop(0)
-        current_action = ""
+        current_action = "" # For error handling
         experiment = self.data_handler.experiments.select(self.current_task)
         if experiment != None:
             try:
@@ -53,20 +52,46 @@ class Runner:
             return experiment
 
     def __execute_step(self, action, experiment):
+        action_handler_id = experiment.get("pipeline")[action]["id"]
+        action_handler = next(
+            (service for service in self.services if service.id == action_handler_id),
+            None
+        )
+
+        if action_handler == None:
+            raise Exception("No service with ID '{}'".format(
+                action_handler_id
+            ))
+
         file_path = self.data_handler.cache.lookup(experiment, action)
-        if file_path:
+        if file_path: # Step is cached
             experiment.start_action(
                 action,
                 cached = True
             )
-        else:
+        else: # Run step
             experiment.start_action(action)
-            file_path = self.actions[action](
-                self.docker_client,
-                self.data_handler,
+            file_path = self.data_handler.cache.create_path(
                 experiment,
-                self.action_names
+                action
             )
+            file_utils.create_directory(file_path)
+            runtime_log_path = os.path.join(file_path, "Runtime.log")
+            with open(runtime_log_path, "w") as runtime_log:
+                runtime_log.write("Started at {}\n".format(
+                    time.strftime("%d %b %Y %H:%M:%S", time.localtime())
+                ))
+            action_handler.run({
+                "docker_client": self.docker_client,
+                "data_handler": self.data_handler,
+                "experiment": experiment,
+                "destination": file_path,
+                "runtime_log_path": runtime_log_path
+            })
+            with open(runtime_log_path, "a") as runtime_log:
+                runtime_log.write("Done at {}\n".format(
+                    time.strftime("%d %b %Y %H:%M:%S", time.localtime())
+                ))
             experiment.complete_action(action)
         experiment.add_download(action, file_path)
         return experiment

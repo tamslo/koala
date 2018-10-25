@@ -64,6 +64,15 @@ def experiment():
         return json.dumps(experiment.content)
     elif request.method == "POST":
         params = request.get_json()
+        unpacked_pipeline = {}
+        for action_name, action in params["pipeline"].items():
+            if isinstance(action, list):
+                for index, action_id in enumerate(action):
+                    name = action_name + "_" + str(index)
+                    unpacked_pipeline[name] = { "id": action_id }
+            else:
+                unpacked_pipeline[action_name] = { "id": action }
+        params["pipeline"] = unpacked_pipeline
         experiment = data_handler.experiments.create(params)
         runner.add_task(experiment.get("id"))
         return json.dumps(experiment.content)

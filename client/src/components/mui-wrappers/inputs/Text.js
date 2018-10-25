@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import TextField from "@material-ui/core/TextField";
+import { width, marginTop, marginRight, marginBottom } from "./constants";
 
 export default class extends Component {
   render() {
@@ -12,7 +13,7 @@ export default class extends Component {
         margin="normal"
         select={this.props.select}
         fullWidth={this.props.fullWidth}
-        width={this.props.width || 200}
+        width={this.props.width || width}
         type={this.props.type || "text"}
         disabled={this.props.disabled}
       >
@@ -24,5 +25,7 @@ export default class extends Component {
 
 const FixedWidthTextField = styled(TextField)`
   width: ${props => props.width}px;
-  margin-right: 20px !important;
+  margin-right: ${marginRight}px !important;
+  margin-top: ${marginTop}px !important;
+  margin-bottom: ${marginBottom}px !important;
 `;
