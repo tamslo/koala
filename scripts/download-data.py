@@ -80,11 +80,11 @@ genomes = {
         "name": "Human (hg38)",
         "source": "http://hgdownload.cse.ucsc.edu/downloads.html#human"
     },
-    "pfal": {
-        "getter": get_p_falciparum,
-        "name": "Malaria",
-        "source": "http://bioinf.itmat.upenn.edu/BEERS/bp1/datasets.php"
-    }
+    # "pfal": {
+    #     "getter": get_p_falciparum,
+    #     "name": "Malaria",
+    #     "source": "http://bioinf.itmat.upenn.edu/BEERS/bp1/datasets.php"
+    # }
 }
 
 def get_tools():
@@ -225,7 +225,21 @@ def get_from_encode(dataset, directory):
 # * id is prefix of unzipped FASTA files
 # * file_name is zip name given in download url
 rna_seq_data = [
-#
+    # {
+    #     "id": "GM12878",
+    #     "name": "GIAB Pilot Genome",
+    #     "getter": get_from_encode,
+    #     "files": {
+    #         constants["dataset"]["FORWARD"]: "ENCFF000EWJ",
+    #         constants["dataset"]["REVERSE"]: "ENCFF000EWX"
+    #     }
+    # },
+    {
+        "id": "simulated_reads_HG19t1r1",
+        "getter": get_baruzzo,
+        "file_name": "human_t1r1",
+        "name": "Simulated Human T1R1"
+    },
     # {
     #     "id": "simulated_reads_HG19t1r2",
     #     "getter": get_baruzzo,
@@ -347,14 +361,15 @@ def get_datasets():
 ############################
 
 giab_version = "3.3.2"
-confidence_sets = [{
-    "reference": "hg38",
-    "name": "GRCh38",
-    "bed_file_postfix": "_noCENorHET7"
-}, {
-    "reference": "hg19",
-    "name": "GRCh37"
-}]
+confidence_sets = []
+# confidence_sets = [{
+#     "reference": "hg38",
+#     "name": "GRCh38",
+#     "bed_file_postfix": "_noCENorHET7"
+# }, {
+#     "reference": "hg19",
+#     "name": "GRCh37"
+# }]
 
 def get_giab_calls():
     def get_confidence_set(confidence_set, directory):
@@ -396,8 +411,6 @@ def get_giab_calls():
 ###################
 # SCRIPT EXECUTION
 ###################
-
-exit(0)
 
 print("", flush=True)
 print("Downloading data", flush=True)
