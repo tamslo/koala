@@ -274,12 +274,12 @@ rna_seq_data = [
     #     "file_name": "human_t3r3",
     #     "name": "Simulated Human T3R3"
     # },
-    {
-        "id": "simulated_reads_PFALt1r1",
-        "getter": get_baruzzo,
-        "file_name": "malaria_t1r1",
-        "name": "Simulated Malaria T1R1"
-    },
+    # {
+    #     "id": "simulated_reads_PFALt1r1",
+    #     "getter": get_baruzzo,
+    #     "file_name": "malaria_t1r1",
+    #     "name": "Simulated Malaria T1R1"
+    # },
     # {
     #     "id": "simulated_reads_PFALt1r2",
     #     "getter": get_baruzzo,
@@ -396,6 +396,8 @@ def get_giab_calls():
 ###################
 # SCRIPT EXECUTION
 ###################
+
+exit(0)
 
 print("", flush=True)
 print("Downloading data", flush=True)
