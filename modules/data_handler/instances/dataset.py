@@ -24,7 +24,7 @@ class Dataset(BaseInstance):
 
     def __store_data(self):
         for file_key in self.content["data"]:
-            file_path = self.directory + file_key + ".fq"
+            file_path = self.directory + file_key + ".fastq"
             if self.content["method"] == self.constants["dataset"]["URL"]:
                 url = self.content["data"][file_key]["name"]
                 file_utils.download(url, file_path)

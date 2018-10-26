@@ -36,7 +36,7 @@ tools = ["twoBitToFa"]
 
 # Constants
 fasta_file_ending = ".fa"
-fastq_file_ending = ".fq"
+fastq_file_ending = ".fastq"
 rsync_uri = "rsync://hgdownload.soe.ucsc.edu/genome/admin/exe/linux.x86_64/"
 
 started_tasks = []
