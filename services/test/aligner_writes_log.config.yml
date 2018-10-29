@@ -2,4 +2,3 @@ name: Test (writes log)
 type: aligner
 reference_is_directory: false
 creates_output_files: false
-image: test

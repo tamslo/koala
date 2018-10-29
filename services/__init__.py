@@ -37,5 +37,5 @@ def getServices():
                     else:
                         service_id = directory + "_" + file.split(".config.yml")[0]
                     ServiceClass = ServiceClasses[service_id]
-                    services.append(ServiceClass(config_path, service_id))
+                    services.append(ServiceClass(config_path, service_id, image_name=directory))
     return services

@@ -1,3 +1,2 @@
 name: HaplotypeCaller
 type: variant_caller
-image: gatk

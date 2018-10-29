@@ -2,10 +2,11 @@ import os
 import yaml
 
 class BaseService:
-    def __init__(self, config_path, service_id):
+    def __init__(self, config_path, service_id, image_name):
         with open(config_path, "r") as config_file:
             config = yaml.load(config_file)
             self.id = service_id
+            self.image = image_name
             for key in config:
                 setattr(self, key, config[key])
 
@@ -26,10 +27,8 @@ class BaseService:
     def __image_name(self, parameters):
         if "docker_image" in parameters:
             return parameters["docker_image"]
-        elif hasattr(self, "image"):
-            return self.image
         else:
-            return self.id
+            return self.image
 
     def run_docker(self, parameters, command, log_is_output=False, rename_output=False, log_file_path=None):
         self.__log_command(parameters, command)

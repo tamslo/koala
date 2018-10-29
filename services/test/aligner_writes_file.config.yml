@@ -3,4 +3,3 @@ type: aligner
 reference_is_directory: true
 creates_output_files: true
 output_file_name: "Aligned.out.sam"
-image: test
