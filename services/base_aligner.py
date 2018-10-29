@@ -105,29 +105,7 @@ class BaseAligner(BaseService):
 
     def convert(self, parameters, sam_file_path, bam_file_path):
         destination = parameters["destination"]
-        # Somehow, samtools needs a present file to write to but logs to
-        # STDOUT anyways, this file will be deleted later
-        dummy_file_path = destination + "tmp.file"
-        open(dummy_file_path, "w").close()
-        command = "samtools sort -o /{} /{}".format(dummy_file_path, sam_file_path)
-        output_parameters = {
-            "log_is_output": True,
-            "log_file_path": destination + "Samtools.log",
-            "out_file_path": bam_file_path
-        }
-
-        # Sometimes, no output is written (should be invesitgated, maybe we
-        # need a newer samtools version)
-        MAX_ATTEMPTS = 5
-        attempt = 0
-        while (attempt < MAX_ATTEMPTS):
-            self.run_docker(command, parameters, output_parameters)
-            if file_utils.file_has_content(bam_file_path):
-                print("[INFO] Converted to BAM after {} attempts".format(
-                    str(attempt + 1)
-                ), flush=True)
-                attempt = MAX_ATTEMPTS
-            else:
-                attempt += 1
+        command = "gatk SortSam -I=/{} -O=/{} -SO=coordinate".format(sam_file_path, bam_file_path)
+        output_parameters = { "log_file_path": destination + "Samtools.log" }
+        self.run_docker(command, parameters, output_parameters)
         file_utils.validate_file_content(bam_file_path)
-        os.remove(dummy_file_path)
