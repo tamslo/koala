@@ -1,5 +1,11 @@
 import os, shutil, json, urllib.request
 
+def validate_file_content(path):
+    file_exists = os.path.exists(path)
+    file_is_empty = file_exists and os.stat(path).st_size == 0
+    if file_is_empty or not file_exists:
+        raise Exception("Output {} not written".format(path))
+
 def create_directory(path):
     if not os.path.isdir(path):
         os.makedirs(path)

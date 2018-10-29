@@ -92,6 +92,7 @@ class BaseAligner(BaseService):
             conversion_output_parameters
         )
         os.remove(dummy_file_path)
+        file_utils.validate_file_content(destination + conversion_parameters["out_file_name"])
         with open(runtime_log_path, "a") as runtime_log:
             runtime = str(datetime.timedelta(seconds=time.time() - conversion_start))
             runtime_log.write("Convert to sorted BAM: {}\n".format(runtime))

@@ -66,7 +66,6 @@ class BaseService:
             stderr_file_path
         )
 
-        out_file_path = None
         if "out_file_name" in parameters:
             out_file_path = os.path.join(parameters["destination"], parameters["out_file_name"])
             if rename_output:
@@ -74,8 +73,3 @@ class BaseService:
                     os.path.join(parameters["destination"], self.output_file_name),
                     out_file_path
                 )
-
-            file_exists = os.path.exists(out_file_path)
-            file_is_empty = file_exists and os.stat(out_file_path).st_size == 0
-            if file_is_empty or not file_exists:
-                raise Exception("Output {} not written".format(out_file_path))
