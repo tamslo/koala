@@ -66,16 +66,35 @@ class BaseAligner(BaseService):
             runtime = str(datetime.timedelta(seconds=time.time() - run_start))
             runtime_log.write("Alignment: {}\n".format(runtime))
 
-        # Create BAM file from SAM file
+        # Create sorted BAM file from SAM file
+
+        conversion_start = time.time()
         sam_path = destination + out_file_name
-        bam_path = destination + "Out.bam"
         log_path = destination + "Samtools.log"
-        docker_client.run_and_write_logs(
-            "gatk",
-            "samtools view -Sb /{}".format(sam_path),
-            bam_path,
-            log_path
+
+        # Somehow, samtools needs a present file to write to but logs to
+        # STDOUT anyways, this file will be deleted later
+        dummy_file_path = destination + "tmp.file"
+        open(dummy_file_path, "w").close()
+
+        conversion_parameters = {
+            "docker_client": docker_client,
+            "docker_image": "gatk",
+            "destination": destination,
+            "out_file_name": "Out.bam"
+        }
+        command = "samtools sort -o /{} /{}".format(dummy_file_path, sam_path)
+
+        self.run_docker(
+            conversion_parameters,
+            command,
+            log_is_output=True,
+            log_file_path=log_path
         )
+        os.remove(dummy_file_path)
+        with open(runtime_log_path, "a") as runtime_log:
+            runtime = str(datetime.timedelta(seconds=time.time() - conversion_start))
+            runtime_log.write("Convert to sorted BAM: {}\n".format(runtime))
 
     def build_genome_index(self, parameters):
         if self.reference_is_directory:

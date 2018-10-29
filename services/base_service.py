@@ -23,8 +23,10 @@ class BaseService:
         with open(os.path.join(destination, "Commands.txt"), "a") as command_file:
             command_file.write("{}\n".format(command))
 
-    def image_name(self):
-        if hasattr(self, "image"):
+    def __image_name(self, parameters):
+        if "docker_image" in parameters:
+            return parameters["docker_image"]
+        elif hasattr(self, "image"):
             return self.image
         else:
             return self.id
@@ -51,7 +53,7 @@ class BaseService:
                 stdout_file_path = None
 
         docker_client.run_and_write_logs(
-            self.image_name(),
+            self.__image_name(parameters),
             command,
             stdout_file_path,
             stderr_file_path
