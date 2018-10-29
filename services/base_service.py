@@ -60,8 +60,8 @@ class BaseService:
         # The command does not write to file, write to output file what is
         # printed in STDOUT and to log what is printed in STDERR.
         if log_is_output:
-            stdout_file_path = os.path.join(destination, parameters["out_file_name"])
-            stderr_file_path = stdout_file_path # Write logs from stderr
+            stdout_file_path = output_parameters["out_file_path"]
+            stderr_file_path = log_file_path
 
         docker_client.run_and_write_logs(
             self.__image_name(parameters),

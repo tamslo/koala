@@ -28,6 +28,9 @@ class BaseAligner(BaseService):
         destination = parameters["destination"]
         runtime_log_path = parameters["runtime_log_path"]
 
+        sam_file_path = destination + "Out.sam"
+        bam_file_path = destination + "Out.bam"
+
         # Define genome index path and temp path (will be renamed if successful)
         genome_index_path = data_handler.genome_index_path(experiment, self.id)
         temp_genome_index_path = genome_index_path + ".running"
@@ -58,30 +61,26 @@ class BaseAligner(BaseService):
                 runtime_log.write("Index already present\n")
 
         # Run alignment
-        out_file_name = "Out.sam"
         alignment_parameters = {
             "docker_client": docker_client,
             "destination": destination,
             "genome_index_path": genome_index_path,
-            "dataset": data_handler.datasets.select(experiment.get("dataset")),
-            "out_file_name": out_file_name
+            "dataset": data_handler.datasets.select(experiment.get("dataset"))
         }
         run_start = time.time()
-        self.align(alignment_parameters)
+        self.align(alignment_parameters, sam_file_path)
         with open(runtime_log_path, "a") as runtime_log:
             runtime = str(datetime.timedelta(seconds=time.time() - run_start))
             runtime_log.write("Alignment: {}\n".format(runtime))
 
         # Create sorted BAM file from SAM file
-        sam_file_path = destination + out_file_name
         conversion_parameters = {
             "docker_client": docker_client,
             "docker_image": "gatk",
-            "destination": destination,
-            "out_file_name": "Out.bam"
+            "destination": destination
         }
         conversion_start = time.time()
-        self.convert(conversion_parameters, sam_file_path)
+        self.convert(conversion_parameters, sam_file_path, bam_file_path)
         with open(runtime_log_path, "a") as runtime_log:
             runtime = str(datetime.timedelta(seconds=time.time() - conversion_start))
             runtime_log.write("Convert to sorted BAM: {}\n".format(runtime))
@@ -91,29 +90,30 @@ class BaseAligner(BaseService):
         command = self.build_index_command(parameters)
         self.run_docker(command, parameters)
 
-    def align(self, parameters):
+    def align(self, parameters, sam_file_path):
         command = self.alignment_command(parameters)
         output_parameters = {
-            "log_is_output": not self.creates_output
+            "log_is_output": not self.creates_output,
+            "out_file_path": sam_file_path
         }
         self.run_docker(
             command,
             parameters,
             output_parameters
         )
-        self.conclude_alignment(parameters)
+        self.conclude_alignment(parameters, sam_file_path)
 
-    def convert(self, parameters, sam_file_path):
+    def convert(self, parameters, sam_file_path, bam_file_path):
         destination = parameters["destination"]
         # Somehow, samtools needs a present file to write to but logs to
         # STDOUT anyways, this file will be deleted later
         dummy_file_path = destination + "tmp.file"
         open(dummy_file_path, "w").close()
         command = "samtools sort -o /{} /{}".format(dummy_file_path, sam_file_path)
-        out_file_path = destination + parameters["out_file_name"]
         output_parameters = {
             "log_is_output": True,
-            "log_file_path": destination + "Samtools.log"
+            "log_file_path": destination + "Samtools.log",
+            "out_file_path": bam_file_path
         }
 
         # Sometimes, no output is written (should be invesitgated, maybe we
@@ -122,12 +122,12 @@ class BaseAligner(BaseService):
         attempt = 0
         while (attempt < MAX_ATTEMPTS):
             self.run_docker(command, parameters, output_parameters)
-            if file_utils.file_has_content(out_file_path):
+            if file_utils.file_has_content(bam_file_path):
                 print("[INFO] Converted to BAM after {} attempts".format(
                     str(attempt + 1)
                 ), flush=True)
                 attempt = MAX_ATTEMPTS
             else:
                 attempt += 1
-        file_utils.validate_file_content(out_file_path)
+        file_utils.validate_file_content(bam_file_path)
         os.remove(dummy_file_path)

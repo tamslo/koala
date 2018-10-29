@@ -1,4 +1,5 @@
 import yaml, docker, os
+import modules.file_utils as file_utils
 
 class Docker:
     def __init__(self, data_directory):
@@ -55,5 +56,5 @@ class Docker:
         # expected to be the log file, if both files are written, it is expected
         # to be stderr_file_path
         log_file_path = stderr_file_path or stdout_file_path
-        if os.stat(log_file_path).st_size == 0:
-            os.remove(log_file_path)
+        if not file_utils.file_has_content(log_file_path):
+            file_utils.delete(log_file_path)
