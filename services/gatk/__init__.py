@@ -9,7 +9,6 @@ class HaplotypeCaller(BaseService):
         data_handler = parameters["data_handler"]
         docker_client = parameters["docker_client"]
         runtime_log_path = parameters["runtime_log_path"]
-        parameters["log_from_stderr"] = True
 
         reference_path = data_handler.reference_path(experiment)
         reference_index_path = reference_path + ".fai"
@@ -22,7 +21,10 @@ class HaplotypeCaller(BaseService):
         if not os.path.exists(reference_index_path):
             start_time = time.time()
             command = "samtools faidx /{}".format(reference_path)
-            output_parameters = { "log_file_path": destination + "Index.log" }
+            output_parameters = {
+                "log_file_path": destination + "Index.log",
+                "log_from_stderr": True
+            }
             self.run_docker(command, parameters, output_parameters)
             with open(runtime_log_path, "a") as runtime_log:
                 runtime = str(datetime.timedelta(seconds=time.time() - start_time))
@@ -38,7 +40,10 @@ class HaplotypeCaller(BaseService):
                 reference_path,
                 reference_dict_path
             )
-            output_parameters = { "log_file_path": destination + "Dict.log" }
+            output_parameters = {
+                "log_file_path": destination + "Dict.log",
+                "log_from_stderr": True
+            }
             self.run_docker(command, parameters, output_parameters)
             with open(runtime_log_path, "a") as runtime_log:
                 runtime = str(datetime.timedelta(seconds=time.time() - start_time))
@@ -54,5 +59,6 @@ class HaplotypeCaller(BaseService):
             out_file_path,
             data_handler.reference_path(experiment)
         )
-        self.run_docker(command, parameter)
+        output_parameters = { "log_from_stderr": True }
+        self.run_docker(command, parameter, output_parameters)
         file_utils.validate_file_content(out_file_path)
