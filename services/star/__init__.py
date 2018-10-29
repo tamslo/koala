@@ -1,4 +1,5 @@
 import yaml
+import modules.file_utils as file_utils
 from ..base_aligner import BaseAligner
 
 class Star(BaseAligner):
@@ -13,6 +14,9 @@ class Star(BaseAligner):
             "/" + genome_index_path,
             destination
         )
+
+    def prepare_indexing(self, parameters):
+        file_utils.create_directory(parameters["genome_index_path"])
 
     def build_index_command(self, parameters):
         command = self.__preamble(parameters) + " --runMode genomeGenerate"

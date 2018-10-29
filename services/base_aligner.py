@@ -5,6 +5,10 @@ import modules.file_utils as file_utils
 from .base_service import BaseService
 
 class BaseAligner(BaseService):
+    # Optional preparation of building the index, implement in specific class
+    def prepare_indexing(self, parameters):
+        return None
+
     # Returns: Command to build genome index as string
     def build_index_command(self, parameters):
         raise Exception("Method base_aligner.build_index_command needs to be implemented by subclasses")
@@ -98,8 +102,7 @@ class BaseAligner(BaseService):
             runtime_log.write("Convert to sorted BAM: {}\n".format(runtime))
 
     def build_genome_index(self, parameters):
-        if self.reference_is_directory:
-            file_utils.create_directory(parameters["genome_index_path"])
+        self.prepare_indexing(parameters)
         command = self.build_index_command(parameters)
         self.run_docker(command, parameters)
 
