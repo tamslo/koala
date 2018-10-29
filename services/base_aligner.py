@@ -68,7 +68,6 @@ class BaseAligner(BaseService):
 
         conversion_start = time.time()
         sam_path = destination + out_file_name
-        log_path = destination + "Samtools.log"
 
         # Somehow, samtools needs a present file to write to but logs to
         # STDOUT anyways, this file will be deleted later
@@ -81,13 +80,16 @@ class BaseAligner(BaseService):
             "destination": destination,
             "out_file_name": "Out.bam"
         }
+        conversion_output_parameters = {
+            "log_is_output": True,
+            "log_file_path": destination + "Samtools.log"
+        }
         command = "samtools sort -o /{} /{}".format(dummy_file_path, sam_path)
 
         self.run_docker(
             command,
             conversion_parameters,
-            log_is_output=True,
-            log_file_path=log_path
+            conversion_output_parameters
         )
         os.remove(dummy_file_path)
         with open(runtime_log_path, "a") as runtime_log:
@@ -102,9 +104,12 @@ class BaseAligner(BaseService):
 
     def align(self, parameters):
         command = self.alignment_command(parameters)
+        output_parameters = {
+            "log_is_output": not self.creates_output_files,
+            "rename_output": self.creates_output_files
+        }
         self.run_docker(
             command,
             parameters,
-            log_is_output = not self.creates_output_files,
-            rename_output = self.creates_output_files
+            output_parameters
         )

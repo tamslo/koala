@@ -19,7 +19,7 @@ class BaseService:
         return { "id": self.id, "name": self.name, "type": self.type }
 
     # For debugging and manual execution
-    def __log_command(self, parameters, command):
+    def __log_command(self, command, parameters):
         destination = parameters["destination"]
         with open(os.path.join(destination, "Commands.txt"), "a") as command_file:
             command_file.write("{}\n".format(command))
@@ -30,10 +30,18 @@ class BaseService:
         else:
             return self.image
 
-    def run_docker(self, command, parameters, log_is_output=False, rename_output=False, log_file_path=None):
-        self.__log_command(parameters, command)
+    def run_docker(self, command, parameters, output_parameters={}):
+        self.__log_command(command, parameters)
         docker_client = parameters["docker_client"]
         destination = parameters["destination"]
+
+        # Set defaults for output_parameters
+        def set_default(dict, key, default):
+            return dict[key] if key in dict else default
+        log_is_output = set_default(output_parameters, "log_is_output", False)
+        rename_output = set_default(output_parameters, "rename_output", False)
+        log_file_path = set_default(output_parameters, "log_file_path", None)
+
         # Default. The command automatically writes to file, write to log what
         # is printed in STDOUT.
         stdout_file_path = log_file_path or os.path.join(destination, "Out.log")
@@ -70,4 +78,4 @@ class BaseService:
             file_exists = os.path.exists(out_file_path)
             file_is_empty = file_exists and os.stat(out_file_path).st_size == 0
             if file_is_empty or not file_exists:
-                raise Exception("Output not written")
+                raise Exception("Output {} not written".format(out_file_path))
