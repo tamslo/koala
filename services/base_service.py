@@ -10,10 +10,10 @@ class BaseService:
             for key in config:
                 setattr(self, key, config[key])
 
-    # self.command needs to be implemented by subclasses or self.run overwritten
+    # Gets parameters and builds command. Possibly adds output_parameters and
+    # runs docker `self.run_docker(command, parameters, [, output_parameters])`.
     def run(self, parameters):
-        if hasattr(self, "command"):
-            return self.run_docker(parameters, self.command(parameters))
+        raise Exception("Method base_service.run needs to be implemented by subclasses")
 
     def frontend_information(self):
         return { "id": self.id, "name": self.name, "type": self.type }
@@ -30,7 +30,7 @@ class BaseService:
         else:
             return self.image
 
-    def run_docker(self, parameters, command, log_is_output=False, rename_output=False, log_file_path=None):
+    def run_docker(self, command, parameters, log_is_output=False, rename_output=False, log_file_path=None):
         self.__log_command(parameters, command)
         docker_client = parameters["docker_client"]
         destination = parameters["destination"]

@@ -22,7 +22,7 @@ class HaplotypeCaller(BaseService):
             start_time = time.time()
             command = "samtools faidx /{}".format(reference_path)
             log_file_path = destination + "Index.log"
-            self.run_docker(parameters, command, log_file_path=log_file_path)
+            self.run_docker(command, parameters, log_file_path=log_file_path)
             with open(runtime_log_path, "a") as runtime_log:
                 runtime = str(datetime.timedelta(seconds=time.time() - start_time))
                 runtime_log.write("Index generation: {}\n".format(runtime))
@@ -38,7 +38,7 @@ class HaplotypeCaller(BaseService):
                 reference_dict_path
             )
             log_file_path = destination + "Dict.log"
-            self.run_docker(parameters, command, log_file_path=log_file_path)
+            self.run_docker(command, parameters, log_file_path=log_file_path)
             with open(runtime_log_path, "a") as runtime_log:
                 runtime = str(datetime.timedelta(seconds=time.time() - start_time))
                 runtime_log.write("Dict generation: {}\n".format(runtime))

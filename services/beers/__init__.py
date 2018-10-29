@@ -11,4 +11,4 @@ class BeersEvaluator(BaseService):
             truth_file
         )
         raise Exception("Needs to be tested")
-        self.run_docker(parameters, command)
+        self.run_docker(command, parameters)
