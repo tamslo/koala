@@ -39,7 +39,6 @@ class BaseService:
         def set_default(dict, key, default):
             return dict[key] if key in dict else default
         log_is_output = set_default(output_parameters, "log_is_output", False)
-        rename_output = set_default(output_parameters, "rename_output", False)
         log_file_path = set_default(output_parameters, "log_file_path", None)
 
         # Default. The command automatically writes to file, write to log what
@@ -64,12 +63,4 @@ class BaseService:
             command,
             stdout_file_path,
             stderr_file_path
-        )
-
-        if "out_file_name" in parameters:
-            out_file_path = os.path.join(parameters["destination"], parameters["out_file_name"])
-            if rename_output:
-                os.rename(
-                    os.path.join(parameters["destination"], self.output_file_name),
-                    out_file_path
-                )
+        )            

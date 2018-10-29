@@ -30,7 +30,17 @@ Additionally, we forward port 5000 to port 80 with `iptables -t nat -A PREROUTIN
 
 ## Adding a Service
 
-To add a service, add a directory in services, its name will be the `service_id`. To this directory, add a Dockerfile that sets up a service and a YAML with the specification (at least the name that should be displayed in the front-end and the type should be included). To perform tasks, a class that inherits from `BaseService` needs to be added, look at similar services for examples.
+Services are composed of a Dockerfile that defines its dependencies, a configuration file, and a Python class extending the `BaseService`. For one Dockerfile, multiple services can exist, each with an own configuration file and Python class.
+
+Add new Dockerfiles to sub-directories in `services`, where the directory name will be the tag name of the Docker image that will be build from the file with the deploy script.
+
+If only one service depends on this image, create a file called `config.yml`, if multiple services will depend on it, create a file called `<service_name>.config.yml`. The configuration file must include the `name` that will be displayed in the front-end and the `type` of the service, which is one of `aligner`, `alignment_filter`, or `variant_caller`. For some types, additional information is needed, as documented below.
+
+To perform tasks, a class that inherits from `BaseService` needs to be added, look at similar services for examples. The class needs to be imported in `services/__init__.py` and added to the dictionary. For now, all classes are defined in the file `image_name/__init__.py` for shorter imports. If the files get too large, they can of course be split up.
+
+### Configuration
+
+For services of type `aligner`, it needs to be defined whether the service creates a file by itself or writes to STDOUT by setting the boolean `creates_output`.
 
 ## Useful Commands for Testing
 

@@ -9,6 +9,10 @@ class BaseAligner(BaseService):
     def prepare_indexing(self, parameters):
         return None
 
+    # Optional post-processing of alignment, implement in specific class
+    def conclude_alignment(self, parameters):
+        return None
+
     # Returns: Command to build genome index as string
     def build_index_command(self, parameters):
         raise Exception("Method base_aligner.build_index_command needs to be implemented by subclasses")
@@ -69,34 +73,15 @@ class BaseAligner(BaseService):
             runtime_log.write("Alignment: {}\n".format(runtime))
 
         # Create sorted BAM file from SAM file
-
-        conversion_start = time.time()
-        sam_path = destination + out_file_name
-
-        # Somehow, samtools needs a present file to write to but logs to
-        # STDOUT anyways, this file will be deleted later
-        dummy_file_path = destination + "tmp.file"
-        open(dummy_file_path, "w").close()
-
+        sam_file_path = destination + out_file_name
         conversion_parameters = {
             "docker_client": docker_client,
             "docker_image": "gatk",
             "destination": destination,
             "out_file_name": "Out.bam"
         }
-        conversion_output_parameters = {
-            "log_is_output": True,
-            "log_file_path": destination + "Samtools.log"
-        }
-        command = "samtools sort -o /{} /{}".format(dummy_file_path, sam_path)
-
-        self.run_docker(
-            command,
-            conversion_parameters,
-            conversion_output_parameters
-        )
-        os.remove(dummy_file_path)
-        file_utils.validate_file_content(destination + conversion_parameters["out_file_name"])
+        conversion_start = time.time()
+        self.convert(conversion_parameters, sam_file_path)
         with open(runtime_log_path, "a") as runtime_log:
             runtime = str(datetime.timedelta(seconds=time.time() - conversion_start))
             runtime_log.write("Convert to sorted BAM: {}\n".format(runtime))
@@ -109,11 +94,40 @@ class BaseAligner(BaseService):
     def align(self, parameters):
         command = self.alignment_command(parameters)
         output_parameters = {
-            "log_is_output": not self.creates_output_files,
-            "rename_output": self.creates_output_files
+            "log_is_output": not self.creates_output
         }
         self.run_docker(
             command,
             parameters,
             output_parameters
         )
+        self.conclude_alignment(parameters)
+
+    def convert(self, parameters, sam_file_path):
+        destination = parameters["destination"]
+        # Somehow, samtools needs a present file to write to but logs to
+        # STDOUT anyways, this file will be deleted later
+        dummy_file_path = destination + "tmp.file"
+        open(dummy_file_path, "w").close()
+        command = "samtools sort -o /{} /{}".format(dummy_file_path, sam_file_path)
+        out_file_path = destination + parameters["out_file_name"]
+        output_parameters = {
+            "log_is_output": True,
+            "log_file_path": destination + "Samtools.log"
+        }
+
+        # Sometimes, no output is written (should be invesitgated, maybe we
+        # need a newer samtools version)
+        MAX_ATTEMPTS = 5
+        attempt = 0
+        while (attempt < MAX_ATTEMPTS):
+            self.run_docker(command, parameters, output_parameters)
+            if file_utils.file_has_content(out_file_path):
+                print("[INFO] Converted to BAM after {} attempts".format(
+                    str(attempt + 1)
+                ), flush=True)
+                attempt = MAX_ATTEMPTS
+            else:
+                attempt += 1
+        file_utils.validate_file_content(out_file_path)
+        os.remove(dummy_file_path)
