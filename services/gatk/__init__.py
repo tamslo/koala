@@ -60,5 +60,5 @@ class HaplotypeCaller(BaseService):
             data_handler.reference_path(experiment)
         )
         output_parameters = { "log_from_stderr": True }
-        self.run_docker(command, parameter, output_parameters)
+        self.run_docker(command, parameters, output_parameters)
         file_utils.validate_file_content(out_file_path)
