@@ -40,24 +40,28 @@ class BaseService:
             return dict[key] if key in dict else default
         log_is_output = set_default(output_parameters, "log_is_output", False)
         log_from_stderr = set_default(output_parameters, "log_from_stderr", False)
-        log_file_path = set_default(output_parameters, "log_file_path", None)
+        log_file_path = set_default(
+            output_parameters,
+            "log_file_path",
+            os.path.join(destination, "Out.log")
+        )
 
         # Default. The command automatically writes to file, write to log what
         # is printed in STDOUT.
-        stdout_file_path = log_file_path or os.path.join(destination, "Out.log")
+        stdout_file_path = log_file_path
         stderr_file_path = None
+
+        # The command automatically writes to file, write to log what is
+        # printed in STDERR.
+        if log_from_stderr:
+            stdout_file_path = None
+            stderr_file_path = log_file_path
 
         # The command does not write to file, write to output file what is
         # printed in STDOUT and to log what is printed in STDERR.
         if log_is_output:
-            stderr_file_path = stdout_file_path # Write logs from stderr
             stdout_file_path = os.path.join(destination, parameters["out_file_name"])
-        else:
-            # The command automatically writes to file, write to log what is
-            # printed in STDERR.
-            if log_from_stderr:
-                stderr_file_path = stdout_file_path
-                stdout_file_path = None
+            stderr_file_path = stdout_file_path # Write logs from stderr
 
         docker_client.run_and_write_logs(
             self.__image_name(parameters),
