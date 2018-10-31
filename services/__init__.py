@@ -24,7 +24,7 @@ ServiceClasses = {
     "gatk_haplotypecaller": HaplotypeCaller
 }
 
-def getServices():
+def get_services():
     services = []
     for directory in os.listdir("services"):
         service_directory = "services/{}/".format(directory)

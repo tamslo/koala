@@ -1,4 +1,5 @@
 from time import localtime
+from services import get_services
 from .base_instance import BaseInstance
 
 class Experiment(BaseInstance):
@@ -43,17 +44,26 @@ class Experiment(BaseInstance):
         self.content["status"] = self.constants["experiment"]["WAITING"]
         super().store()
 
-    def get_input_directory(self, action_id):
+    def __get_preceding_step_id(self, action_id):
         pipeline = self.content["pipeline"]
         step_ids = []
-        step_directories = []
-        for step in list(map(lambda tuple: tuple[1], list(pipeline.items()))):
+        action_ids = []
+        for step_id, step in pipeline.items():
+            step_ids.append(step_id)
             for tuple in list(step.items()):
                 if tuple[0] == "id":
-                    step_ids.append(tuple[1])
-                if tuple[0] == "directory":
-                    step_directories.append(tuple[1])
-        current_index = step_ids.index(action_id)
+                    action_ids.append(tuple[1])
+        current_index = action_ids.index(action_id)
         if current_index == 0:
             raise Exception("The first action does not have a preceding action")
-        return step_directories[current_index - 1]
+        return step_ids[current_index - 1]
+
+    def get_preceding_service(self, action_id):
+        services = get_services()
+        preceding_step = self.__get_preceding_step_id(action_id)
+        action_id = self.content["pipeline"][preceding_step]["id"]
+        return next(service for service in services if service.id == action_id)
+
+    def get_input_directory(self, action_id):
+        preceding_step = self.__get_preceding_step_id(action_id)
+        return self.content["pipeline"][preceding_step]["directory"]

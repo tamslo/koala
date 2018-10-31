@@ -6,7 +6,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from modules.data_handler import DataHandler
 from modules.runner import Runner
 from modules.exporter import Exporter
-from services import getServices
+from services import get_services
 
 app = Flask(__name__)
 CORS(app)
@@ -44,7 +44,7 @@ def get_context():
     return json.dumps({
         "references": data_handler.get_references(),
         "datasets": get_content(data_handler.datasets.all()),
-        "services": list(map(lambda Service: Service.frontend_information(), getServices())),
+        "services": list(map(lambda Service: Service.frontend_information(), get_services())),
         "experiments": get_content(data_handler.experiments.all())
     })
 

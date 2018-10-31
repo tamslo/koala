@@ -3,7 +3,7 @@ import time
 import traceback
 import modules.file_utils as file_utils
 from .docker import Docker
-from services import getServices
+from services import get_services
 
 class Runner:
     def __init__(self, data_handler, data_directory, constants):
@@ -12,7 +12,7 @@ class Runner:
         self.docker_client = Docker(data_directory)
         self.tasks = []
         self.current_task = None
-        self.services = getServices()
+        self.services = get_services()
 
     def add_task(self, experiment_id):
         experiment = self.data_handler.experiments.select(experiment_id)
