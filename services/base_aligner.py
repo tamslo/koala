@@ -10,7 +10,7 @@ class BaseAligner(BaseService):
         return None
 
     # Optional post-processing of alignment, implement in specific class
-    def conclude_alignment(self, parameters):
+    def conclude_alignment(self, parameters, out_file_path):
         return None
 
     # Returns: Command to build genome index as string
