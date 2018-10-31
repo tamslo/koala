@@ -3,6 +3,7 @@ FROM ubuntu:16.04
 RUN apt-get update
 RUN apt-get install -y python-minimal python-pip
 RUN apt-get install -y git
+RUN apt-get install -y vim
 
 # Install Opossum
 
