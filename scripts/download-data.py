@@ -156,7 +156,7 @@ def get_baruzzo(dataset, directory):
         if not os.path.isdir(file_path) and not file_path == download_path:
             shutil.move(file_path, beers_directory + file_name)
 
-    # Move FASTA files to root and rename
+    # Move FASTQ files to root and rename
     def setup_file(direction):
         file_name = "{}.{}.fa".format(dataset["id"], direction)
         file_origin = beers_directory + file_name
@@ -166,7 +166,14 @@ def get_baruzzo(dataset, directory):
 
     forward_file_name, forward_file_path = setup_file(constants["dataset"]["FORWARD"])
     reverse_file_name, reverse_file_path = setup_file(constants["dataset"]["REVERSE"])
+
+    # Move CIG file to root and rename
+    truth_file_name = "{}.cig".format(dataset["id"])
+    truth_file_path = directory + "/truth.cig"
+    os.rename(beers_directory + truth_file_name, truth_file_path)
+
     file_utils.delete(download_path)
+    file_utils.delete(beers_directory)
 
     write_dataset_json({
         "id": dataset["id"],
@@ -182,6 +189,13 @@ def get_baruzzo(dataset, directory):
                 "path": reverse_file_path,
             }
         },
+        "evaluation": {
+            "type": "beers",
+            "truth_file": {
+                "name": truth_file_name,
+                "path": truth_file_path
+            }
+        }
     })
 
 def get_from_encode(dataset, directory):
@@ -192,7 +206,8 @@ def get_from_encode(dataset, directory):
         "data": {
             constants["dataset"]["FORWARD"]: {},
             constants["dataset"]["REVERSE"]: {}
-        }
+        },
+        "evaluation": dataset["evaluation"]
     }
 
     def get_file(file_id, direction, directory):
@@ -232,7 +247,8 @@ rna_seq_data = [
     #     "files": {
     #         constants["dataset"]["FORWARD"]: "ENCFF000EWJ",
     #         constants["dataset"]["REVERSE"]: "ENCFF000EWX"
-    #     }
+    #     },
+    #     "evaluation": { "type": "giab" }
     # },
     {
         "id": "simulated_reads_HG19t1r1",
