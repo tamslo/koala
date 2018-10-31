@@ -240,54 +240,54 @@ rna_seq_data = [
         "file_name": "human_t1r1",
         "name": "Simulated Human T1R1"
     },
-    # {
-    #     "id": "simulated_reads_HG19t1r2",
-    #     "getter": get_baruzzo,
-    #     "file_name": "human_t1r2",
-    #     "name": "Simulated Human T1R2"
-    # },
-    # {
-    #     "id": "simulated_reads_HG19t1r3",
-    #     "getter": get_baruzzo,
-    #     "file_name": "human_t1r3",
-    #     "name": "Simulated Human T1R3"
-    # },
-    # {
-    #     "id": "simulated_reads_HG19t2r1",
-    #     "getter": get_baruzzo,
-    #     "file_name": "human_t2r1",
-    #     "name": "Simulated Human T2R1"
-    # },
-    # {
-    #     "id": "simulated_reads_HG19t2r2",
-    #     "getter": get_baruzzo,
-    #     "file_name": "human_t2r2",
-    #     "name": "Simulated Human T2R2"
-    # },
-    # {
-    #     "id": "simulated_reads_HG19t2r3",
-    #     "getter": get_baruzzo,
-    #     "file_name": "human_t2r3",
-    #     "name": "Simulated Human T2R3"
-    # },
-    # {
-    #     "id": "simulated_reads_HG19t3r1",
-    #     "getter": get_baruzzo,
-    #     "file_name": "human_t3r1",
-    #     "name": "Simulated Human T3R1"
-    # },
-    # {
-    #     "id": "simulated_reads_HG19t3r2",
-    #     "getter": get_baruzzo,
-    #     "file_name": "human_t3r2",
-    #     "name": "Simulated Human T3R2"
-    # },
-    # {
-    #     "id": "simulated_reads_HG19t3r3",
-    #     "getter": get_baruzzo,
-    #     "file_name": "human_t3r3",
-    #     "name": "Simulated Human T3R3"
-    # },
+    {
+        "id": "simulated_reads_HG19t1r2",
+        "getter": get_baruzzo,
+        "file_name": "human_t1r2",
+        "name": "Simulated Human T1R2"
+    },
+    {
+        "id": "simulated_reads_HG19t1r3",
+        "getter": get_baruzzo,
+        "file_name": "human_t1r3",
+        "name": "Simulated Human T1R3"
+    },
+    {
+        "id": "simulated_reads_HG19t2r1",
+        "getter": get_baruzzo,
+        "file_name": "human_t2r1",
+        "name": "Simulated Human T2R1"
+    },
+    {
+        "id": "simulated_reads_HG19t2r2",
+        "getter": get_baruzzo,
+        "file_name": "human_t2r2",
+        "name": "Simulated Human T2R2"
+    },
+    {
+        "id": "simulated_reads_HG19t2r3",
+        "getter": get_baruzzo,
+        "file_name": "human_t2r3",
+        "name": "Simulated Human T2R3"
+    },
+    {
+        "id": "simulated_reads_HG19t3r1",
+        "getter": get_baruzzo,
+        "file_name": "human_t3r1",
+        "name": "Simulated Human T3R1"
+    },
+    {
+        "id": "simulated_reads_HG19t3r2",
+        "getter": get_baruzzo,
+        "file_name": "human_t3r2",
+        "name": "Simulated Human T3R2"
+    },
+    {
+        "id": "simulated_reads_HG19t3r3",
+        "getter": get_baruzzo,
+        "file_name": "human_t3r3",
+        "name": "Simulated Human T3R3"
+    },
     # {
     #     "id": "simulated_reads_PFALt1r1",
     #     "getter": get_baruzzo,
