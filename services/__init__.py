@@ -6,7 +6,6 @@ from .base_service import BaseService
 
 from .test import TestAlignerWritesFile
 from .test import TestAlignerWritesLog
-from .test import TestAlignmentFilter
 from .star import Star
 from .novoalign import NovoAlign
 from .opossum import Opossum
@@ -16,7 +15,6 @@ from .gatk import HaplotypeCaller
 ServiceClasses = {
     "test_aligner_writes_file": TestAlignerWritesFile,
     "test_aligner_writes_log": TestAlignerWritesLog,
-    "test_alignment_filter": TestAlignmentFilter,
     "star": Star,
     "novoalign": NovoAlign,
     "opossum": Opossum,

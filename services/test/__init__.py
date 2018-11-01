@@ -1,13 +1,6 @@
 import os
 import modules.file_utils as file_utils
-from ..base_service import BaseService
 from ..base_aligner import BaseAligner
-
-class TestAlignmentFilter(BaseService):
-    def run(self, parameters):
-        command = "touch {}".format(parameters["destination"] + "Out.bam")
-        self.run_docker(command, parameters)
-
 
 class TestAlignerWritesLog(BaseAligner):
     def build_index_command(self, parameters):
