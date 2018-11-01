@@ -75,16 +75,16 @@ genomes = {
         "name": "Human (hg19)",
         "source": "http://hgdownload.cse.ucsc.edu/downloads.html#human"
     },
-    "hg38": {
-        "getter": get_human_genome,
-        "name": "Human (hg38)",
-        "source": "http://hgdownload.cse.ucsc.edu/downloads.html#human"
-    },
-    # "pfal": {
-    #     "getter": get_p_falciparum,
-    #     "name": "Malaria",
-    #     "source": "http://bioinf.itmat.upenn.edu/BEERS/bp1/datasets.php"
-    # }
+    # "hg38": {
+    #     "getter": get_human_genome,
+    #     "name": "Human (hg38)",
+    #     "source": "http://hgdownload.cse.ucsc.edu/downloads.html#human"
+    # },
+    "pfal": {
+        "getter": get_p_falciparum,
+        "name": "Malaria",
+        "source": "http://bioinf.itmat.upenn.edu/BEERS/bp1/datasets.php"
+    }
 }
 
 def get_tools():
