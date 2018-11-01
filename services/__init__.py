@@ -13,16 +13,24 @@ from .beers import BeersEvaluator
 from .gatk import HaplotypeCaller
 from .giab import GiabEvaluator
 
+with open("config.yml") as config_file:
+    config = yaml.load(config_file)
+    environment = config["environment"]
+
 ServiceClasses = {
-    "test_aligner_writes_file": TestAlignerWritesFile,
-    "test_aligner_writes_log": TestAlignerWritesLog,
-    "star": Star,
-    "novoalign": NovoAlign,
     "opossum": Opossum,
     "beers": BeersEvaluator,
     "gatk_haplotypecaller": HaplotypeCaller,
     "giab": GiabEvaluator
 }
+
+if environment == "test":
+    ServiceClasses["test_aligner_writes_file"] = TestAlignerWritesFile
+    ServiceClasses["test_aligner_writes_log"] = TestAlignerWritesLog
+
+if environment == "production":
+    ServiceClasses["star"] = Star
+    ServiceClasses["novoalign"] = NovoAlign
 
 def get_services():
     services = []
@@ -36,6 +44,7 @@ def get_services():
                         service_id = directory
                     else:
                         service_id = directory + "_" + file.split(".config.yml")[0]
-                    ServiceClass = ServiceClasses[service_id]
-                    services.append(ServiceClass(config_path, service_id, image_name=directory))
+                    if service_id in ServiceClasses:
+                        ServiceClass = ServiceClasses[service_id]
+                        services.append(ServiceClass(config_path, service_id, image_name=directory))
     return services
