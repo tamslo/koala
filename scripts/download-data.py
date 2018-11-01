@@ -98,6 +98,11 @@ def get_tools():
         else:
             log_data_present(tool_name)
 
+def remove_tools():
+    for tool_name in tools:
+        tool_path = reference_directory + tool_name
+        file_utils.delete(tool_path)
+
 def genome_path(genome_id):
     return reference_directory + genome_id + fasta_file_ending
 
@@ -439,7 +444,8 @@ try:
     get_tools()
     get_genomes()
     get_datasets()
-    get_giab_calls()
+    # get_giab_calls()
+    remove_tools()
 finally:
     for path in started_tasks:
         if not path in finished_tasks:
