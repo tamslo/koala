@@ -104,8 +104,15 @@ class BaseAligner(BaseService):
         self.conclude_alignment(parameters, sam_file_path)
 
     def convert(self, parameters, sam_file_path, bam_file_path):
+        """
+        Convert SAM file to sorted BAM file. Also append read groups to ensure
+        compatibility with Picard and GATK tools.
+        """
+
         destination = parameters["destination"]
-        command = "gatk SortSam -I=/{} -O=/{} -SO=coordinate".format(sam_file_path, bam_file_path)
+        command = "gatk AddOrReplaceReadGroups -I /{} -O /{} -SO coordinate " \
+            "-ID foo -LB bar -PL illumina -SM Sample1 -PU foo.bar " \
+            "--CREATE_INDEX true".format(sam_file_path, bam_file_path)
         output_parameters = { "log_file_path": destination + "Samtools.log" }
         self.run_docker(command, parameters, output_parameters)
         file_utils.validate_file_content(bam_file_path)
