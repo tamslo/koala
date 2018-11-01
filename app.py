@@ -1,4 +1,4 @@
-import json, zipfile, time, os, optparse, atexit, logging, yaml
+import json, zipfile, time, os, optparse, atexit, logging, yaml, uuid
 from flask import Flask, request, send_file, send_from_directory
 from flask_cors import CORS
 from collections import OrderedDict
@@ -29,18 +29,18 @@ scheduler.add_job(func=runner.run, trigger="interval", seconds=5, timezone="Euro
 scheduler.start()
 logging.getLogger('apscheduler').setLevel("ERROR")
 
+def get_content(instances):
+    content = OrderedDict()
+    for id, instance in instances.items():
+        content[id] = instance.content
+    return content
+
 @app.route("/ping")
 def ping():
     return time.strftime("%a, %d %b %Y %H:%M:%S", time.localtime())
 
 @app.route("/context", methods=["GET"])
 def get_context():
-    def get_content(instances):
-        content = OrderedDict()
-        for id, instance in instances.items():
-            content[id] = instance.content
-        return content
-
     return json.dumps({
         "references": data_handler.get_references(),
         "datasets": get_content(data_handler.datasets.all()),
@@ -113,6 +113,74 @@ def export():
         as_attachment=True,
         attachment_filename=export_file_name
     )
+
+@app.route("/evaluate", methods=["GET"])
+def evaluate():
+    dataset_prefix = request.args.get("dataset")
+    reference = request.args.get("reference") or "hg19"
+
+    if dataset_prefix == None:
+        return "Please enter a data set prefix to select data sets by name"
+
+    # Select data sets
+    datasets = []
+    for dataset_id, dataset in get_content(data_handler.datasets.all()).items():
+        if dataset["name"].startswith(dataset_prefix):
+            datasets.append(dataset)
+
+    if len(datasets) < 1:
+        return "No data sets with name that begins with '{}' found".format(dataset_prefix)
+
+    # Define different services
+    services = {
+        "aligners": [],
+        "alignment_filters": [],
+        "variant_callers": []
+    }
+    for service in get_services():
+        services_key = "{}s".format(service.type)
+        if services_key in services:
+            services[services_key].append(service.frontend_information())
+
+    # Create experiments and add to task queue
+    def create_experiment(dataset, aligner, variant_caller, alignment_filter=None):
+        name = dataset["name"] + " " + aligner["name"] + " "
+        pipeline = OrderedDict()
+        pipeline["alignment"] = {"id": aligner["id"]}
+        if alignment_filter != None:
+            name += alignment_filter["name"] + " "
+            pipeline["alignment_filtering_0"] = {"id": alignment_filter["id"]}
+        name += variant_caller["name"]
+        pipeline["variant_calling"] = {"id": variant_caller["id"]}
+        return {
+            "id": str(uuid.uuid4()),
+            "name": name,
+            "reference": reference,
+            "dataset": dataset["id"],
+            "pipeline": pipeline
+        }
+
+    experiments = []
+    for dataset in datasets:
+        for aligner in services["aligners"]:
+            for variant_caller in services["variant_callers"]:
+                experiment = create_experiment(dataset, aligner, variant_caller)
+                experiments.append(experiment)
+                data_handler.experiments.create(experiment)
+                runner.add_task(experiment["id"])
+            for alignment_filter in services["alignment_filters"]:
+                for variant_caller in services["variant_callers"]:
+                    experiment = create_experiment(dataset, aligner,
+                        variant_caller, alignment_filter)
+                    experiments.append(experiment)
+                    data_handler.experiments.create(experiment)
+                    runner.add_task(experiment["id"])
+
+    text = "Created {} experiments and added them to runner queue</br></br>".format(
+        len(experiments)
+    )
+    text += "</br>".join(list(map(lambda experiment: experiment["name"], experiments)))
+    return text
 
 
 # Routes for client built with `npm run build`
