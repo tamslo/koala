@@ -11,6 +11,7 @@ from .novoalign import NovoAlign
 from .opossum import Opossum
 from .beers import BeersEvaluator
 from .gatk import HaplotypeCaller
+from .giab import GiabEvaluator
 
 ServiceClasses = {
     "test_aligner_writes_file": TestAlignerWritesFile,
@@ -19,7 +20,8 @@ ServiceClasses = {
     "novoalign": NovoAlign,
     "opossum": Opossum,
     "beers": BeersEvaluator,
-    "gatk_haplotypecaller": HaplotypeCaller
+    "gatk_haplotypecaller": HaplotypeCaller,
+    "giab": GiabEvaluator
 }
 
 def get_services():

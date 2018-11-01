@@ -42,9 +42,10 @@ To perform tasks, a class that inherits from `BaseService` needs to be added, lo
 
 For services of type `aligner`, it needs to be defined whether the service creates a file by itself or writes to STDOUT by setting the boolean `creates_output` and whether the aligner uses soft clips by setting the boolean `soft_clips_exist`.
 
+For services of type `evaluation`, a list of steps needs to be given that can be evaluated. Possible values are `alignment`, `alignment_filtering`, and `variant_calling` (as defined in `client/src/components/experimentConstants.js`).
+
 ## Useful Commands for Testing
 
 - Run docker locally: `docker run -v /c/Users/Tamara/Repos/koala/data:/data -it <container_name>`
 - Run docker on VM: `docker run -v ~/code/data:/data -it <container_name>`
-- Build test image: `docker build -t test_aligner services/test_aligner`
-- Run BEERS evaluation in Docker container: `./evaluate_alignment.sh [100|76] data/datasets/<path> /data/datasets/<truth_path>`
+- Build image: `docker build -t <image_name> services/<image_name>`

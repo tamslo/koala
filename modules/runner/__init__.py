@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import traceback
 import modules.file_utils as file_utils
@@ -86,6 +87,24 @@ class Runner:
                 runtime_log.write("Done at {}\n".format(
                     time.strftime("%d %b %Y %H:%M:%S", time.localtime())
                 ))
+            self.__run_evaluation_if_specified(file_path, experiment, action)
             experiment.complete_action(action)
         experiment.add_download(action, file_path)
         return experiment
+
+    def __run_evaluation_if_specified(self, destination, experiment, step):
+        dataset = self.data_handler.datasets.select(experiment.get("dataset"))
+        evaluation = dataset.get("evaluation")
+        if evaluation:
+            evaluation_type = evaluation["type"]
+            evaluation_handler = next(
+                (service for service in self.services if service.id == evaluation_type),
+                None
+            )
+            step_id = re.sub(r"_\d$", "", step) # in case a number was appended
+            if (step_id in evaluation_handler.steps):
+                evaluation_handler.run({
+                    "docker_client": self.docker_client,
+                    "destination": destination,
+                    "dataset": dataset
+                })

@@ -1,0 +1,4 @@
+name: GIAB
+type: evaluation
+steps:
+  - variant_calling
