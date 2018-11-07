@@ -73,20 +73,18 @@ class Docker:
                     sum_memory_usage += stats["memory_stats"]["usage"]
                     num_memory_usages += 1
 
-            if num_memory_usages == 0:
-                write_stats("No memory consumption measured")
-            else:
+            if num_memory_usages > 0:
                 avg_memory_usage = sum_memory_usage / num_memory_usages
-                write_stats("Average memory usage is {}".format(
+                write_stats("Average memory: {}".format(
                     gigabytes_string(avg_memory_usage)
                 ))
-                write_stats("Maximum memory usage is {}".format(
+                write_stats("Maximum memory: {}".format(
                     gigabytes_string(max_memory_usage)
                 ))
 
         write_stats("{}\n".format(command))
         start_time = time.time()
-        write_stats("Started at {}".format(
+        write_stats("Start time: {}".format(
             time.strftime("%d %b %Y %H:%M:%S", time.localtime(start_time))
         ))
 
@@ -106,9 +104,9 @@ class Docker:
         docker_container.remove()
 
         end_time = time.time()
-        write_stats("Done at {}".format(
+        write_stats("End time: {}".format(
             time.strftime("%d %b %Y %H:%M:%S", time.localtime(end_time))
         ))
-        write_stats("Total time {}\n".format(
+        write_stats("Total time: {}\n".format(
             str(datetime.timedelta(seconds=end_time - start_time))
         ))
