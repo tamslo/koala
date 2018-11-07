@@ -28,4 +28,7 @@ class BaseInstance:
         self.store()
 
     def get(self, property):
-        return self.content[property]
+        if property in self.content:
+            return self.content[property]
+        else:
+            return None

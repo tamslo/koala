@@ -1,5 +1,6 @@
 import os
 import json
+import uuid
 from collections import OrderedDict
 import modules.file_utils as file_utils
 
@@ -13,6 +14,8 @@ class InstanceHandler:
         return self.directory + id + ".json"
 
     def create(self, content):
+        if not "id" in content:
+            content["id"] = str(uuid.uuid4())
         instance = self.Instance(content, self.__instance_path(content["id"]))
         instance.setup()
         return instance

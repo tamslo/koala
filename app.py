@@ -1,4 +1,4 @@
-import json, zipfile, time, os, optparse, atexit, logging, yaml, uuid
+import json, zipfile, time, os, optparse, atexit, logging, yaml
 from flask import Flask, request, send_file, send_from_directory
 from flask_cors import CORS
 from collections import OrderedDict
@@ -75,9 +75,20 @@ def experiment():
             else:
                 unpacked_pipeline[action_name] = { "id": action }
         params["pipeline"] = unpacked_pipeline
-        experiment = data_handler.experiments.create(params)
-        runner.add_task(experiment.get("id"))
-        return json.dumps(experiment.content)
+        experiments = []
+        datasets = params.pop("datasets")
+        experiment_name = params.pop("name")
+        for dataset in datasets:
+            params["dataset"] = dataset
+            params["name"] = "{} ({})".format(
+                experiment_name,
+                data_handler.datasets.select(dataset).get("name")
+            )
+            params.pop("id", None)
+            experiment = data_handler.experiments.create(params)
+            experiments.append(experiment.content)
+            runner.add_task(experiment.get("id"))
+        return json.dumps(experiments)
     elif request.method == "PUT":
         content = request.get_json()
         experiment = data_handler.experiments.update(content)
@@ -93,6 +104,7 @@ def experiment():
 def running():
     experiment_id = runner.current_task or len(runner.tasks) > 0 and runner.tasks[0]
     if experiment_id:
+        print(experiment_id, flush=True)
         content = data_handler.experiments.select(experiment_id).content
     else:
         content = {}
@@ -113,75 +125,6 @@ def export():
         as_attachment=True,
         attachment_filename=export_file_name
     )
-
-@app.route("/evaluate", methods=["GET"])
-def evaluate():
-    dataset_prefix = request.args.get("dataset")
-    reference = request.args.get("reference") or "hg19"
-
-    if dataset_prefix == None:
-        return "Please enter a data set prefix to select data sets by name"
-
-    # Select data sets
-    datasets = []
-    for dataset_id, dataset in get_content(data_handler.datasets.all()).items():
-        if dataset["name"].startswith(dataset_prefix):
-            datasets.append(dataset)
-
-    if len(datasets) < 1:
-        return "No data sets with name that begins with '{}' found".format(dataset_prefix)
-
-    # Define different services
-    services = {
-        "aligners": [],
-        "alignment_filters": [],
-        "variant_callers": []
-    }
-    for service in get_services():
-        services_key = "{}s".format(service.type)
-        if services_key in services:
-            services[services_key].append(service.frontend_information())
-
-    # Create experiments and add to task queue
-    def create_experiment(dataset, aligner, variant_caller, alignment_filter=None):
-        name = dataset["name"] + " " + aligner["name"] + " "
-        pipeline = OrderedDict()
-        pipeline["alignment"] = {"id": aligner["id"]}
-        if alignment_filter != None:
-            name += alignment_filter["name"] + " "
-            pipeline["alignment_filtering_0"] = {"id": alignment_filter["id"]}
-        name += variant_caller["name"]
-        pipeline["variant_calling"] = {"id": variant_caller["id"]}
-        return {
-            "id": str(uuid.uuid4()),
-            "name": name,
-            "reference": reference,
-            "dataset": dataset["id"],
-            "pipeline": pipeline
-        }
-
-    experiments = []
-    for dataset in datasets:
-        for aligner in services["aligners"]:
-            for variant_caller in services["variant_callers"]:
-                experiment = create_experiment(dataset, aligner, variant_caller)
-                experiments.append(experiment)
-                data_handler.experiments.create(experiment)
-                runner.add_task(experiment["id"])
-            for alignment_filter in services["alignment_filters"]:
-                for variant_caller in services["variant_callers"]:
-                    experiment = create_experiment(dataset, aligner,
-                        variant_caller, alignment_filter)
-                    experiments.append(experiment)
-                    data_handler.experiments.create(experiment)
-                    runner.add_task(experiment["id"])
-
-    text = "Created {} experiments and added them to runner queue</br></br>".format(
-        len(experiments)
-    )
-    text += "</br>".join(list(map(lambda experiment: experiment["name"], experiments)))
-    return text
-
 
 # Routes for client built with `npm run build`
 

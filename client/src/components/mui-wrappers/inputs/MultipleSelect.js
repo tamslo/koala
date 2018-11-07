@@ -25,16 +25,20 @@ export default props => {
         input={<Input id="select-multiple-checkbox" />}
         renderValue={selected =>
           selected
-            .map(item_id => props.items.find(item => item.id === item_id).name)
+            .map(item_id => {
+              const item = props.items.find(item => item.id === item_id);
+              return item && item.name;
+            })
             .join(", ")
         }
       >
         {props.items.map(item => (
           <MenuItem key={item.id} value={item.id}>
             <Checkbox checked={itemSelected(props.selected, item.id)} />
-            <ListItemText primary={item.name} />
+            {item.content || <ListItemText primary={item.name} />}
           </MenuItem>
         ))}
+        {props.children}
       </Select>
     </FormControl>
   );

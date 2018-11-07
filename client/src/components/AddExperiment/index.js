@@ -1,5 +1,4 @@
 import React, { Component } from "react";
-import uuid from "uuid/v4";
 import styled from "styled-components";
 import MenuItem from "@material-ui/core/MenuItem";
 import Button from "@material-ui/core/Button";
@@ -24,10 +23,9 @@ export default class extends Component {
 
   initialState() {
     return {
-      id: uuid(),
       name: "New Experiment",
       reference: "",
-      dataset: "",
+      datasets: [],
       pipeline: {
         [ALIGNMENT]: "",
         [ALIGNMENT_FILTERING]: [],
@@ -40,7 +38,7 @@ export default class extends Component {
     return (
       this.state.name !== "" &&
       this.state.reference !== "" &&
-      this.state.dataset !== "" &&
+      this.state.datasets.length > 0 &&
       this.state.pipeline[ALIGNMENT] !== ""
     );
   }
@@ -80,7 +78,7 @@ export default class extends Component {
 
         <DatasetSelection
           datasets={this.props.datasets}
-          dataset={this.state.dataset}
+          selected={this.state.datasets}
           addDataset={this.addDataset.bind(this)}
           setDataset={this.setDataset.bind(this)}
         />
@@ -147,13 +145,13 @@ export default class extends Component {
   }
 
   addDataset(dataset) {
-    this.setState({ dataset: dataset.id }, () =>
+    this.setState({ datasets: [...this.state.datasets, dataset.id] }, () =>
       this.props.addDataset(dataset)
     );
   }
 
-  setDataset(datasetId) {
-    this.setState({ dataset: datasetId });
+  setDataset(datasetIds) {
+    this.setState({ datasets: datasetIds });
   }
 }
 

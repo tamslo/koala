@@ -18,12 +18,11 @@ export const deleteExperiment = id => {
 export const addExperiment = params => {
   return dispatch => {
     postRequest("/experiment", params)
-      .then(experiment => {
-        experiment.id &&
-          dispatch({
-            type: types.ADD_EXPERIMENT,
-            experiment
-          });
+      .then(experiments => {
+        dispatch({
+          type: types.ADD_EXPERIMENTS,
+          experiments
+        });
       })
       .catch(error => ({ error }));
   };
@@ -57,7 +56,7 @@ export const retryExperiment = experiment => {
     putRequest("/experiment", params)
       .then(experiment => {
         dispatch({
-          type: types.ADD_EXPERIMENT,
+          type: types.OVERWRITE_EXPERIMENT,
           experiment
         });
       })

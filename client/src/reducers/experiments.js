@@ -5,7 +5,14 @@ const initialState = {};
 export default (state = initialState, action = {}) => {
   const { experiment } = action;
   switch (action.type) {
-    case types.ADD_EXPERIMENT:
+    case types.ADD_EXPERIMENTS:
+      action.experiments.forEach(experiment => {
+        if (experiment.id) {
+          state = { ...state, [experiment.id]: experiment };
+        }
+      });
+      return state;
+    case types.OVERWRITE_EXPERIMENT:
       return {
         ...state,
         [experiment.id]: experiment

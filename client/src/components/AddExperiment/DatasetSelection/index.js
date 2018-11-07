@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 import MenuItem from "@material-ui/core/MenuItem";
+import ListItemText from "@material-ui/core/ListItemText";
 import Divider from "@material-ui/core/Divider";
 import InfoIcon from "@material-ui/icons/Info";
-import Select from "../../mui-wrappers/inputs/Select";
+import MultipleSelect from "../../mui-wrappers/inputs/MultipleSelect";
 import Loading from "../../Loading";
 import AddDataset from "./AddDataset";
 import DatasetInfo from "./DatasetInfo";
@@ -16,7 +17,7 @@ export default class extends Component {
   }
 
   handleChange = event => {
-    if (event.target.value === "add") {
+    if (event.target.value.some(value => value === "add")) {
       this.startAddingDataset();
     } else {
       this.props.setDataset(event.target.value);
@@ -25,7 +26,7 @@ export default class extends Component {
 
   render() {
     const { addingDataset, datasetInfo } = this.state;
-    const { datasets, dataset } = this.props;
+    const { datasets, selected } = this.props;
 
     const loadingText =
       "Adding data set, this can take a while for big files...";
@@ -42,22 +43,30 @@ export default class extends Component {
           close={this.closeDatasetInfo.bind(this)}
           dataset={datasetInfo || null}
         />
-        <Select
+
+        <MultipleSelect
           label={displayNames.dataset}
-          value={dataset || ""}
+          selected={selected}
           onChange={this.handleChange}
+          items={Object.keys(datasets)
+            .filter(key => key !== "areLoading")
+            .map(datasetId => {
+              return {
+                ...datasets[datasetId],
+                content: (
+                  <DatasetItem key={`content-${datasetId}`}>
+                    <DatasetName>{datasets[datasetId].name}</DatasetName>
+                    <StyledInfoIcon
+                      onClick={this.showDatasetInfo(datasets[datasetId])}
+                    />
+                  </DatasetItem>
+                )
+              };
+            })}
         >
-          {Object.keys(datasets).map(datasetId => (
-            <DatasetItem key={datasetId} value={datasetId}>
-              <DatasetName>{datasets[datasetId].name}</DatasetName>
-              <StyledInfoIcon
-                onClick={this.showDatasetInfo(datasets[datasetId])}
-              />
-            </DatasetItem>
-          ))}
           <Divider />
           <MenuItem value="add">Add data set</MenuItem>
-        </Select>
+        </MultipleSelect>
       </div>
     );
   }
@@ -96,8 +105,11 @@ const StyledInfoIcon = styled(InfoIcon)`
   }
 `;
 
-const DatasetItem = styled(MenuItem)`
-  justify-content: space-between !important;
+const DatasetItem = styled(ListItemText)`
+  padding: 0 !important;
+  span {
+    display: flex;
+  }
 `;
 
 const DatasetName = styled.div`

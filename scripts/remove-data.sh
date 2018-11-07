@@ -1,7 +1,7 @@
 #!/bin/bash
 
-rm -rf data/experiments
-rm -rf data/errored
+rm -rf data/experiments/*
+rm -rf data/errored/*
 
 cd data/datasets
 for dataset_json in *.json; do
