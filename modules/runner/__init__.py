@@ -71,22 +71,12 @@ class Runner:
                 action
             )
             file_utils.create_directory(file_path)
-            runtime_log_path = os.path.join(file_path, "Runtime.log")
-            with open(runtime_log_path, "w") as runtime_log:
-                runtime_log.write("Started at {}\n".format(
-                    time.strftime("%d %b %Y %H:%M:%S", time.localtime())
-                ))
             action_handler.run({
                 "docker_client": self.docker_client,
                 "data_handler": self.data_handler,
                 "experiment": experiment,
-                "destination": file_path,
-                "runtime_log_path": runtime_log_path
+                "destination": file_path
             })
-            with open(runtime_log_path, "a") as runtime_log:
-                runtime_log.write("Done at {}\n".format(
-                    time.strftime("%d %b %Y %H:%M:%S", time.localtime())
-                ))
             self.__run_evaluation_if_specified(file_path, experiment, action)
             experiment.complete_action(action)
         experiment.add_download(action, file_path)

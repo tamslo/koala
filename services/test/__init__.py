@@ -23,4 +23,4 @@ class TestAlignerWritesFile(BaseAligner):
         return "touch {}/test".format(parameters["genome_index_path"])
 
     def alignment_command(self, parameters):
-        return "cp /example.sam {}/{}".format(parameters["destination"], "Aligned.out.sam")
+        return "cp /example.sam {}{}".format(parameters["destination"], "Aligned.out.sam")

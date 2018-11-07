@@ -18,11 +18,9 @@ class BaseService:
     def frontend_information(self):
         return { "id": self.id, "name": self.name, "type": self.type }
 
-    # For debugging and manual execution
-    def __log_command(self, command, parameters):
+    def __log_path(self, parameters):
         destination = parameters["destination"]
-        with open(os.path.join(destination, "Commands.txt"), "a") as command_file:
-            command_file.write("{}\n".format(command))
+        return os.path.join(destination, "Runstats.log")
 
     def __image_name(self, parameters):
         if "docker_image" in parameters:
@@ -31,7 +29,6 @@ class BaseService:
             return self.image
 
     def run_docker(self, command, parameters, output_parameters={}):
-        self.__log_command(command, parameters)
         docker_client = parameters["docker_client"]
         destination = parameters["destination"]
 
@@ -67,5 +64,6 @@ class BaseService:
             self.__image_name(parameters),
             command,
             stdout_file_path,
-            stderr_file_path
+            stderr_file_path,
+            self.__log_path(parameters)
         )

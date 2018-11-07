@@ -1,6 +1,4 @@
 import os
-import time
-import datetime
 import modules.file_utils as file_utils
 from .base_service import BaseService
 
@@ -26,7 +24,6 @@ class BaseAligner(BaseService):
         data_handler = parameters["data_handler"]
         experiment = parameters["experiment"]
         destination = parameters["destination"]
-        runtime_log_path = parameters["runtime_log_path"]
 
         sam_file_path = destination + "Out.sam"
         bam_file_path = destination + "Out.bam"
@@ -45,20 +42,11 @@ class BaseAligner(BaseService):
                     "reference_id": experiment.get("reference"),
                     "reference_path": data_handler.reference_path(experiment)
                 }
-                build_genome_index_start = time.time()
                 self.build_genome_index(index_parameters)
-                with open(runtime_log_path, "a") as runtime_log:
-                    runtime = str(datetime.timedelta(
-                        seconds=time.time() - build_genome_index_start)
-                    )
-                    runtime_log.write("Index generation: {}\n".format(runtime))
             except:
                 file_utils.delete(temp_genome_index_path)
                 raise
             os.rename(temp_genome_index_path, genome_index_path)
-        else:
-            with open(runtime_log_path, "a") as runtime_log:
-                runtime_log.write("Index already present\n")
 
         # Run alignment
         alignment_parameters = {
@@ -67,11 +55,7 @@ class BaseAligner(BaseService):
             "genome_index_path": genome_index_path,
             "dataset": data_handler.datasets.select(experiment.get("dataset"))
         }
-        run_start = time.time()
         self.align(alignment_parameters, sam_file_path)
-        with open(runtime_log_path, "a") as runtime_log:
-            runtime = str(datetime.timedelta(seconds=time.time() - run_start))
-            runtime_log.write("Alignment: {}\n".format(runtime))
 
         # Create sorted BAM file from SAM file
         conversion_parameters = {
@@ -79,11 +63,7 @@ class BaseAligner(BaseService):
             "docker_image": "gatk",
             "destination": destination
         }
-        conversion_start = time.time()
         self.convert(conversion_parameters, sam_file_path, bam_file_path)
-        with open(runtime_log_path, "a") as runtime_log:
-            runtime = str(datetime.timedelta(seconds=time.time() - conversion_start))
-            runtime_log.write("Convert to sorted BAM: {}\n".format(runtime))
 
     def build_genome_index(self, parameters):
         self.prepare_indexing(parameters)
