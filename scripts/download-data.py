@@ -245,16 +245,16 @@ def get_from_encode(dataset, directory):
 # * id is prefix of unzipped FASTA files
 # * file_name is zip name given in download url
 rna_seq_data = [
-    # {
-    #     "id": "GM12878",
-    #     "name": "GIAB Pilot Genome",
-    #     "getter": get_from_encode,
-    #     "files": {
-    #         constants["dataset"]["FORWARD"]: "ENCFF000EWJ",
-    #         constants["dataset"]["REVERSE"]: "ENCFF000EWX"
-    #     },
-    #     "evaluation": { "type": "giab" }
-    # },
+    {
+        "id": "GM12878",
+        "name": "GIAB Pilot Genome",
+        "getter": get_from_encode,
+        "files": {
+            constants["dataset"]["FORWARD"]: "ENCFF000EWJ",
+            constants["dataset"]["REVERSE"]: "ENCFF000EWX"
+        },
+        "evaluation": { "type": "giab" }
+    },
     {
         "id": "simulated_reads_HG19t1r1",
         "getter": get_baruzzo,
@@ -309,60 +309,60 @@ rna_seq_data = [
         "file_name": "human_t3r3",
         "name": "Simulated Human T3R3"
     },
-    # {
-    #     "id": "simulated_reads_PFALt1r1",
-    #     "getter": get_baruzzo,
-    #     "file_name": "malaria_t1r1",
-    #     "name": "Simulated Malaria T1R1"
-    # },
-    # {
-    #     "id": "simulated_reads_PFALt1r2",
-    #     "getter": get_baruzzo,
-    #     "file_name": "malaria_t1r2",
-    #     "name": "Simulated Malaria T1R2"
-    # },
-    # {
-    #     "id": "simulated_reads_PFALt1r3",
-    #     "getter": get_baruzzo,
-    #     "file_name": "malaria_t1r3",
-    #     "name": "Simulated Malaria T1R3"
-    # },
-    # {
-    #     "id": "simulated_reads_PFALt2r1",
-    #     "getter": get_baruzzo,
-    #     "file_name": "malaria_t2r1",
-    #     "name": "Simulated Malaria T2R1"
-    # },
-    # {
-    #     "id": "simulated_reads_PFALt2r2",
-    #     "getter": get_baruzzo,
-    #     "file_name": "malaria_t2r2",
-    #     "name": "Simulated Malaria T2R2"
-    # },
-    # {
-    #     "id": "simulated_reads_PFALt2r3",
-    #     "getter": get_baruzzo,
-    #     "file_name": "malaria_t2r3",
-    #     "name": "Simulated Malaria T2R3"
-    # },
-    # {
-    #     "id": "simulated_reads_PFALt3r1",
-    #     "getter": get_baruzzo,
-    #     "file_name": "malaria_t3r1",
-    #     "name": "Simulated Malaria T3R1"
-    # },
-    # {
-    #     "id": "simulated_reads_PFALt3r2",
-    #     "getter": get_baruzzo,
-    #     "file_name": "malaria_t3r2",
-    #     "name": "Simulated Malaria T3R2"
-    # },
-    # {
-    #     "id": "simulated_reads_PFALt3r3",
-    #     "getter": get_baruzzo,
-    #     "file_name": "malaria_t3r3",
-    #     "name": "Simulated Malaria T3R3"
-    # }
+    {
+        "id": "simulated_reads_PFALt1r1",
+        "getter": get_baruzzo,
+        "file_name": "malaria_t1r1",
+        "name": "Simulated Malaria T1R1"
+    },
+    {
+        "id": "simulated_reads_PFALt1r2",
+        "getter": get_baruzzo,
+        "file_name": "malaria_t1r2",
+        "name": "Simulated Malaria T1R2"
+    },
+    {
+        "id": "simulated_reads_PFALt1r3",
+        "getter": get_baruzzo,
+        "file_name": "malaria_t1r3",
+        "name": "Simulated Malaria T1R3"
+    },
+    {
+        "id": "simulated_reads_PFALt2r1",
+        "getter": get_baruzzo,
+        "file_name": "malaria_t2r1",
+        "name": "Simulated Malaria T2R1"
+    },
+    {
+        "id": "simulated_reads_PFALt2r2",
+        "getter": get_baruzzo,
+        "file_name": "malaria_t2r2",
+        "name": "Simulated Malaria T2R2"
+    },
+    {
+        "id": "simulated_reads_PFALt2r3",
+        "getter": get_baruzzo,
+        "file_name": "malaria_t2r3",
+        "name": "Simulated Malaria T2R3"
+    },
+    {
+        "id": "simulated_reads_PFALt3r1",
+        "getter": get_baruzzo,
+        "file_name": "malaria_t3r1",
+        "name": "Simulated Malaria T3R1"
+    },
+    {
+        "id": "simulated_reads_PFALt3r2",
+        "getter": get_baruzzo,
+        "file_name": "malaria_t3r2",
+        "name": "Simulated Malaria T3R2"
+    },
+    {
+        "id": "simulated_reads_PFALt3r3",
+        "getter": get_baruzzo,
+        "file_name": "malaria_t3r3",
+        "name": "Simulated Malaria T3R3"
+    }
 ]
 
 def get_datasets():
