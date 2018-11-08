@@ -19,9 +19,17 @@ class Opossum(BaseService):
 
     def __post_process(self, parameters, bam_file_path):
         parameters["docker_image"] = "gatk"
+        # Index BAM for further processing
+        output_parameters = {
+            "log_file_path": parameters["destination"] + "Index.log"
+        }
+        command = "samtools index /{}".format(bam_file_path)
+        self.run_docker(command, parameters)
+        # Convert BAM to SAM for evaluation
         output_parameters = {
             "log_is_output": True,
-            "out_file_path": parameters["destination"] + "Out.sam"
+            "out_file_path": parameters["destination"] + "Out.sam",
+            "log_file_path": parameters["destination"] + "Sam.log"
         }
         command = "samtools view -h /{}".format(bam_file_path)
         self.run_docker(command, parameters, output_parameters)

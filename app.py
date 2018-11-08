@@ -104,7 +104,6 @@ def experiment():
 def running():
     experiment_id = runner.current_task or len(runner.tasks) > 0 and runner.tasks[0]
     if experiment_id:
-        print(experiment_id, flush=True)
         content = data_handler.experiments.select(experiment_id).content
     else:
         content = {}

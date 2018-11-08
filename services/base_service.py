@@ -20,7 +20,7 @@ class BaseService:
 
     def __log_path(self, parameters):
         destination = parameters["destination"]
-        return os.path.join(destination, "Runstats.log")
+        return os.path.join(destination, "Runstats.txt")
 
     def __image_name(self, parameters):
         if "docker_image" in parameters:
