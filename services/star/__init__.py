@@ -34,4 +34,6 @@ class Star(BaseAligner):
         command = self.__preamble(parameters) + " --readFilesIn"
         for direction, specification in dataset.get("data").items():
             command += " /{}".format(specification["path"])
+        command += " --twopass1readsN 1000000000"
+        command += " --sjdbOverhang {}".format(int(dataset.get("readLength")) - 1)
         return command
