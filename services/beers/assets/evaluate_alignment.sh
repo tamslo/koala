@@ -13,3 +13,5 @@ grep -v "^@" ./Out.sam | sort -t'.' -k 2n > Sorted.sam
 ruby $alignment_tool_directory/fix_sam.rb -r $read_length Sorted.sam > Fixed.sam
 ruby $alignment_tool_directory/compare2truth_multi_mappers.rb -r $read_length $truth_file Fixed.sam > Evaluation.multi.txt
 ruby $alignment_tool_directory/compare2truth.rb -r $read_length $truth_file Fixed.sam > Evaluation.txt
+rm -f Sorted.sam
+rm -f Fixed.sam
