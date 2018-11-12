@@ -6,6 +6,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from modules.data_handler import DataHandler
 from modules.runner import Runner
 from modules.exporter import Exporter
+from modules.evaluator import Evaluator
 from services import get_services
 
 app = Flask(__name__)
@@ -23,6 +24,7 @@ data_directory = "data/"
 data_handler = DataHandler(data_directory)
 runner = Runner(data_handler, data_directory, constants)
 exporter = Exporter(data_directory)
+evaluator = Evaluator(data_directory)
 
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=runner.run, trigger="interval", seconds=5, timezone="Europe/Berlin")
@@ -118,12 +120,24 @@ def export():
         export_file_name = exporter.file_name(path)
     elif experiment_id != None:
         experiment = data_handler.experiments.select(experiment_id)
-        export_file_path, export_file_name = exporter.zip(experiment)
+        export_file_path, export_file_name = exporter.zip_experiment(experiment)
     return send_file(
         export_file_path,
         as_attachment=True,
         attachment_filename=export_file_name
     )
+
+@app.route("/evaluation", methods=["GET"])
+def evaluation():
+    evaluation_path = evaluator.collect_results(data_handler)
+    export_name = "Evaluation.zip"
+    export_path = exporter.zip(evaluation_path, export_name)
+    return send_file(
+        export_path,
+        as_attachment=True,
+        attachment_filename=export_name
+    )
+
 
 # Routes for client built with `npm run build`
 

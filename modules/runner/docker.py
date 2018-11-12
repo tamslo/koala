@@ -82,7 +82,7 @@ class Docker:
                     gigabytes_string(max_memory_usage)
                 ))
 
-        write_stats("{}\n".format(command))
+        write_stats("Command: {}".format(command))
         start_time = time.time()
         write_stats("Start time: {}".format(
             time.strftime("%d %b %Y %H:%M:%S", time.localtime(start_time))
