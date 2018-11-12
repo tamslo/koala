@@ -40,7 +40,7 @@ To perform tasks, a class that inherits from `BaseService` needs to be added, lo
 
 ### Configuration
 
-For services of type `aligner`, it needs to be defined whether the service creates a file by itself or writes to STDOUT by setting the boolean `creates_output` and whether the aligner uses soft clips by setting the boolean `soft_clips_exist`.
+For services of type `aligner`, it needs to be defined whether the service creates a file by itself or writes to STDOUT by setting the boolean `creates_output`.
 
 For services of type `evaluation`, a list of steps needs to be given that can be evaluated. Possible values are `alignment`, `alignment_filtering`, and `variant_calling` (as defined in `client/src/components/experimentConstants.js`).
 
