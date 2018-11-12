@@ -291,7 +291,7 @@ rna_seq_data = [
     #     "file_name": "human_t2r3",
     #     "name": "Simulated Human T2R3"
     # },
-    # {
+    {
         "id": "simulated_reads_HG19t3r1",
         "getter": get_baruzzo,
         "file_name": "human_t3r1",
