@@ -3,16 +3,17 @@ import modules.file_utils as file_utils
 from ..base_aligner import BaseAligner
 
 class Star(BaseAligner):
-    def __preamble(self, parameters):
+    def __preamble(self, parameters, destination_postfix=""):
         destination = parameters["destination"]
         genome_index_path = parameters["genome_index_path"]
         with open("config.yml", "r") as config_file:
             config = yaml.load(config_file)
             num_threads = int(config["cores"])
-        return "STAR --runThreadN {} --genomeDir {} --outFileNamePrefix {}".format(
+        return "STAR --runThreadN {} --genomeDir {} --outFileNamePrefix {}{}".format(
             num_threads,
             "/" + genome_index_path,
-            destination
+            destination,
+            destination_postfix
         )
 
     def prepare_indexing(self, parameters):
@@ -25,7 +26,7 @@ class Star(BaseAligner):
         )
 
     def build_index_command(self, parameters):
-        command = self.__preamble(parameters) + " --runMode genomeGenerate"
+        command = self.__preamble(parameters, "Genome.Index.") + " --runMode genomeGenerate"
         command += " --genomeFastaFiles /{}".format(parameters["reference_path"])
         return command
 
@@ -34,6 +35,7 @@ class Star(BaseAligner):
         command = self.__preamble(parameters) + " --readFilesIn"
         for direction, specification in dataset.get("data").items():
             command += " /{}".format(specification["path"])
+        command += " --twopassMode Basic"
         command += " --twopass1readsN 1000000000"
         command += " --sjdbOverhang {}".format(int(dataset.get("readLength")) - 1)
         return command
