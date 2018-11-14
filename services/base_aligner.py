@@ -62,7 +62,8 @@ class BaseAligner(BaseService):
             "docker_client": docker_client,
             "docker_image": "gatk",
             "destination": destination,
-            "reference_path": data_handler.reference_path(experiment)
+            "data_handler": data_handler,
+            "experiment": experiment
         }
         self.post_process(post_processing_parameters, sam_file_path, bam_file_path)
 
@@ -85,15 +86,9 @@ class BaseAligner(BaseService):
         self.conclude_alignment(parameters, sam_file_path)
 
     def post_process(self, parameters, sam_file_path, bam_file_path):
-        """
-        Convert SAM file to sorted BAM file. Also append read groups to ensure
-        compatibility with Picard and GATK tools, mark duplicates, remove soft
-        clips, and standardize the mapping quality.
-        Command parameters from https://gatkforums.broadinstitute.org/gatk/discussion/3891/calling-variants-in-rnaseq
-        """
-
         destination = parameters["destination"]
 
+        # Convert to BAM, add read groups and sort
         sorted_path = destination + "Sorted.bam"
         command = "gatk AddOrReplaceReadGroups -I /{} -O /{} -SO coordinate " \
             "-ID foo -LB bar -PL illumina -SM Sample1 -PU foo.bar".format(
@@ -109,8 +104,8 @@ class BaseAligner(BaseService):
 
         deduplicated_path = destination + "Deduplicated.bam"
         metrics_path = destination + "Deduplicate.metrics"
-        command = "gatk MarkDuplicates -I /{} -O /{} --CREATE_INDEX=true " \
-            "--VALIDATION_STRINGENCY=SILENT -M /{}".format(
+        command = "gatk MarkDuplicates -I /{} -O /{} -M /{} " \
+            "--VALIDATION_STRINGENCY=SILENT".format(
                 sorted_path,
                 deduplicated_path,
                 metrics_path
@@ -123,10 +118,41 @@ class BaseAligner(BaseService):
         file_utils.validate_file_content(deduplicated_path)
         file_utils.delete(sorted_path)
 
-        command = "gatk SplitNCigarReads -R /{} -I /{} -o /{} " \
-            "-rf ReassignOneMappingQuality -RMQF 255 -RMQT 60 " \
-            "-U ALLOW_N_CIGAR_READS".format(
-                parameters["reference_path"],
+        data_handler = parameters["data_handler"]
+        experiment = parameters["experiment"]
+        reference_path = data_handler.reference_path(experiment)
+        reference_index_path = data_handler.reference_path(
+            experiment,
+            alternate_file_ending=".fa.fai"
+        )
+        reference_dict_path = data_handler.reference_path(
+            experiment,
+            alternate_file_ending=".dict"
+        )
+
+        # Generate index of reference if not there
+        if not os.path.exists(reference_index_path):
+            command = "samtools faidx /{}".format(reference_path)
+            output_parameters = {
+                "log_file_path": destination + "Index.log",
+                "log_from_stderr": True
+            }
+            self.run_docker(command, parameters, output_parameters)
+
+        # Generate dict or reference if not there
+        if not os.path.exists(reference_dict_path):
+            command = "gatk CreateSequenceDictionary -R /{} -O /{}".format(
+                reference_path,
+                reference_dict_path
+            )
+            output_parameters = {
+                "log_file_path": destination + "Dict.log",
+                "log_from_stderr": True
+            }
+            self.run_docker(command, parameters, output_parameters)
+
+        command = "gatk SplitNCigarReads -R /{} -I /{} -O /{}".format(
+                reference_path,
                 deduplicated_path,
                 bam_file_path
             )
