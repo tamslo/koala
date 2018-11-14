@@ -35,6 +35,7 @@ class Star(BaseAligner):
         command = self.__preamble(parameters) + " --readFilesIn"
         for direction, specification in dataset.get("data").items():
             command += " /{}".format(specification["path"])
+        command += " --outSAMmapqUnique 60" # default is 255 but GATK can't interpret this
         command += " --twopassMode Basic"
         command += " --twopass1readsN 1000000000"
         command += " --sjdbOverhang {}".format(int(dataset.get("readLength")) - 1)
