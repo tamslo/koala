@@ -12,7 +12,9 @@ class HaplotypeCaller(BaseService):
         reference_path = data_handler.reference_path(experiment)
         # Run variant calling
         out_file_path = destination + "Out.vcf"
-        command = "gatk HaplotypeCaller -I /{} -O /{} -R /{} -dontUseSoftClippedBases -stand_call_conf 20".format(
+        command = "gatk HaplotypeCaller -I /{} -O /{} -R /{} " \
+            "--dont-use-soft-clipped-bases " \
+            "--standard-min-confidence-threshold-for-calling 20".format(
             experiment.get_input_directory(self.id) + "Out.bam",
             out_file_path,
             data_handler.reference_path(experiment)
