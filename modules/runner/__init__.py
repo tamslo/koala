@@ -2,6 +2,8 @@ import os
 import re
 import time
 import traceback
+import logging
+from apscheduler.schedulers.background import BackgroundScheduler
 import modules.file_utils as file_utils
 from .docker import Docker
 from services import get_services
@@ -14,6 +16,15 @@ class Runner:
         self.tasks = []
         self.current_task = None
         self.services = get_services()
+        self.scheduler = BackgroundScheduler()
+        self.scheduler.add_job(
+            func=self.check_run,
+            trigger="interval",
+            seconds=5,
+            timezone="Europe/Berlin"
+        )
+        self.scheduler.start()
+        logging.getLogger('apscheduler').setLevel("ERROR")
 
     def add_task(self, experiment_id):
         experiment = self.data_handler.experiments.select(experiment_id)
@@ -30,7 +41,7 @@ class Runner:
     def remove_task(self, experiment_id):
         experiment_id in self.tasks and self.tasks.remove(experiment_id)
 
-    def run(self):
+    def check_run(self):
         if len(self.tasks) > 0:
             self.__execute_next_task()
 

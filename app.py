@@ -1,8 +1,7 @@
-import json, zipfile, time, os, optparse, atexit, logging, yaml
+import json, zipfile, time, os, optparse, atexit, yaml
 from flask import Flask, request, send_file, send_from_directory
 from flask_cors import CORS
 from collections import OrderedDict
-from apscheduler.schedulers.background import BackgroundScheduler
 from modules.data_handler import DataHandler
 from modules.runner import Runner
 from modules.exporter import Exporter
@@ -25,11 +24,6 @@ data_handler = DataHandler(data_directory)
 runner = Runner(data_handler, data_directory, constants)
 exporter = Exporter(data_directory)
 evaluator = Evaluator(data_directory)
-
-scheduler = BackgroundScheduler()
-scheduler.add_job(func=runner.run, trigger="interval", seconds=5, timezone="Europe/Berlin")
-scheduler.start()
-logging.getLogger('apscheduler').setLevel("ERROR")
 
 def get_content(instances):
     content = OrderedDict()
@@ -171,4 +165,4 @@ if __name__ == "__main__":
     finally:
         exporter.clean_up()
         data_handler.clean_up()
-        scheduler.shutdown()
+        runner.scheduler.shutdown()
