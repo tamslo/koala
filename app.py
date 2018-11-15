@@ -5,8 +5,8 @@ from collections import OrderedDict
 from modules.data_handler import DataHandler
 from modules.runner import Runner
 from modules.exporter import Exporter
-from modules.evaluator import Evaluator
 from services import get_services
+from evaluation import collect_evaluation_results
 
 app = Flask(__name__)
 CORS(app)
@@ -23,7 +23,6 @@ data_directory = "data/"
 data_handler = DataHandler(data_directory)
 runner = Runner(data_handler, data_directory, constants)
 exporter = Exporter(data_directory)
-evaluator = Evaluator(data_directory)
 
 def get_content(instances):
     content = OrderedDict()
@@ -123,7 +122,10 @@ def export():
 
 @app.route("/evaluation", methods=["GET"])
 def evaluation():
-    evaluation_path = evaluator.collect_results(data_handler)
+    evaluation_path = collect_evaluation_results(data_directory, data_handler)
+    if len(os.listdir(evaluation_path)) == 0:
+        return "No evaluation results present"
+
     export_name = "Evaluation.zip"
     export_path = exporter.zip(evaluation_path, export_name)
     return send_file(
