@@ -2,11 +2,11 @@ import os, urllib.request
 
 giab_version = "3.3.2"
 confidence_sets = [
-    # {
-    #     "reference": "hg38",
-    #     "name": "GRCh38",
-    #     "bed_file_postfix": "_noCENorHET7"
-    # },
+    {
+        "reference": "hg38",
+        "name": "GRCh38",
+        "bed_file_postfix": "_noCENorHET7"
+    },
     {
         "reference": "hg19",
         "name": "GRCh37"
