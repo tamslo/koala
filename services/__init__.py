@@ -8,6 +8,7 @@ from .test import TestAlignerWritesFile
 from .test import TestAlignerWritesLog
 from .star import Star
 from .novoalign import NovoAlign
+from .gatk import GatkFilters
 from .opossum import Opossum
 from .beers import BeersEvaluator
 from .gatk import HaplotypeCaller
@@ -18,6 +19,7 @@ with open("config.yml") as config_file:
     environment = config["environment"]
 
 ServiceClasses = {
+    "gatk_filters": GatkFilters,
     "opossum": Opossum,
     "beers": BeersEvaluator,
     "gatk_haplotypecaller": HaplotypeCaller,

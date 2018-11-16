@@ -89,34 +89,17 @@ class BaseAligner(BaseService):
         destination = parameters["destination"]
 
         # Convert to BAM, add read groups and sort
-        sorted_path = destination + "Sorted.bam"
         command = "gatk AddOrReplaceReadGroups -I /{} -O /{} -SO coordinate " \
             "-ID foo -LB bar -PL illumina -SM Sample1 -PU foo.bar".format(
                 sam_file_path,
-                sorted_path
+                bam_file_path
         )
         output_parameters = {
             "log_file_path": destination + "Conversion.log",
             "log_from_stderr": True
         }
         self.run_docker(command, parameters, output_parameters)
-        file_utils.validate_file_content(sorted_path)
-
-        deduplicated_path = destination + "Deduplicated.bam"
-        metrics_path = destination + "Deduplicate.metrics"
-        command = "gatk MarkDuplicates -I /{} -O /{} -M /{} " \
-            "--VALIDATION_STRINGENCY=SILENT".format(
-                sorted_path,
-                deduplicated_path,
-                metrics_path
-            )
-        output_parameters = {
-            "log_file_path": destination + "Deduplicate.log",
-            "log_from_stderr": True
-        }
-        self.run_docker(command, parameters, output_parameters)
-        file_utils.validate_file_content(deduplicated_path)
-        file_utils.delete(sorted_path)
+        file_utils.validate_file_content(bam_file_path)
 
         data_handler = parameters["data_handler"]
         experiment = parameters["experiment"]
@@ -150,13 +133,3 @@ class BaseAligner(BaseService):
                 "log_from_stderr": True
             }
             self.run_docker(command, parameters, output_parameters)
-
-        command = "gatk SplitNCigarReads -R /{} -I /{} -O /{}".format(
-                reference_path,
-                deduplicated_path,
-                bam_file_path
-            )
-        output_parameters = { "log_file_path": destination + "SplitN.log" }
-        self.run_docker(command, parameters, output_parameters)
-        file_utils.validate_file_content(bam_file_path)
-        file_utils.delete(deduplicated_path)
