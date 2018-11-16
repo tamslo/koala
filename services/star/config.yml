@@ -1,3 +1,4 @@
 name: Star
 type: aligner
 creates_output: true
+soft_clips_exist: true

@@ -1,3 +1,4 @@
 name: NovoAlign
 type: aligner
 creates_output: false
+soft_clips_exist: true
