@@ -90,7 +90,8 @@ class BaseAligner(BaseService):
 
         # Convert to BAM, add read groups and sort
         command = "gatk AddOrReplaceReadGroups -I /{} -O /{} -SO coordinate " \
-            "-ID foo -LB bar -PL illumina -SM Sample1 -PU foo.bar".format(
+            "-ID foo -LB bar -PL illumina -SM Sample1 -PU foo.bar " \
+            "--CREATE_INDEX".format(
                 sam_file_path,
                 bam_file_path
         )
