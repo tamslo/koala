@@ -36,7 +36,7 @@ def get_confidence_set(confidence_set, directory):
 
     vcf_zip_name = "confidence_calls.vcf.gz"
     download_path = directory + vcf_zip_name
-    print("Downloading {}".format(vcf_zip_name), flush=True)
+    print("Downloading {} for {}".format(vcf_zip_name, confidence_set["reference"]), flush=True)
     urllib.request.urlretrieve(url + vcf_file_url, download_path, progress)
     os.system("gunzip {}".format(download_path))
     print("Done", flush=True)
@@ -44,7 +44,7 @@ def get_confidence_set(confidence_set, directory):
 
     bed_file_name = "confidence_calls.bed"
     download_path = directory + bed_file_name
-    print("Downloading {}".format(bed_file_name), flush=True)
+    print("Downloading {} for {}".format(bed_file_name, confidence_set["reference"]), flush=True)
     urllib.request.urlretrieve(url + bed_file_url, download_path, progress)
     print("Done", flush=True)
 
