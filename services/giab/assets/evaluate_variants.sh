@@ -9,8 +9,8 @@ vcf_file_name="$2"
 reference_id="$3"
 cd $happy_directory
 
-./hap.py /giab/$reference_id/confidence_calls.vcf \
+HG19=/data/references/$reference_id.fa \
+  ./hap.py /giab/$reference_id/confidence_calls.vcf \
   $path_prefix/$vcf_file_name \
   -f /giab/$reference_id/confidence_calls.bed \
-  -o $path_prefix/Evaluation \
-  -r /data/references/$reference_id.fa
+  -o $path_prefix/Evaluation

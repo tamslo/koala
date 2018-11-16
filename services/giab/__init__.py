@@ -4,7 +4,10 @@ class GiabEvaluator(BaseService):
     def run(self, parameters):
         dataset = parameters["dataset"]
         destination = parameters["destination"]
-        command = "bash evaluate_variants.sh {} {} /{}".format(
+        path_prefix = destination
+        if path_prefix.endswith("/"):
+            path_prefix = path_prefix[:-1] # Trim trailing slash
+        command = "bash evaluate_variants.sh /{} {} {}".format(
             destination,
             "Out.vcf",
             dataset.get("reference")
@@ -14,7 +17,6 @@ class GiabEvaluator(BaseService):
             "log_file_path": destination + "Evaluation.log"
         }
         self.run_docker(command, parameters, output_parameters)
-        raise Exception("Still implementing")
 
         # for file_name in ["Evaluation.multi.txt", "Evaluation.txt"]:
         #     file_path = destination + file_name
