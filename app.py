@@ -14,10 +14,6 @@ CORS(app)
 # Create constants.json for same constants in back- and frontend
 with open("constants.yml", "r") as constants_file:
     constants = yaml.load(constants_file)
-root_directory = os.path.dirname(os.path.abspath(__file__))
-frontend_path = os.path.join(root_directory, "client/src/constants.json")
-with open(frontend_path, "w") as constants_file:
-    constants_file.write(json.dumps(constants))
 
 data_directory = "data/"
 data_handler = DataHandler(data_directory)
