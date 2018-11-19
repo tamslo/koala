@@ -1,2 +1,4 @@
 name: HaplotypeCaller (only ch4)
 type: variant_caller
+filters:
+  - ch4

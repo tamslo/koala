@@ -88,7 +88,7 @@ class Runner:
                 "experiment": experiment,
                 "destination": file_path
             })
-            self.__run_evaluation_if_specified(file_path, experiment, action)
+            self.__run_evaluation_if_specified(file_path, experiment, action, action_handler)
             experiment.complete_action(action)
         experiment.add_download(action, file_path)
         return experiment
@@ -107,5 +107,6 @@ class Runner:
                 evaluation_handler.run({
                     "docker_client": self.docker_client,
                     "destination": destination,
-                    "dataset": dataset
+                    "dataset": dataset,
+                    "action_handler": action_handler
                 })

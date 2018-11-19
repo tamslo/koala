@@ -3,14 +3,46 @@ from ..base_service import BaseService
 class GiabEvaluator(BaseService):
     def run(self, parameters):
         dataset = parameters["dataset"]
+        reference_id = dataset.get("reference")
         destination = parameters["destination"]
         path_prefix = destination
         if path_prefix.endswith("/"):
             path_prefix = path_prefix[:-1] # Trim trailing slash
-        command = "bash evaluate_variants.sh /{} {} {}".format(
+
+        # Filter data if necessary
+        action_handler = parameters["action_handler"]
+        filters = []
+        filter_postfix = ""
+        if has_attr(action_handler, "filters"):
+            filters = action_handler.filters
+            giab_path_prefix = "/giab/{}".format(reference_id)
+
+            # Filter BED and VCF file
+            command = "awk '"
+            for filter, index in enumerate(filters):
+                filter_postfix += "_" + filter
+                if index != 0:
+                    command += " || "
+                command += "/^{}/".format(filter)
+            command += "' {}/confidence_calls{}".format(giab_path_prefix, file_ending)
+
+            for file_ending in [".bed", ".vcf"]:
+                output_parameters = {
+                    "log_is_output": True,
+                    "out_file_path": "{}/confidence_calls{}{}".format(
+                        giab_path_prefix,
+                        filter_postfix,
+                        file_ending
+                    ),
+                    "log_file_path": "Filter{}.log".format(file_ending)
+                }
+                self.run_docker(command, parameters, output_parameters)
+
+        command = "bash evaluate_variants.sh /{} {} {} {}".format(
             destination,
             "Out.vcf",
-            dataset.get("reference")
+            reference_id,
+            filter_postfix
         )
         output_parameters = {
             "log_from_stderr": True,
