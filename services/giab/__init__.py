@@ -13,7 +13,7 @@ class GiabEvaluator(BaseService):
         action_handler = parameters["action_handler"]
         filters = []
         filter_postfix = ""
-        if has_attr(action_handler, "filters"):
+        if hasattr(action_handler, "filters"):
             filters = action_handler.filters
             giab_path_prefix = "/giab/{}".format(reference_id)
 
