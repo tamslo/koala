@@ -1,0 +1,2 @@
+name: HaplotypeCaller (only ch4)
+type: variant_caller

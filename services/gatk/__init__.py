@@ -40,7 +40,7 @@ class GatkFilters(BaseService):
         file_utils.delete(deduplicated_path)
 
 class HaplotypeCaller(BaseService):
-    def run(self, parameters):
+    def run(self, parameters, in_file_path=None):
         experiment = parameters["experiment"]
         destination = parameters["destination"]
         data_handler = parameters["data_handler"]
@@ -48,14 +48,36 @@ class HaplotypeCaller(BaseService):
 
         reference_path = data_handler.reference_path(experiment)
         # Run variant calling
+        in_file_path = in_file_path or experiment.get_input_directory(self.id) + "Out.bam"
         out_file_path = destination + "Out.vcf"
         command = "gatk HaplotypeCaller -I /{} -O /{} -R /{} " \
             "--dont-use-soft-clipped-bases " \
             "--standard-min-confidence-threshold-for-calling 20".format(
-            experiment.get_input_directory(self.id) + "Out.bam",
+            in_file_path,
             out_file_path,
             data_handler.reference_path(experiment)
         )
         output_parameters = { "log_from_stderr": True }
         self.run_docker(command, parameters, output_parameters)
         file_utils.validate_file_content(out_file_path)
+
+class HaplotypeCallerCh4(HaplotypeCaller):
+    def run(self, parameters):
+        experiment = parameters["experiment"]
+        destination = parameters["destination"]
+        data_handler = parameters["data_handler"]
+        docker_client = parameters["docker_client"]
+
+        # Create filtered BAM
+        filtered_bam_file_path = destination + "Ch4.bam"
+        command = "samtools view -b /{} chr4".format(
+            experiment.get_input_directory(self.id) + "Out.bam"
+        )
+        output_parameters = {
+            "log_is_output": True,
+            "out_file_path": filtered_bam_file_path,
+            "log_file_path": "Filter.log"
+        }
+        self.run_docker(command, parameters, output_parameters)
+        file_utils.validate_file_content(filtered_bam_file_path)
+        super().run(parameters, filtered_bam_file_path)
