@@ -93,7 +93,7 @@ class Runner:
         experiment.add_download(action, file_path)
         return experiment
 
-    def __run_evaluation_if_specified(self, destination, experiment, step):
+    def __run_evaluation_if_specified(self, destination, experiment, step, action_handler):
         dataset = self.data_handler.datasets.select(experiment.get("dataset"))
         evaluation = dataset.get("evaluation")
         if evaluation:
