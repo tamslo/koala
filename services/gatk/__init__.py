@@ -61,7 +61,7 @@ class HaplotypeCaller(BaseService):
         self.run_docker(command, parameters, output_parameters)
         file_utils.validate_file_content(out_file_path)
 
-class HaplotypeCallerCh4(HaplotypeCaller):
+class HaplotypeCallerChr4(HaplotypeCaller):
     def run(self, parameters):
         experiment = parameters["experiment"]
         destination = parameters["destination"]

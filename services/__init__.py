@@ -12,7 +12,7 @@ from .gatk import GatkFilters
 from .opossum import Opossum
 from .beers import BeersEvaluator
 from .gatk import HaplotypeCaller
-from .gatk import HaplotypeCallerCh4
+from .gatk import HaplotypeCallerChr4
 from .giab import GiabEvaluator
 
 with open("config.yml") as config_file:
@@ -24,7 +24,7 @@ ServiceClasses = {
     "opossum": Opossum,
     "beers": BeersEvaluator,
     "gatk_haplotypecaller": HaplotypeCaller,
-    "gatk_haplotypecaller_ch4": HaplotypeCallerCh4,
+    "gatk_haplotypecaller_chr4": HaplotypeCallerChr4,
     "giab": GiabEvaluator
 }
 

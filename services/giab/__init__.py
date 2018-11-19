@@ -21,6 +21,8 @@ class GiabEvaluator(BaseService):
             command = "awk '"
             for filter, index in enumerate(filters):
                 filter_postfix += "_" + filter
+                if reference_id == "hg19":
+                    filter = filter.replace("chr", "")
                 if index != 0:
                     command += " || "
                 command += "/^{}/".format(filter)
