@@ -40,6 +40,10 @@ class GatkFilters(BaseService):
         file_utils.delete(deduplicated_path)
 
 class HaplotypeCaller(BaseService):
+    # Can be overwritten by specific components
+    def add_filters(self, command):
+        return command
+
     def run(self, parameters, in_file_path=None):
         experiment = parameters["experiment"]
         destination = parameters["destination"]
@@ -57,27 +61,11 @@ class HaplotypeCaller(BaseService):
             out_file_path,
             data_handler.reference_path(experiment)
         )
+        command = self.add_filters(command)
         output_parameters = { "log_from_stderr": True }
         self.run_docker(command, parameters, output_parameters)
         file_utils.validate_file_content(out_file_path)
 
 class HaplotypeCallerChr4(HaplotypeCaller):
-    def run(self, parameters):
-        experiment = parameters["experiment"]
-        destination = parameters["destination"]
-        data_handler = parameters["data_handler"]
-        docker_client = parameters["docker_client"]
-
-        # Create filtered BAM
-        filtered_bam_file_path = destination + "Ch4.bam"
-        command = "samtools view -b /{} chr4".format(
-            experiment.get_input_directory(self.id) + "Out.bam"
-        )
-        output_parameters = {
-            "log_is_output": True,
-            "out_file_path": filtered_bam_file_path,
-            "log_file_path": "Filter.log"
-        }
-        self.run_docker(command, parameters, output_parameters)
-        file_utils.validate_file_content(filtered_bam_file_path)
-        super().run(parameters, filtered_bam_file_path)
+    def add_filters(self, command):
+        return command + " -L chr4"
