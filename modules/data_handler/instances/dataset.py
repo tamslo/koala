@@ -11,26 +11,44 @@ class Dataset(BaseInstance):
         super().__init__(content, path)
 
     def setup(self):
+        super().setup()
         os.mkdir(self.directory)
         try:
             self.content["error"] = False
             self.__store_data()
-            super().setup()
         except Exception as error:
             file_utils.delete(self.directory)
             file_utils.delete(self.path)
             self.content["error"] = True
-            super().setup()
+            raise error
 
     def __store_data(self):
+        def is_zipped(name):
+            return name.endswith(".gz")
+
+        def maybe_zipped_path(name, path):
+            if is_zipped(name):
+                return path + ".gz"
+            else:
+                return path
+
+        def maybe_unzip(path):
+            if is_zipped(path):
+                file_utils.unzip(path)
+
         for file_key in self.content["data"]:
-            file_path = self.directory + file_key + ".fastq"
+            unzipped_file_path = self.directory + file_key + ".fastq"
             if self.content["method"] == self.constants["dataset"]["URL"]:
                 url = self.content["data"][file_key]["name"]
+                file_path = maybe_zipped_path(url, unzipped_file_path)
                 file_utils.download(url, file_path)
+                maybe_unzip(file_path)
             else:
                 file = self.files[file_key]
                 name = file.filename
+                file_path = maybe_zipped_path(name, unzipped_file_path)
+                print(file_path, flush=True)
                 file.save(file_path)
+                maybe_unzip(file_path)
                 self.content["data"][file_key]["name"] = name
-            self.content["data"][file_key]["path"] = file_path
+            self.content["data"][file_key]["path"] = unzipped_file_path
