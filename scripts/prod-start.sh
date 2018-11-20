@@ -1,5 +1,3 @@
-killall python
-
 cd client
 npm run build
 cd ..

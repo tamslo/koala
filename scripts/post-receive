@@ -19,6 +19,11 @@ git --work-tree=/home/deploy/code/ --git-dir=/home/deploy/git/ checkout -f
 chmod a+x scripts/remove-data.sh
 
 echo ""
+echo "Stopping server"
+chmod a+x scripts/stop.sh
+source scripts/stop.sh
+
+echo ""
 echo "Installing dependencies"
 echo ""
 cd ~/code
