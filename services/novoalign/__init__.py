@@ -15,4 +15,5 @@ class NovoAlign(BaseAligner):
         for direction, specification in dataset.get("data").items():
             command += " /{}".format(specification["path"])
         command += " -d /{}".format(genome_index_path)
+        command += " --tags MD NM"
         return command

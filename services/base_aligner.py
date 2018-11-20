@@ -89,19 +89,18 @@ class BaseAligner(BaseService):
         destination = parameters["destination"]
 
         # Convert to BAM, add read groups and sort
-        sorted_path = destination + "Sorted.bam"
         command = "gatk AddOrReplaceReadGroups -I /{} -O /{} -SO coordinate " \
             "-ID foo -LB bar -PL illumina -SM Sample1 -PU foo.bar " \
             "--CREATE_INDEX".format(
                 sam_file_path,
-                sorted_path
+                bam_file_path
         )
         output_parameters = {
             "log_file_path": destination + "Conversion.log",
             "log_from_stderr": True
         }
         self.run_docker(command, parameters, output_parameters)
-        file_utils.validate_file_content(sorted_path)
+        file_utils.validate_file_content(bam_file_path)
 
         # Create reference indices
         data_handler = parameters["data_handler"]
@@ -136,12 +135,3 @@ class BaseAligner(BaseService):
                 "log_from_stderr": True
             }
             self.run_docker(command, parameters, output_parameters)
-
-        # Add MD tags
-        command = "samtools calmd /{} /{}".format(sorted_path, reference_path)
-        output_parameters = {
-            "log_is_output": True,
-            "out_file_path": bam_file_path
-        }
-        self.run_docker(command, parameters, output_parameters)
-        file_utils.delete(sorted_path)

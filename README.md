@@ -38,7 +38,7 @@ If only one service depends on this image, create a file called `config.yml`, if
 
 To perform tasks, a class that inherits from `BaseService` needs to be added, look at similar services for examples. The class needs to be imported in `services/__init__.py` and added to the dictionary. For now, all classes are defined in the file `image_name/__init__.py` for shorter imports. If the files get too large, they can of course be split up.
 
-**Important note for aligners**: Aligners are expected to have a maximum quality value of 60, usually options are provided to adapt it if this value is not the default.
+**Important note for aligners**: Aligners are expected to have a maximum quality value of 60, usually options are provided to adapt it if this value is not the default. Additionally, the MD tag needs to be present in order to use Opossum. If no option is provided, SAMtools calmd can be used for post-processing (included in the GATK Docker image).
 
 ### Configuration
 
