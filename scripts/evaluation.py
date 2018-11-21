@@ -55,7 +55,7 @@ def collect_evaluation_results(data_directory, data_handler):
         pipeline = experiment.get("pipeline")
         for step_name, step_content in pipeline.items():
             directory = step_content["directory"]
-            file_name = "{}_{}_{}.txt".format(
+            file_name = "{}_{}{}.txt".format(
                 dataset.get("id"),
                 experiment.get("reference"),
                 assemble_step_id(step_content["id"], pipeline)
