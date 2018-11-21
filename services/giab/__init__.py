@@ -2,8 +2,8 @@ from ..base_service import BaseService
 
 class GiabEvaluator(BaseService):
     def run(self, parameters):
-        dataset = parameters["dataset"]
-        reference_id = dataset.get("reference")
+        experiment = parameters["experiment"]
+        reference_id = experiment.get("reference")
         destination = parameters["destination"]
         path_prefix = destination
         if path_prefix.endswith("/"):
@@ -41,7 +41,7 @@ class GiabEvaluator(BaseService):
                 self.run_docker(command, parameters, output_parameters)
 
         command = "bash evaluate_variants.sh /{} {} {} {}".format(
-            destination,
+            path_prefix,
             "Out.vcf",
             reference_id,
             filter_postfix

@@ -107,6 +107,6 @@ class Runner:
                 evaluation_handler.run({
                     "docker_client": self.docker_client,
                     "destination": destination,
-                    "dataset": dataset,
+                    "experiment": experiment,
                     "action_handler": action_handler
                 })
