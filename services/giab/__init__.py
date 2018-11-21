@@ -48,7 +48,7 @@ class GiabEvaluator(BaseService):
         )
         output_parameters = {
             "log_from_stderr": True,
-            "log_file_path": destination + "Evaluation.log"
+            "log_file_path": destination + "Evaluation.giab.log"
         }
         self.run_docker(command, parameters, output_parameters)
 
