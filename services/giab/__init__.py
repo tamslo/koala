@@ -1,3 +1,5 @@
+import os
+import modules.file_utils as file_utils
 from ..base_service import BaseService
 
 class GiabEvaluator(BaseService):
@@ -52,7 +54,8 @@ class GiabEvaluator(BaseService):
         }
         self.run_docker(command, parameters, output_parameters)
 
-        # for file_name in ["Evaluation.multi.txt", "Evaluation.txt"]:
-        #     file_path = destination + file_name
-        #     if not file_utils.file_has_content(file_path):
-        #         file_utils.delete(file_path)
+        for file_name in os.listdir(destination):
+            if file_name.startswith("Evaluation"):
+                file_path = destination + file_name
+                if not file_utils.file_has_content(file_path):
+                    file_utils.delete(file_path)
