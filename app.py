@@ -5,8 +5,8 @@ from collections import OrderedDict
 from modules.data_handler import DataHandler
 from modules.runner import Runner
 from modules.exporter import Exporter
+from scripts.evaluation import collect_evaluation_results
 from services import get_services
-from evaluation import collect_evaluation_results
 
 app = Flask(__name__)
 CORS(app)
