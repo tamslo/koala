@@ -108,5 +108,6 @@ class Runner:
                     "docker_client": self.docker_client,
                     "destination": destination,
                     "experiment": experiment,
+                    "dataset": dataset,
                     "action_handler": action_handler
                 })
