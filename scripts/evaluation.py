@@ -55,13 +55,13 @@ def collect_evaluation_results(data_directory, data_handler):
         pipeline = experiment.get("pipeline")
         for step_name, step_content in pipeline.items():
             directory = step_content["directory"]
-            file_name = "{}_{}{}.txt".format(
+            file_name = "{}_{}{}".format(
                 dataset.get("id"),
                 experiment.get("reference"),
                 assemble_step_id(step_content["id"], pipeline)
             )
 
-            runstats_path = runstats_directory + file_name
+            runstats_path = runstats_directory + file_name + ".txt"
             if not os.path.isdir(runstats_directory):
                 os.makedirs(runstats_directory)
 
@@ -78,13 +78,30 @@ def collect_evaluation_results(data_directory, data_handler):
             if not os.path.isdir(evaluation_directory):
                 os.makedirs(evaluation_directory)
 
-            evaluation_path = evaluation_directory + file_name
-            if not os.path.exists(evaluation_path):
-                if "Evaluation.txt" in os.listdir(directory):
+            evaluation_results = []
+            for file in os.listdir(directory):
+                if file.startswith("Evaluation"):
+                    evaluation_results.append(file)
+
+            if len(evaluation_results) == 0:
+                continue
+            elif len(evaluation_results) == 1:
+                evaluation_path = evaluation_directory + file_name + ".txt"
+                if not os.path.exists(evaluation_path):
                     shutil.copy(
-                        directory + "Evaluation.txt",
+                        directory + evaluation_results[0],
                         evaluation_path
                     )
+            else:
+                evaluation_path = evaluation_directory + file_name + "/"
+                if not os.path.exists(evaluation_path):
+                    os.makedirs(evaluation_path)
+                    for file in evaluation_results:
+                        shutil.copy(
+                            directory + file,
+                            evaluation_path + file
+                        )
+
     accumulate_runstats(runstats_directory)
     for evaluation_type, evaluation_directory in evaluation_types.items():
         if evaluation_type in evaluation_accumulators:
