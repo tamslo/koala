@@ -1,6 +1,7 @@
 data/
 /config.yml
 client/src/constants.json
+services/*/assets/*.lic
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
