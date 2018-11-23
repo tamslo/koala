@@ -25,11 +25,3 @@ class Opossum(BaseService):
         }
         command = "samtools index /{}".format(bam_file_path)
         self.run_docker(command, parameters)
-        # Convert BAM to SAM for evaluation
-        output_parameters = {
-            "log_is_output": True,
-            "out_file_path": parameters["destination"] + "Out.sam",
-            "log_file_path": parameters["destination"] + "Sam.log"
-        }
-        command = "samtools view -h /{}".format(bam_file_path)
-        self.run_docker(command, parameters, output_parameters)
