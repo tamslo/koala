@@ -8,6 +8,7 @@ from .test import TestAlignerWritesFile
 from .test import TestAlignerWritesLog
 from .star import Star
 from .novoalign import NovoAlign
+from .novoalign import NovoAlignIndelSensitive
 from .gatk import GatkFilters
 from .opossum import Opossum
 from .beers import BeersEvaluator
@@ -35,6 +36,7 @@ if environment == "test":
 if environment == "production":
     ServiceClasses["star"] = Star
     ServiceClasses["novoalign"] = NovoAlign
+    ServiceClasses["novoalign_tweaked"] = NovoAlignIndelSensitive
 
 def get_services():
     services = []

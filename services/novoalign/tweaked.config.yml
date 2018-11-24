@@ -1,0 +1,4 @@
+name: NovoAlign (Indel mode)
+type: aligner
+creates_output: false
+soft_clips_exist: true
