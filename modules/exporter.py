@@ -11,7 +11,11 @@ class Exporter:
             os.makedirs(self.directory)
 
     def file_name(self, path):
-        return path.split("/")[-1]
+        if path.endswith("/"):
+            split_index = -2
+        else:
+            split_index = -1
+        return path.split("/")[split_index]
 
     def zip(self, directory, archive_name):
         archive_path = self.directory + archive_name
@@ -25,15 +29,28 @@ class Exporter:
         archive.close()
         return archive_path
 
-    def zip_experiment(self, experiment):
-        archive_name = experiment["name"] + ".zip"
+    def zip_experiment_directory(self, path):
+        archive_name = self.file_name(path) + ".zip"
         archive_path = self.directory + archive_name
         archive = zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED)
-        for key, action in experiment["pipeline"].items():
-            if "file" in action:
-                path = action["file"]
-                file_name = path.split("/")[-1]
-                archive.write(path, file_name)
+        for file_name in os.listdir(path):
+            file_path = os.path.join(path, file_name)
+            if not os.path.isdir(file_path):
+                archive.write(file_path, file_name)
+        archive.close()
+        return archive_path, archive_name
+
+    def zip_experiment(self, experiment):
+        archive_name = experiment.get("name") + ".zip"
+        archive_path = self.directory + archive_name
+        archive = zipfile.ZipFile(archive_path, "w", zipfile.ZIP_DEFLATED)
+        for key, action in experiment.get("pipeline").items():
+            if "directory" in action:
+                path = action["directory"]
+                for file_name in os.listdir(path):
+                    file_path = os.path.join(path, file_name)
+                    if not os.path.isdir(file_path):
+                        archive.write(file_path, os.path.join(action["id"], file_name))
         archive.close()
         return archive_path, archive_name
 

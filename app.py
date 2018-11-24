@@ -111,8 +111,7 @@ def export():
     experiment_id = request.args.get("experiment")
     path = request.args.get("path")
     if path != None:
-        export_file_path = path
-        export_file_name = exporter.file_name(path)
+        export_file_path, export_file_name = exporter.zip_experiment_directory(path)
     elif experiment_id != None:
         experiment = data_handler.experiments.select(experiment_id)
         export_file_path, export_file_name = exporter.zip_experiment(experiment)
