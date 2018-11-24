@@ -92,6 +92,8 @@ def experiment():
     else: # request.method == "DELETE"
         experiment_id = request.args.get("id")
         experiment = data_handler.experiments.delete(experiment_id)
+        if runner.current_task == experiment_id:
+            raise Exception("Task cannot be deleted, it is already running")
         runner.remove_task(experiment_id)
         return json.dumps(experiment.content)
 
