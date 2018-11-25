@@ -13,40 +13,17 @@ class GiabEvaluator(BaseService):
 
         # Filter data if necessary
         action_handler = parameters["action_handler"]
-        filters = []
-        filter_postfix = ""
+        additional_commands = ""
         if hasattr(action_handler, "filters"):
-            filters = action_handler.filters
-            giab_path_prefix = "/giab/{}".format(reference_id)
-
-            # Filter BED and VCF file
-            command = "awk '"
-            for filter, index in enumerate(filters):
-                filter_postfix += "_" + filter
-                if reference_id == "hg19":
-                    filter = filter.replace("chr", "")
-                if index != 0:
-                    command += " || "
-                command += "/^{}/".format(filter)
-            command += "' {}/confidence_calls{}".format(giab_path_prefix, file_ending)
-
-            for file_ending in [".bed", ".vcf"]:
-                output_parameters = {
-                    "log_is_output": True,
-                    "out_file_path": "{}/confidence_calls{}{}".format(
-                        giab_path_prefix,
-                        filter_postfix,
-                        file_ending
-                    ),
-                    "log_file_path": "Filter{}.log".format(file_ending)
-                }
-                self.run_docker(command, parameters, output_parameters)
+            additional_commands = "-l {}".format(
+                " ".join(action_handler.filters)
+            )
 
         command = "bash evaluate_variants.sh /{} {} {} {}".format(
             path_prefix,
             "Out.vcf",
             reference_id,
-            filter_postfix
+            additional_commands
         )
         output_parameters = {
             "log_from_stderr": True,
