@@ -30,3 +30,9 @@ class NovoAlignIndelSensitive(NovoAlign):
         command += " --softclip 50,30" # four color
         # command += " --softclip 35,0" # two color
         return command
+
+class NovoAlignFasta(NovoAlign):
+    def alignment_command(self, parameters):
+        command = super().alignment_command(parameters)
+        command += " -F FA"
+        return command

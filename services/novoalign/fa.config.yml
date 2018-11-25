@@ -1,0 +1,4 @@
+name: NovoAlign (FASTA Input)
+type: aligner
+creates_output: false
+soft_clips_exist: true
