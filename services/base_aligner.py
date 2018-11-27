@@ -19,17 +19,21 @@ class BaseAligner(BaseService):
     def alignment_command(self, parameters):
         raise Exception("Method base_aligner.alignment_command needs to be implemented by subclasses")
 
+    def genome_index_amendment(self, parameters):
+        return ""
+
     def run(self, parameters):
         docker_client = parameters["docker_client"]
         data_handler = parameters["data_handler"]
         experiment = parameters["experiment"]
         destination = parameters["destination"]
+        dataset = data_handler.datasets.select(experiment.get("dataset"))
 
         sam_file_path = destination + "Out.sam"
         bam_file_path = destination + "Out.bam"
 
         # Define genome index path and temp path (will be renamed if successful)
-        genome_index_path = data_handler.genome_index_path(experiment, self.id)
+        genome_index_path = data_handler.genome_index_path(experiment, self.id) + self.genome_index_amendment(dataset)
         temp_genome_index_path = genome_index_path + ".running"
 
         # If neccessary, build genome index
@@ -40,7 +44,9 @@ class BaseAligner(BaseService):
                     "destination": destination,
                     "genome_index_path": temp_genome_index_path,
                     "reference_id": experiment.get("reference"),
-                    "reference_path": data_handler.reference_path(experiment)
+                    "reference_path": data_handler.reference_path(experiment),
+                    "dataset": dataset,
+                    "reference_base_path": data_handler.reference_directory
                 }
                 self.build_genome_index(index_parameters)
             except:
@@ -53,7 +59,7 @@ class BaseAligner(BaseService):
             "docker_client": docker_client,
             "destination": destination,
             "genome_index_path": genome_index_path,
-            "dataset": data_handler.datasets.select(experiment.get("dataset"))
+            "dataset": dataset
         }
         self.align(alignment_parameters, sam_file_path)
 
