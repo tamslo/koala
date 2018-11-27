@@ -56,3 +56,4 @@ COPY ./assets/refFlat.hg38.txt.gz ./annotations/hg38.txt.gz
 RUN gunzip ./annotations/hg38.txt.gz
 
 COPY ./assets/build_genome.sh ./build_genome.sh
+RUN chmod +x ./build_genome.sh
