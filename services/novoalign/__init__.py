@@ -18,6 +18,7 @@ class NovoAlign(BaseAligner):
             command += " /{}".format(specification["path"])
         command += " -d /{}".format(genome_index_path)
         command += " -r All 10" # report max. 10 alignments per read
+        command += " -v 0 70 70 '[>]([^:]*)'" # group junction and exon sequences together
         return command
 
     def conclude_alignment(self, parameters, sam_file_path):
