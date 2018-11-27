@@ -3,11 +3,12 @@ from ..base_aligner import BaseAligner
 
 class NovoAlign(BaseAligner):
     def build_index_command(self, parameters):
-        return "./build_genome.sh {} {} {} {}".format(
+        return "./build_genome.sh {} {} {} {} {}".format(
             parameters["reference_base_path"],
             parameters["genome_index_path"],
             parameters["reference_id"],
-            parameters["dataset"].get("readLength")
+            parameters["dataset"].get("readLength"),
+            parameters["reference_path"]
         )
 
     def alignment_command(self, parameters):
@@ -30,7 +31,7 @@ class NovoAlign(BaseAligner):
         self.run_docker(command, parameters, output_parameters)
 
     def genome_index_amendment(self, dataset):
-        return "_" + dataset["readLength"]
+        return "_" + dataset.get("readLength")
 
 
 class NovoAlignIndelSensitive(NovoAlign):
