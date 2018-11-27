@@ -20,10 +20,7 @@ class GatkFilters(BaseService):
                 deduplicated_path,
                 metrics_path
             )
-        output_parameters = {
-            "log_file_path": destination + "Deduplicate.log",
-            "log_from_stderr": True
-        }
+        output_parameters = { "log_file_path": destination + "Deduplicate.log" }
         self.run_docker(command, parameters, output_parameters)
         file_utils.validate_file_content(deduplicated_path)
 
@@ -62,8 +59,7 @@ class HaplotypeCaller(BaseService):
             data_handler.reference_path(experiment)
         )
         command = self.add_filters(command)
-        output_parameters = { "log_from_stderr": True }
-        self.run_docker(command, parameters, output_parameters)
+        self.run_docker(command, parameters)
         file_utils.validate_file_content(out_file_path)
 
 class HaplotypeCallerChr4(HaplotypeCaller):

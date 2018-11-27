@@ -10,10 +10,7 @@ class BeersEvaluator(BaseService):
             destination,
             dataset.get("evaluation")["truth_file"]["path"]
         )
-        output_parameters = {
-            "log_from_stderr": True,
-            "log_file_path": destination + "Evaluation.log"
-        }
+        output_parameters = { "log_file_path": destination + "Evaluation.log" }
         self.run_docker(command, parameters, output_parameters)
 
         for file_name in ["Evaluation.multi.txt", "Evaluation.txt"]:

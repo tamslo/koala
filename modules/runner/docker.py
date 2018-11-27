@@ -39,12 +39,12 @@ class Docker:
 
         def log_output(docker_container):
             if stdout_file_path != None:
-                out_file = open(stdout_file_path, "wb")
+                out_file = open(stdout_file_path, "ab")
                 for line in docker_container.logs(stdout=True, stderr=False, stream=True):
                     out_file.write(line)
                 out_file.close()
             if stderr_file_path != None:
-                log_file = open(stderr_file_path, "wb")
+                log_file = open(stderr_file_path, "ab")
                 for line in docker_container.logs(stdout=False, stderr=True, stream=True):
                     log_file.write(line)
                 log_file.close()

@@ -36,7 +36,6 @@ class BaseService:
         def set_default(dict, key, default):
             return dict[key] if key in dict else default
         log_is_output = set_default(output_parameters, "log_is_output", False)
-        log_from_stderr = set_default(output_parameters, "log_from_stderr", False)
         log_file_path = set_default(
             output_parameters,
             "log_file_path",
@@ -44,15 +43,9 @@ class BaseService:
         )
 
         # Default. The command automatically writes to file, write to log what
-        # is printed in STDOUT.
+        # is printed in STDOUT and STDERR.
         stdout_file_path = log_file_path
-        stderr_file_path = None
-
-        # The command automatically writes to file, write to log what is
-        # printed in STDERR.
-        if log_from_stderr:
-            stdout_file_path = None
-            stderr_file_path = log_file_path
+        stderr_file_path = log_file_path
 
         # The command does not write to file, write to output file what is
         # printed in STDOUT and to log what is printed in STDERR.

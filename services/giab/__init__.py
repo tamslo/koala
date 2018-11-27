@@ -25,10 +25,7 @@ class GiabEvaluator(BaseService):
             reference_id,
             additional_commands
         )
-        output_parameters = {
-            "log_from_stderr": True,
-            "log_file_path": destination + "Evaluation.giab.log"
-        }
+        output_parameters = { "log_file_path": destination + "Evaluation.giab.log" }
         self.run_docker(command, parameters, output_parameters)
 
         for file_name in os.listdir(destination):

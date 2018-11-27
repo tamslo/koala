@@ -24,10 +24,7 @@ class NovoAlign(BaseAligner):
 
     def conclude_alignment(self, parameters, sam_file_path):
         command = "./fix_coordinates.sh {}".format(sam_file_path)
-        output_parameters = {
-            "log_file_path": parameters["destination"] + "Coordinates.log",
-            "log_from_stderr": True
-        }
+        output_parameters = { "log_file_path": parameters["destination"] + "Coordinates.log" }
         self.run_docker(command, parameters, output_parameters)
 
     def genome_index_amendment(self, dataset):

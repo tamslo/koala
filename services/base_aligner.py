@@ -101,10 +101,7 @@ class BaseAligner(BaseService):
                 sam_file_path,
                 bam_file_path
         )
-        output_parameters = {
-            "log_file_path": destination + "Conversion.log",
-            "log_from_stderr": True
-        }
+        output_parameters = { "log_file_path": destination + "Conversion.log" }
         self.run_docker(command, parameters, output_parameters)
         file_utils.validate_file_content(bam_file_path)
 
@@ -124,10 +121,7 @@ class BaseAligner(BaseService):
         # Generate index of reference if not there
         if not os.path.exists(reference_index_path):
             command = "samtools faidx /{}".format(reference_path)
-            output_parameters = {
-                "log_file_path": destination + "Index.log",
-                "log_from_stderr": True
-            }
+            output_parameters = { "log_file_path": destination + "Index.log" }
             self.run_docker(command, parameters, output_parameters)
 
         # Generate dict or reference if not there
@@ -136,8 +130,5 @@ class BaseAligner(BaseService):
                 reference_path,
                 reference_dict_path
             )
-            output_parameters = {
-                "log_file_path": destination + "Dict.log",
-                "log_from_stderr": True
-            }
+            output_parameters = { "log_file_path": destination + "Dict.log" }
             self.run_docker(command, parameters, output_parameters)
