@@ -13,6 +13,7 @@ class DataHandler:
         self.datasets_directory = data_directory + "datasets/"
         self.error_directory = data_directory + "errored/"
         self.reference_directory = data_directory + "references/"
+        self.annotation_directory = data_directory + "annotations/"
 
         self.experiments = InstanceHandler(self.experiments_directory, Experiment)
         self.datasets = InstanceHandler(self.datasets_directory, Dataset)

@@ -1,4 +1,8 @@
-data/
+data/*
+!data/annotations/*
+data/annotations/*
+!data/annotations/refFlat.*
+
 /config.yml
 client/src/constants.json
 services/*/assets/*.lic

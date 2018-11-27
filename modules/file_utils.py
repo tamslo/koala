@@ -5,6 +5,7 @@ def file_has_content(path):
 
 def validate_file_content(path):
     if not file_has_content(path):
+        delete(path)
         raise Exception("Output {} not written".format(path))
 
 def create_directory(path):

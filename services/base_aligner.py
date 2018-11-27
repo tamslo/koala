@@ -46,7 +46,8 @@ class BaseAligner(BaseService):
                     "reference_id": experiment.get("reference"),
                     "reference_path": data_handler.reference_path(experiment),
                     "dataset": dataset,
-                    "reference_base_path": data_handler.reference_directory
+                    "reference_base_path": data_handler.reference_directory,
+                    "annotation_base_path": data_handler.annotation_directory
                 }
                 self.build_genome_index(index_parameters)
             except:

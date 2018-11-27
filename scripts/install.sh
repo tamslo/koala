@@ -9,4 +9,5 @@ cd ..
 bash scripts/build-docker.sh
 
 # Download data
+bash scripts/download-data.sh
 python scripts/download-data.py

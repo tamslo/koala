@@ -45,15 +45,5 @@ RUN rm $DST_PATH/$USEQ_ZIP_NAME
 RUN mv $DST_PATH/USeq_$USEQ_VESION/* $DST_PATH
 RUN rm -r $DST_PATH/USeq_$USEQ_VESION
 
-# Download FASTA references per chromosome
-RUN wget ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/* -P references/hg19
-RUN wget ftp://hgdownload.cse.ucsc.edu/goldenPath/hg38/chromosomes/* -P references/hg38
-
-# Copy annotations
-COPY ./assets/refFlat.hg19.txt.gz ./annotations/hg19.txt.gz
-RUN gunzip ./annotations/hg19.txt.gz
-COPY ./assets/refFlat.hg38.txt.gz ./annotations/hg38.txt.gz
-RUN gunzip ./annotations/hg38.txt.gz
-
-COPY ./assets/build_genome.sh ./build_genome.sh
-RUN chmod +x ./build_genome.sh
+COPY ./assets/fix_coordinates.sh ./fix_coordinates.sh
+RUN chmod +x ./fix_coordinates.sh
