@@ -33,11 +33,11 @@ ServiceClasses = {
 if environment == "test":
     ServiceClasses["test_aligner_writes_file"] = TestAlignerWritesFile
     ServiceClasses["test_aligner_writes_log"] = TestAlignerWritesLog
-    ServiceClasses["novoalign_fa"] = NovoAlignFasta
 
 if environment == "production":
     ServiceClasses["star"] = Star
     ServiceClasses["novoalign"] = NovoAlign
+    ServiceClasses["novoalign_fa"] = NovoAlignFasta
     ServiceClasses["novoalign_tweaked"] = NovoAlignIndelSensitive
 
 def get_services():
