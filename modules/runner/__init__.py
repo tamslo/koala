@@ -71,10 +71,22 @@ class Runner:
         )
         file_path = self.data_handler.cache.lookup(experiment, action)
         if file_path: # Step is cached
-            experiment.start_action(
-                action,
-                cached = True
+            # Check if evaluation was run, maybe run evaluation
+            evaluation_handler = self.__evaluation_handler(experiment, action)
+            has_evaluation = next(
+                (file for file in os.listdir(file_path) if file.startswith("Evaluation")),
+                False
             )
+            if evaluation_handler and not has_evaluation:
+                experiment.start_action(action)
+                experiment.mark_cached(action)
+                self.__run_evaluation(file_path, experiment, evaluation_handler, action_handler)
+                experiment.complete_action(action)
+            else:
+                experiment.start_action(
+                    action,
+                    cached = True
+                )
         else: # Run step
             experiment.start_action(action)
             file_path = self.data_handler.cache.create_path(
@@ -93,7 +105,7 @@ class Runner:
         experiment.add_download(action, file_path)
         return experiment
 
-    def __run_evaluation_if_specified(self, destination, experiment, step, action_handler):
+    def __evaluation_handler(self, experiment, step):
         dataset = self.data_handler.datasets.select(experiment.get("dataset"))
         evaluation = dataset.get("evaluation")
         if evaluation:
@@ -104,10 +116,20 @@ class Runner:
             )
             step_id = re.sub(r"_\d$", "", step) # in case a number was appended
             if (step_id in evaluation_handler.steps):
-                evaluation_handler.run({
-                    "docker_client": self.docker_client,
-                    "destination": destination,
-                    "experiment": experiment,
-                    "dataset": dataset,
-                    "action_handler": action_handler
-                })
+                return evaluation_handler
+
+    def __run_evaluation(self, destination, experiment, evaluation_handler, action_handler):
+        dataset = self.data_handler.datasets.select(experiment.get("dataset"))
+        evaluation_handler.run({
+            "docker_client": self.docker_client,
+            "destination": destination,
+            "experiment": experiment,
+            "dataset": dataset,
+            "action_handler": action_handler
+        })
+
+
+    def __run_evaluation_if_specified(self, destination, experiment, step, action_handler):
+        evaluation_handler = self.__evaluation_handler(experiment, step)
+        if evaluation_handler:
+            self.__run_evaluation(destination, experiment, evaluation_handler, action_handler)

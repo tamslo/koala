@@ -18,10 +18,13 @@ class Experiment(BaseInstance):
         self.content["pipeline"][action]["directory"] = path
         super().store()
 
+    def mark_cached(self, action):
+        self.content["pipeline"][action]["cached"] = True
+
     def start_action(self, action, cached = False):
         self.log_action_status(action, "started")
         if cached:
-            self.content["pipeline"][action]["cached"] = True
+            self.mark_cached(action)
             self.complete_action(action)
 
     def complete_action(self, action):
