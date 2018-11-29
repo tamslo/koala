@@ -14,9 +14,9 @@ class GiabEvaluator(BaseService):
         # Filter data if necessary
         action_handler = parameters["action_handler"]
         additional_commands = ""
-        if hasattr(action_handler, "filters"):
+        if hasattr(action_handler, "chromosomes"):
             additional_commands = "-l {}".format(
-                " ".join(action_handler.filters)
+                " ".join(action_handler.chromosomes)
             )
 
         command = "bash evaluate_variants.sh /{} {} {} {}".format(
@@ -25,7 +25,7 @@ class GiabEvaluator(BaseService):
             reference_id,
             additional_commands
         )
-        output_parameters = { "log_file_path": destination + "Evaluation.giab.log" }
+        output_parameters = { "log_file_path": destination + "Evaluation.log" }
         self.run_docker(command, parameters, output_parameters)
 
         for file_name in os.listdir(destination):
