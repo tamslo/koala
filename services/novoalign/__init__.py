@@ -3,6 +3,11 @@ from ..base_aligner import BaseAligner
 import modules.file_utils as file_utils
 
 class NovoAlign(BaseAligner):
+    def __fasta_input(self, parameters):
+        dataset = parameters["dataset"]
+        evaluation = dataset.get("evaluation")
+        return evaluation and evaluation["type"] == "beers"
+
     def __annotation_path(self, parameters):
         annotation_base_path = parameters["annotation_base_path"]
         reference_id = parameters["reference_id"]
@@ -106,26 +111,27 @@ class NovoAlign(BaseAligner):
         command += " -d /{}".format(genome_index_path)
         command += " -r All 10" # report max. 10 alignments per read
         command += " -v 0 70 70 '[>]([^:]*)'" # group junction and exon sequences together
+        if self.__fasta_input(parameters):
+            command += " -F FA"
         return command
 
     def conclude_alignment(self, parameters, sam_file_path):
         file_utils.validate_file_content(sam_file_path)
-        command = "./fix_coordinates.sh {}".format(sam_file_path)
-        output_parameters = { "log_file_path": parameters["destination"] + "Coordinates.log" }
-        self.run_docker(command, parameters, output_parameters)
+        if self.__annotation_path(parameters):
+            command = "./fix_coordinates.sh {}".format(sam_file_path)
+            output_parameters = { "log_file_path": parameters["destination"] + "Coordinates.log" }
+            self.run_docker(command, parameters, output_parameters)
+        # if self.__fasta_input(parameters):
+            # TODO: Add dummy qualities for SAM File if FASTA mode
 
-    def genome_index_amendment(self, dataset):
-        return "_" + dataset.get("readLength")
-
-class NovoAlignFasta(NovoAlign):
-    def conclude_alignment(self, parameters, sam_file_path):
-        # TODO: Add dummy qualities for SAM File
-        super().conclude_alignment(parameters, sam_file_path)
-
-    def alignment_command(self, parameters):
-        command = super().alignment_command(parameters)
-        command += " -F FA"
-        return command
+    def genome_index_amendment(self, parameters):
+        data_handler = parameters["data_handler"]
+        experiment = parameters["experiment"]
+        dataset = data_handler.datasets.select(experiment.get("dataset"))
+        if self.__annotation_path(parameters):
+            return "_" + dataset.get("readLength")
+        else:
+            return super().genome_index_amendment(parameters)
 
 class NovoAlignIndelSensitive(NovoAlign):
     def alignment_command(self, parameters):

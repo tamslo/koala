@@ -33,7 +33,7 @@ class BaseAligner(BaseService):
         bam_file_path = destination + "Out.bam"
 
         # Define genome index path and temp path (will be renamed if successful)
-        genome_index_path = data_handler.genome_index_path(experiment, self.id) + self.genome_index_amendment(dataset)
+        genome_index_path = data_handler.genome_index_path(experiment, self.id) + self.genome_index_amendment(parameters)
         temp_genome_index_path = genome_index_path + ".running"
 
         # If neccessary, build genome index
