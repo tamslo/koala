@@ -13,7 +13,6 @@ from .gatk import GatkFilters
 from .opossum import Opossum
 from .beers import BeersEvaluator
 from .gatk import HaplotypeCaller
-from .gatk import HaplotypeCallerChr4
 from .gatk import HaplotypeCallerFiltered
 from .giab import GiabEvaluator
 
