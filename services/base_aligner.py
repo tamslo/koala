@@ -28,6 +28,7 @@ class BaseAligner(BaseService):
         experiment = parameters["experiment"]
         destination = parameters["destination"]
         dataset = data_handler.datasets.select(experiment.get("dataset"))
+        parameters["annotation_base_path"] = data_handler.annotation_directory
 
         sam_file_path = destination + "Out.sam"
         bam_file_path = destination + "Out.bam"
@@ -47,7 +48,7 @@ class BaseAligner(BaseService):
                     "reference_path": data_handler.reference_path(experiment),
                     "dataset": dataset,
                     "reference_base_path": data_handler.reference_directory,
-                    "annotation_base_path": data_handler.annotation_directory
+                    "annotation_base_path": parameters["annotation_base_path"]
                 }
                 self.build_genome_index(index_parameters)
             except:
