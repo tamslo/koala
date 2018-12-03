@@ -6,6 +6,7 @@ path_prefix="$1"  # path needs to be absolute
 vcf_file_name="$2"
 reference_id="$3"
 additional_commands="$4"
+additional_commands="${additional_commands//$$/ }"
 cd $happy_directory
 
 HGREF=/data/references/$reference_id.fa \

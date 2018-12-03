@@ -15,8 +15,9 @@ class GiabEvaluator(BaseService):
         action_handler = parameters["action_handler"]
         additional_commands = ""
         if hasattr(action_handler, "chromosomes"):
-            additional_commands = "--location {}".format(
-                " ".join(action_handler.chromosomes)
+            # Escape space with $$
+            additional_commands = "--location$${}".format(
+                "$$".join(action_handler.chromosomes)
             )
 
         command = "bash evaluate_variants.sh /{} {} {} {}".format(
