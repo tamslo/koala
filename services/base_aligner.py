@@ -73,7 +73,9 @@ class BaseAligner(BaseService):
             "docker_image": "gatk",
             "destination": destination,
             "data_handler": data_handler,
-            "experiment": experiment
+            "experiment": experiment,
+            "reference_id": parameters["reference_id"],
+            "annotation_base_path": parameters["annotation_base_path"]
         }
         self.post_process(post_processing_parameters, sam_file_path, bam_file_path)
 
