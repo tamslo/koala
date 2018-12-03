@@ -61,8 +61,8 @@ class Runner:
                 traceback.print_exc()
                 experiment.mark_error(current_action, error)
                 self.data_handler.cache.clean_up(experiment, current_action)
+            # self.current_task = None
             return experiment
-        self.current_task = None
 
     def __execute_step(self, action, experiment):
         action_handler_id = experiment.get("pipeline")[action]["id"]

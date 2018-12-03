@@ -62,6 +62,7 @@ class HaplotypeCaller(BaseService):
         self.run_docker(command, parameters)
         file_utils.validate_file_content(out_file_path)
 
-class HaplotypeCallerChr4(HaplotypeCaller):
+class HaplotypeCallerFiltered(HaplotypeCaller):
     def add_filters(self, command):
-        return command + " -L chr4"
+        print(self.chromosomes, flush=True)
+        return command + " -L {}".format(",".join(self.chromosomes))

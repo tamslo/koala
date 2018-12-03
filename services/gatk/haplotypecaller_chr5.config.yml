@@ -1,0 +1,4 @@
+name: HaplotypeCaller (only chr5)
+type: variant_caller
+chromosomes:
+  - chr5

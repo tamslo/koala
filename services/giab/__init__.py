@@ -19,7 +19,7 @@ class GiabEvaluator(BaseService):
             space_escape = "%%"
             additional_commands = "--location{}{}".format(
                 space_escape,
-                space_escape.join(action_handler.chromosomes)
+                ",".join(action_handler.chromosomes)
             )
 
         command = "bash evaluate_variants.sh /{} {} {} {}".format(
