@@ -15,7 +15,7 @@ class GiabEvaluator(BaseService):
         action_handler = parameters["action_handler"]
         additional_commands = ""
         if hasattr(action_handler, "chromosomes"):
-            additional_commands = "-l {}".format(
+            additional_commands = "--location {}".format(
                 " ".join(action_handler.chromosomes)
             )
 

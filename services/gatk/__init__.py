@@ -64,4 +64,4 @@ class HaplotypeCaller(BaseService):
 
 class HaplotypeCallerChr4(HaplotypeCaller):
     def add_filters(self, command):
-        return command + " --location chr4"
+        return command + " -L chr4"
