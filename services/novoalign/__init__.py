@@ -24,10 +24,10 @@ class NovoAlign(BaseAligner):
             "min": 10 # default, for the sake of completeness
         }
 
-    def __masked_genome_path(self, parameters):
+    def __masked_genome_path(self, parameters, file_ending=""):
         reference_base_path = parameters["reference_base_path"]
         reference_id = parameters["reference_id"]
-        return reference_base_path + reference_id + "_masked"
+        return reference_base_path + reference_id + "_masked" + file_ending
 
     def __junctions_prefix(self, parameters):
         annotation_base_path = parameters["annotation_base_path"]
@@ -66,6 +66,16 @@ class NovoAlign(BaseAligner):
                 output_parameters = { "log_file_path": destination + "Masking.log" }
                 self.run_docker(command, parameters, output_parameters)
 
+            whole_masked_genome_path = self.__masked_genome_path(parameters, file_ending=".fa")
+            if not os.path.exists(whole_masked_genome_path):
+                with open(whole_masked_genome_path, "w") as whole_genome_file:
+                    for file in os.listdir(masked_genome_path):
+                        with open(os.path.join(masked_genome_path, file), "r") as chromosome_file:
+                            for line in chromosome_file:
+                                if not line.endswith("\n"):
+                                    line += "\n"
+                                whole_genome_file.write(line)
+
             # Create annotations
             known_junctions_path = self.__known_junctions_path(parameters)
             theoretical_junctions_path = self.__theoretical_junctions_path(parameters)
@@ -93,7 +103,7 @@ class NovoAlign(BaseAligner):
         command = "novoindex -n {} /{} ".format(reference_id, genome_index_path)
         if annotation_path:
             command += "/{} /{} /{}".format(
-                self.__masked_genome_path(parameters),
+                self.__masked_genome_path(parameters, file_ending=".fa"),
                 self.__known_junctions_path(parameters),
                 self.__theoretical_junctions_path(parameters),
             )
@@ -118,11 +128,11 @@ class NovoAlign(BaseAligner):
     def conclude_alignment(self, parameters, sam_file_path):
         file_utils.validate_file_content(sam_file_path)
         if self.__annotation_path(parameters):
+            # if self.__fasta_input(parameters):
+            # TODO: Add dummy qualities for SAM File if FASTA mode
             command = "./fix_coordinates.sh {}".format(sam_file_path)
             output_parameters = { "log_file_path": parameters["destination"] + "Coordinates.log" }
             self.run_docker(command, parameters, output_parameters)
-        # if self.__fasta_input(parameters):
-            # TODO: Add dummy qualities for SAM File if FASTA mode
 
     def genome_index_amendment(self, parameters):
         data_handler = parameters["data_handler"]
