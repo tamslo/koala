@@ -9,11 +9,11 @@ if [ ! -d data/references/hg19 ]; then
   wget ftp://hgdownload.cse.ucsc.edu/goldenPath/hg19/chromosomes/* -P data/references/hg19
   wget ftp://hgdownload.cse.ucsc.edu/goldenPath/hg38/chromosomes/* -P data/references/hg38
 
-  cd data/references/hg19
+  cd ~/code/data/references/hg19
   find . -type f ! -name '*.fa.gz' -delete
   rm -f *_*.fa.gz
 
-  cd ../hg38
+  cd ~/code/data/references/hg38
   find . -type f ! -name '*.fa.gz' -delete
   rm -f *_*.fa.gz
 fi
