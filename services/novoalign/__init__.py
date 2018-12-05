@@ -1,8 +1,15 @@
 import os
+import yaml
 from ..base_aligner import BaseAligner
 import modules.file_utils as file_utils
 
 class NovoAlign(BaseAligner):
+    def __jar_preamble(self):
+        with open("config.yml", "r") as config_file:
+            config = yaml.load(config_file)
+            available_memory = int(config["memory"])
+        return "java -Xmx{}G -jar".format(available_memory)
+
     def __fasta_input(self, parameters):
         dataset = parameters["dataset"]
         evaluation = dataset.get("evaluation")
@@ -57,7 +64,8 @@ class NovoAlign(BaseAligner):
             # Mask genome
             masked_genome_path = self.__masked_genome_path(parameters)
             if not os.path.exists(masked_genome_path):
-                command = "java -jar /opt/useq/Apps/MaskExonsInFastaFiles -f {}{} -u {} -s {}".format(
+                command = "{} /opt/useq/Apps/MaskExonsInFastaFiles -f {}{} -u {} -s {}".format(
+                    self.__jar_preamble(),
                     reference_base_path,
                     reference_id,
                     annotation_path,
@@ -82,8 +90,9 @@ class NovoAlign(BaseAligner):
             if not os.path.exists(known_junctions_path):
                 make_transcriptome_parameters = self.__make_transcriptome_parameters(parameters)
                 # -s skips subsequent occurrences of splices with the same coordinates, memory intensive
-                command = "java -jar /opt/useq/Apps/MakeTranscriptome" \
+                command = "{} /opt/useq/Apps/MakeTranscriptome" \
                     " -f /{} -u /{} -r {} -n {} -m {} -s".format(
+                        self.__jar_preamble(),
                         reference_base_path + reference_id,
                         annotation_path,
                         make_transcriptome_parameters["rad"],
