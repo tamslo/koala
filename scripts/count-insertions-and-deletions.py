@@ -1,5 +1,12 @@
 #!/usr/bin/python
 
+# Script to collect counts of insertions and deletions from SAM or VCF files,
+# takes a list of paths to files to be processed and outputs a CSV file  called
+# IndelCounts.csv.
+# If the last path is a dictionary, the IndelCounts.csv is saved to this
+# folder.
+
+import os
 import sys
 import re
 import csv
@@ -91,9 +98,19 @@ def main():
         raise_error("[NO PATH] The path to one or multiple files to be" \
             " processed is expected as parameters")
 
+    output_directory = ""
+    if os.path.isdir(parameters[-1]):
+        print("[INFO] Treating last path as output directory")
+        output_directory = parameters[-1]
+        parameters = parameters[:-1]
+    output_file_path = output_directory + "IndelCounts.csv"
+    if os.path.exists(output_file_path):
+        print("[WARNING] Output file {} already exists, it will be " \
+            "overwritten".format(output_file_path))
+
     file_results = {}
     for path in parameters:
-        print("Processing {}...".format(path))
+        print("[INFO] Processing {}...".format(path))
         results = {}
         file_ending = path.split(".")[-1]
         line_processors = {
@@ -122,10 +139,10 @@ def main():
             results = increase_values(results, line_result)
         file.close()
         file_results[path] = results
-        print("Done.")
+        print("[INFO] Done.")
 
-    print("Writing CSV file...")
-    output_file = open("IndelCounts.csv", "w")
+    print("[INFO] Writing CSV file...")
+    output_file = open(output_file_path, "w")
     csv_writer = csv.writer(output_file)
     header = ["file", "chromosome"]
     for count_name in empty_line_result()["counts"]:
@@ -138,6 +155,6 @@ def main():
                 values.append(count_value)
             csv_writer.writerow(values)
     output_file.close()
-    print("Done.")
+    print("[INFO] Done.")
 
 main()
