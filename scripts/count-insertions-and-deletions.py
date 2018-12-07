@@ -2,17 +2,21 @@
 
 import sys
 import re
+import csv
 
 def raise_error(error_message):
     print(error_message)
     sys.exit(1)
 
-def empty_counts():
+def empty_line_result():
     return {
-        "insertions": 0,
-        "inserted_bases": 0,
-        "deletions": 0,
-        "deleted_bases": 0,
+        "chromosome": None,
+        "counts": {
+            "insertions": 0,
+            "inserted_bases": 0,
+            "deletions": 0,
+            "deleted_bases": 0
+        }
     }
 
 def number_of_indel_bases(cigar_string, index):
@@ -26,44 +30,60 @@ def number_of_indel_bases(cigar_string, index):
     return count
 
 def process_sam_line(line):
-    counts = empty_counts()
+    line_result = empty_line_result()
     if not line.startswith("@"):
         sam_fields = fields = line.split("\t")
         if len(sam_fields) < 11:
             return -1
+        chromosome = sam_fields[2]
+        line_result["chromosome"] = chromosome
         cigar_string = sam_fields[5]
         # Process insertions
         insertion_indices = [match.start() for match in re.finditer("I", cigar_string)]
         if len(insertion_indices) > 0:
-            counts["insertions"] = len(insertion_indices)
+            line_result["counts"]["insertions"] = len(insertion_indices)
             for index in insertion_indices:
-                counts["inserted_bases"] += number_of_indel_bases(cigar_string, index)
+                line_result["counts"]["inserted_bases"] += number_of_indel_bases(cigar_string, index)
         # Process deletions
         deletion_indices = [match.start() for match in re.finditer("D", cigar_string)]
         if len(deletion_indices) > 0:
-            counts["deletions"] = len(deletion_indices)
+            line_result["counts"]["deletions"] = len(deletion_indices)
             for index in deletion_indices:
-                counts["deleted_bases"] += number_of_indel_bases(cigar_string, index)
+                line_result["counts"]["deleted_bases"] += number_of_indel_bases(cigar_string, index)
 
-    return counts
+    return line_result
 
 def process_vcf_line(line):
-    counts = empty_counts()
+    line_result = empty_line_result()
     if not line.startswith("#"):
         vcf_fields = fields = line.split("\t")
         if len(vcf_fields) < 10:
             return -1
+        chromosome = vcf_fields[0]
+        line_result["chromosome"] = chromosome
         reference_bases = vcf_fields[3]
         alternative_bases = vcf_fields[4]
         # Process insertions
         if len(alternative_bases) > len(reference_bases):
-            counts["insertions"] = 1
-            counts["inserted_bases"] = len(alternative_bases) - len(reference_bases)
+            line_result["counts"]["insertions"] = 1
+            line_result["counts"]["inserted_bases"] = len(alternative_bases) - len(reference_bases)
         # Process deletions
         if len(reference_bases) > len(alternative_bases):
-            counts["deletions"] = 1
-            counts["deleted_bases"] = len(reference_bases) - len(alternative_bases)
-    return counts
+            line_result["counts"]["deletions"] = 1
+            line_result["counts"]["deleted_bases"] = len(reference_bases) - len(alternative_bases)
+    return line_result
+
+def increase_values(values, line_values):
+    chromosome = line_values["chromosome"]
+    if not chromosome in values:
+        values[chromosome] = {}
+    for count_key, count_value in line_values["counts"].items():
+        if count_key in values[chromosome]:
+            values[chromosome][count_key] += count_value
+        else:
+            values[chromosome][count_key] = count_value
+    return values
+
 
 def main():
     parameters = sys.argv[1:]
@@ -71,12 +91,10 @@ def main():
         raise_error("[NO PATH] The path to one or multiple files to be" \
             " processed is expected as parameters")
 
+    file_results = {}
     for path in parameters:
-        insertions = 0
-        inserted_bases = 0
-        deletions = 0
-        deleted_bases = 0
-
+        print("Processing {}...".format(path))
+        results = {}
         file_ending = path.split(".")[-1]
         line_processors = {
             "sam": process_sam_line,
@@ -88,24 +106,38 @@ def main():
 
         process_line = line_processors[file_ending]
         file = open(path, "r")
+        skip_file = False
         for line in file.readlines():
-            counts = process_line(line)
+            if skip_file:
+                continue
+            line_result = process_line(line)
             # Error handling
-            if counts == -1:
-                raise_error("[MALFORMED FILE] The fields in {} are" \
-                    " not tab separated".format(path))
-
-            insertions += counts["insertions"]
-            inserted_bases += counts["inserted_bases"]
-            deletions += counts["deletions"]
-            deleted_bases += counts["deleted_bases"]
+            if line_result == -1:
+                print("[MALFORMED FILE] The fields in {} are" \
+                    " not tab separated or do not include all required" \
+                    " information ".format(path))
+                skip_file = True
+            if line_result["chromosome"] == None:
+                continue
+            results = increase_values(results, line_result)
         file.close()
+        file_results[path] = results
+        print("Done.")
 
-        print("")
-        print("Processed file: {}".format(path))
-        print("Number of insertions: {}".format(insertions))
-        print("Number of inserted bases: {}".format(inserted_bases))
-        print("Number of deletions: {}".format(deletions))
-        print("Number of deleted bases: {}".format(deleted_bases))
+    print("Writing CSV file...")
+    output_file = open("IndelCounts.csv", "w")
+    csv_writer = csv.writer(output_file)
+    header = ["file", "chromosome"]
+    for count_name in empty_line_result()["counts"]:
+        header.append(count_name)
+    csv_writer.writerow(header)
+    for path, chromosomes in file_results.items():
+        for chromosome, counts in chromosomes.items():
+            values = [path, chromosome]
+            for count_key, count_value in counts.items():
+                values.append(count_value)
+            csv_writer.writerow(values)
+    output_file.close()
+    print("Done.")
 
 main()
