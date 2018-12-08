@@ -124,7 +124,7 @@ def main():
         process_line = line_processors[file_ending]
         file = open(path, "r")
         skip_file = False
-        for line in file.readlines():
+        for line in file:
             if skip_file:
                 continue
             line_result = process_line(line)
