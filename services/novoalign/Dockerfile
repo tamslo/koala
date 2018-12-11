@@ -22,7 +22,7 @@ ENV PATH $NOVO_PATH:$PATH
 
 # Install dependencies
 RUN apt-get update
-RUN apt-get install -y wget unzip default-jre
+RUN apt-get install -y wget unzip default-jre libswitch-perl
 
 # Install R 3.5
 RUN apt-get install -y apt-transport-https
@@ -45,5 +45,11 @@ RUN rm $DST_PATH/$USEQ_ZIP_NAME
 RUN mv $DST_PATH/USeq_$USEQ_VESION/* $DST_PATH
 RUN rm -r $DST_PATH/USeq_$USEQ_VESION
 
+# Install Perl dependencies
+RUN cpan Bio::SeqIO
+
 COPY ./assets/fix_coordinates.sh ./fix_coordinates.sh
 RUN chmod +x ./fix_coordinates.sh
+
+COPY ./assets/remove_duplicates.pl ./remove_duplicates.pl
+RUN chmod +x ./remove_duplicates.pl
