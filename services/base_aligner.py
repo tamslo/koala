@@ -75,7 +75,8 @@ class BaseAligner(BaseService):
             "data_handler": data_handler,
             "experiment": experiment,
             "reference_id": parameters["reference_id"],
-            "reference_base_path": data_handler.reference_directory
+            "reference_base_path": data_handler.reference_directory,
+            "annotation_base_path": parameters["annotation_base_path"]
         }
         self.post_process(post_processing_parameters, sam_file_path, bam_file_path)
 
@@ -98,6 +99,7 @@ class BaseAligner(BaseService):
         self.conclude_alignment(parameters, sam_file_path)
 
     def post_process(self, parameters, sam_file_path, bam_file_path):
+        file_utils.validate_file_content(sam_file_path)
         destination = parameters["destination"]
 
         # Convert to BAM, add read groups and sort

@@ -9,6 +9,13 @@ class NovoAlign(BaseAligner):
         evaluation = dataset.get("evaluation")
         return evaluation and evaluation["type"] == "beers"
 
+    def __annotation_path(self, parameters):
+        reference_id = parameters["reference_id"]
+        annotation_base_path = parameters["annotation_base_path"]
+        annotation_path = annotation_base_path + reference_id + ".gtf"
+        if os.path.exists(annotation_path):
+            return annotation_path
+
     def __annotated_index_path(self, parameters, file_ending=".idx.fa"):
         reference_base_path = parameters["reference_base_path"]
         reference_id = parameters["reference_id"]
@@ -19,9 +26,8 @@ class NovoAlign(BaseAligner):
         reference_id = parameters["reference_id"]
         annotation_base_path = parameters["annotation_base_path"]
         reference_path = parameters["reference_path"]
-
-        if not os.path.exists(self.__annotated_index_path(parameters)):
-            annotation_path = annotation_base_path + reference_id + ".gtf"
+        annotation_path = self.__annotation_path(parameters)
+        if annotation_path and not os.path.exists(self.__annotated_index_path(parameters)):
             command = "rsem-prepare-reference --gtf {} {} {}".format(
                 annotation_path,
                 reference_path,
@@ -33,10 +39,12 @@ class NovoAlign(BaseAligner):
         genome_index_path = parameters["genome_index_path"]
         reference_id = parameters["reference_id"]
         reference_path = parameters["reference_path"]
-        command = "novoindex -n {} /{} {}".format(
+        if self.__annotation_path(parameters):
+            reference_path = self.__annotated_index_path(parameters)
+        command = "novoindex -n {} /{} /{}".format(
             reference_id,
             genome_index_path,
-            self.__annotated_index_path(parameters)
+            reference_path
         )
         return command
 
@@ -55,20 +63,21 @@ class NovoAlign(BaseAligner):
         return command
 
     def conclude_post_processing(self, parameters, out_file_path):
-        intermediate_result_path = out_file_path + ".tmp"
-        os.rename(out_file_path, intermediate_result_path)
-        with open("config.yml", "r") as config_file:
-            config = yaml.load(config_file)
-            num_threads = int(config["cores"])
-        command = "rsem-tbam2gbam {} {} {} -p {}".format(
-            self.__annotated_index_path(parameters, file_ending=""),
-            intermediate_result_path,
-            out_file_path,
-            num_threads
-        )
-        self.run_docker(command, parameters, log_file_name="FixCoordinates.log")
-        file_utils.validate_file_content(out_file_path)
-        file_utils.delete(intermediate_result_path)
+        if self.__annotation_path(parameters):
+            intermediate_result_path = out_file_path + ".tmp"
+            os.rename(out_file_path, intermediate_result_path)
+            with open("config.yml", "r") as config_file:
+                config = yaml.load(config_file)
+                num_threads = int(config["cores"])
+            command = "rsem-tbam2gbam {} {} {} -p {}".format(
+                self.__annotated_index_path(parameters, file_ending=""),
+                intermediate_result_path,
+                out_file_path,
+                num_threads
+            )
+            self.run_docker(command, parameters, log_file_name="FixCoordinates.log")
+            file_utils.validate_file_content(out_file_path)
+            file_utils.delete(intermediate_result_path)
 
 class NovoAlignIndelSensitive(NovoAlign):
     def alignment_command(self, parameters):
