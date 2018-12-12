@@ -77,7 +77,7 @@ class BaseAligner(BaseService):
     def build_genome_index(self, parameters):
         self.prepare_indexing(parameters)
         command = self.build_index_command(parameters)
-        self.run_docker(command, parameters)
+        self.run_docker(command, parameters, log_file_name="Index.log")
 
     def align(self, parameters, sam_file_path):
         command = self.alignment_command(parameters)

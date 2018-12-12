@@ -9,18 +9,35 @@ class NovoAlign(BaseAligner):
         evaluation = dataset.get("evaluation")
         return evaluation and evaluation["type"] == "beers"
 
-    def prepare_indexing(self, parameters):
-        destination = parameters["destination"]
+    def __annotated_index_path(self, parameters, file_ending=".idx.fa"):
         reference_base_path = parameters["reference_base_path"]
         reference_id = parameters["reference_id"]
-        # TODO: build annotation index with RSEM
+        return reference_base_path + reference_id + file_ending
+
+    def prepare_indexing(self, parameters):
+        destination = parameters["destination"]
+        reference_id = parameters["reference_id"]
+        annotation_base_path = parameters["annotation_base_path"]
+        reference_path = parameters["reference_path"]
+
+        if not os.path.exists(self.__annotated_index_path(parameters)):
+            annotation_path = annotation_base_path + reference_id + ".gtf"
+            command = "rsem-prepare-reference --gtf {} {} {}".format(
+                annotation_path,
+                reference_path,
+                self.__annotated_index_path(parameters, file_ending="")
+            )
+            self.run_docker(command, parameters, log_file_name="Annotation.log")
 
     def build_index_command(self, parameters):
         genome_index_path = parameters["genome_index_path"]
         reference_id = parameters["reference_id"]
         reference_path = parameters["reference_path"]
-        command = "novoindex -n {} /{} ".format(reference_id, genome_index_path)
-        command += reference_path
+        command = "novoindex -n {} /{} {}".format(
+            reference_id,
+            genome_index_path,
+            self.__annotated_index_path(parameters)
+        )
         return command
 
     def alignment_command(self, parameters):

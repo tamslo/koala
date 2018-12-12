@@ -28,7 +28,7 @@ class BaseService:
         else:
             return self.image
 
-    def run_docker(self, command, parameters, output_parameters={}):
+    def run_docker(self, command, parameters, output_parameters={}, log_file_name="Out.log"):
         docker_client = parameters["docker_client"]
         destination = parameters["destination"]
 
@@ -39,7 +39,7 @@ class BaseService:
         log_file_path = set_default(
             output_parameters,
             "log_file_path",
-            os.path.join(destination, "Out.log")
+            os.path.join(destination, log_file_name)
         )
 
         # Default. The command automatically writes to file, write to log what
