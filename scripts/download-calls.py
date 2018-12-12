@@ -49,7 +49,9 @@ def get_confidence_set(confidence_set, directory):
     print("Done", flush=True)
 
 for confidence_set in confidence_sets:
-    directory = "/giab/" + confidence_set["reference"] + "/"
+    directory = "data/giab/" + confidence_set["reference"] + "/"
     if not os.path.isdir(directory):
         os.makedirs(directory)
         get_confidence_set(confidence_set, directory)
+    else:
+        print("Confidence calls for {} already present".format(confidence_set["reference"]), flush=True)

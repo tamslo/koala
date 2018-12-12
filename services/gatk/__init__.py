@@ -64,5 +64,4 @@ class HaplotypeCaller(BaseService):
 
 class HaplotypeCallerFiltered(HaplotypeCaller):
     def add_filters(self, command):
-        print(self.chromosomes, flush=True)
         return command + " -L {}".format(",".join(self.chromosomes))

@@ -7,9 +7,7 @@ class GiabEvaluator(BaseService):
         experiment = parameters["experiment"]
         reference_id = experiment.get("reference")
         destination = parameters["destination"]
-        path_prefix = destination
-        if path_prefix.endswith("/"):
-            path_prefix = path_prefix[:-1] # Trim trailing slash
+        vcf_file_path = destination + "Out.vcf"
 
         # Filter data if necessary
         action_handler = parameters["action_handler"]
@@ -22,12 +20,15 @@ class GiabEvaluator(BaseService):
                 ",".join(action_handler.chromosomes)
             )
 
-        command = "bash evaluate_variants.sh /{} {} {} {}".format(
-            path_prefix,
-            "Out.vcf",
-            reference_id,
-            additional_commands
-        )
+        command = "./hap.py /data/giab/{0}/confidence_calls.vcf /{1}Out.vcf " \
+            "-f /data/giab/{0}/confidence_calls.bed " \
+            "-o /{1}Evaluation " \
+            "-r /data/references/{0}.fa " \
+            "--location {2}".format(
+                reference_id,
+                destination,
+                ",".join(action_handler.chromosomes)
+            )
         output_parameters = { "log_file_path": destination + "Evaluation.log" }
         self.run_docker(command, parameters, output_parameters)
 

@@ -50,10 +50,4 @@ WORKDIR /opt/hap.py
 # run basic tests
 RUN bin/test_haplotypes
 
-# Download GIAB high confidence calls
-
-WORKDIR /
-COPY ./assets/download_calls.py ./download_calls.py
-RUN python3 download_calls.py
-
-COPY ./assets/evaluate_variants.sh ./evaluate_variants.sh
+WORKDIR /opt/hap.py/bin
