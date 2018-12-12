@@ -54,6 +54,22 @@ class NovoAlign(BaseAligner):
             command += " -F FA"
         return command
 
+    def conclude_post_processing(self, parameters, out_file_path):
+        intermediate_result_path = out_file_path + ".tmp"
+        os.rename(out_file_path, intermediate_result_path)
+        with open("config.yml", "r") as config_file:
+            config = yaml.load(config_file)
+            num_threads = int(config["cores"])
+        command = "rsem-tbam2gbam {} {} {} -p {}".format(
+            self.__annotated_index_path(parameters, file_ending=""),
+            intermediate_result_path,
+            out_file_path,
+            num_threads
+        )
+        self.run_docker(command, parameters, log_file_name="FixCoordinates.log")
+        file_utils.validate_file_content(out_file_path)
+        file_utils.delete(intermediate_result_path)
+
 class NovoAlignIndelSensitive(NovoAlign):
     def alignment_command(self, parameters):
         has_license = os.path.exists("services/novoalign/assets/novoalign.lic")

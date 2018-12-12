@@ -11,6 +11,10 @@ class BaseAligner(BaseService):
     def conclude_alignment(self, parameters, out_file_path):
         return None
 
+    # Optional further post-processing of alignment, implement in specific class
+    def conclude_post_processing(self, parameters, out_file_path):
+        return None
+
     # Returns: Command to build genome index as string
     def build_index_command(self, parameters):
         raise Exception("Method base_aligner.build_index_command needs to be implemented by subclasses")
@@ -70,7 +74,8 @@ class BaseAligner(BaseService):
             "destination": destination,
             "data_handler": data_handler,
             "experiment": experiment,
-            "reference_id": parameters["reference_id"]
+            "reference_id": parameters["reference_id"],
+            "reference_base_path": data_handler.reference_directory
         }
         self.post_process(post_processing_parameters, sam_file_path, bam_file_path)
 
@@ -133,3 +138,6 @@ class BaseAligner(BaseService):
             )
             output_parameters = { "log_file_path": destination + "Dict.log" }
             self.run_docker(command, parameters, output_parameters)
+
+        parameters.pop("docker_image", None) # set from gatk to default
+        self.conclude_post_processing(parameters, bam_file_path)
