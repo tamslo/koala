@@ -19,9 +19,6 @@ class BaseAligner(BaseService):
     def alignment_command(self, parameters):
         raise Exception("Method base_aligner.alignment_command needs to be implemented by subclasses")
 
-    def genome_index_amendment(self, parameters):
-        return ""
-
     def run(self, parameters):
         docker_client = parameters["docker_client"]
         data_handler = parameters["data_handler"]
@@ -35,8 +32,7 @@ class BaseAligner(BaseService):
         # Define genome index path and temp path (will be renamed if successful)
         parameters["annotation_base_path"] = data_handler.annotation_directory
         parameters["reference_id"] = experiment.get("reference")
-        possible_amendment = self.genome_index_amendment(parameters)
-        genome_index_path = data_handler.genome_index_path(experiment, self.id) + possible_amendment
+        genome_index_path = data_handler.genome_index_path(experiment, self.id)
         temp_genome_index_path = genome_index_path + ".running"
 
         # If neccessary, build genome index
@@ -74,8 +70,7 @@ class BaseAligner(BaseService):
             "destination": destination,
             "data_handler": data_handler,
             "experiment": experiment,
-            "reference_id": parameters["reference_id"],
-            "annotation_base_path": parameters["annotation_base_path"]
+            "reference_id": parameters["reference_id"]
         }
         self.post_process(post_processing_parameters, sam_file_path, bam_file_path)
 
