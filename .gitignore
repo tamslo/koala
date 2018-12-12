@@ -1,7 +1,7 @@
 data/*
 !data/annotations/*
 data/annotations/*
-!data/annotations/*.gtf.gz
+!data/annotations/*.gz
 
 /config.yml
 client/src/constants.json
