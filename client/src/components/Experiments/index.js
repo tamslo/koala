@@ -73,6 +73,9 @@ class Experiments extends Component {
 
   renderListItem(experiment) {
     const { deleteExperiment, retryExperiment } = this.props;
+    const retryEnabled =
+      constants.retryDoneExperiment ||
+      experiment.status === constants.experiment.ERROR;
     return (
       <StyledListItem
         key={experiment.id}
@@ -87,7 +90,7 @@ class Experiments extends Component {
           secondary={this.secondaryText(experiment)}
         />
         <ListItemSecondaryAction>
-          {experiment.status === constants.experiment.ERROR && (
+          {retryEnabled && (
             <IconButton
               aria-label="Retry"
               onClick={() => retryExperiment(experiment)}

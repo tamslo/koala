@@ -1,4 +1,5 @@
 {
+  "retryDoneExperiment": true,
   "dataset": {
     "FORWARD": "forward",
     "REVERSE": "reverse",
