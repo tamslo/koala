@@ -18,6 +18,7 @@ RUN apt-get install python2.7 python2.7-dev python \
                     python-scipy \
                     -y
 RUN apt-get install software-properties-common python-software-properties -y
+RUN apt-get install
 RUN apt-get clean -y
 
 RUN pip install bx-python
@@ -28,6 +29,18 @@ RUN echo oracle-java8-installer shared/accepted-oracle-license-v1-1 select true 
     apt-get install -y oracle-java8-installer && \
     rm -rf /var/lib/apt/lists/* && \
     rm -rf /var/cache/oracle-jdk8-installer
+
+# Install BEDtools
+
+WORKDIR /opt
+ENV BED_VERSION 2.27.1
+RUN wget https://github.com/arq5x/bedtools2/releases/download/v$BED_VERSION/bedtools-$BED_VERSION.tar.gz
+RUN tar -zxvf bedtools-$BED_VERSION.tar.gz
+RUN rm bedtools-$BED_VERSION.tar.gz
+WORKDIR bedtools2
+RUN make
+WORKDIR /
+ENV PATH $PATH:/opt/bedtools2/bin
 
 # Install Haplotype Comparison Tools
 
