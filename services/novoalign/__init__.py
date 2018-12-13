@@ -62,22 +62,53 @@ class NovoAlign(BaseAligner):
             command += " -F FA"
         return command
 
-    def conclude_post_processing(self, parameters, out_file_path):
+    def conclude_alignment(self, parameters, out_file_path):
+        # file_utils.validate_file_content(out_file_path)
         if self.__annotation_path(parameters):
-            intermediate_result_path = out_file_path + ".tmp"
-            os.rename(out_file_path, intermediate_result_path)
+            destination = parameters["destination"]
             with open("config.yml", "r") as config_file:
                 config = yaml.load(config_file)
                 num_threads = int(config["cores"])
+            intermediate_sam_path = out_file_path + ".tmp"
+            intermediate_bam_path = destination + "Tmp.bam"
+            fixed_bam_path = destination + "Fixed.bam"
+            os.rename(out_file_path, intermediate_sam_path)
+
+            # SAM to BAM
+            command = "samtools view -bS -f 2 {}".format(intermediate_sam_path)
+            output_parameters = {
+                "log_is_output": True,
+                "log_file_path": destination + "IntermediateConversion.log",
+                "out_file_path": intermediate_bam_path
+            }
+            parameters["docker_image"] = "gatk"
+            self.run_docker(command, parameters, output_parameters)
+            parameters.pop("docker_image", None)
+
+            # Fix coordinates
             command = "rsem-tbam2gbam {} {} {} -p {}".format(
                 self.__annotated_index_path(parameters, file_ending=""),
-                intermediate_result_path,
-                out_file_path,
+                intermediate_bam_path,
+                fixed_bam_path,
                 num_threads
             )
             self.run_docker(command, parameters, log_file_name="FixCoordinates.log")
+
+            # BAM to SAM again
+            command = "samtools view -h {}".format(fixed_bam_path)
+            output_parameters = {
+                "log_is_output": True,
+                "log_file_path": destination + "IntermediateReconversion.log",
+                "out_file_path": out_file_path
+            }
+            parameters["docker_image"] = "gatk"
+            self.run_docker(command, parameters, output_parameters)
+            parameters.pop("docker_image", None)
+
             file_utils.validate_file_content(out_file_path)
-            file_utils.delete(intermediate_result_path)
+            file_utils.delete(intermediate_sam_path)
+            file_utils.delete(intermediate_bam_path)
+            file_utils.delete(fixed_bam_path)
 
 class NovoAlignIndelSensitive(NovoAlign):
     def alignment_command(self, parameters):

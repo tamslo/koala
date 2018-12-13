@@ -11,10 +11,6 @@ class BaseAligner(BaseService):
     def conclude_alignment(self, parameters, out_file_path):
         return None
 
-    # Optional further post-processing of alignment, implement in specific class
-    def conclude_post_processing(self, parameters, out_file_path):
-        return None
-
     # Returns: Command to build genome index as string
     def build_index_command(self, parameters):
         raise Exception("Method base_aligner.build_index_command needs to be implemented by subclasses")
@@ -63,7 +59,10 @@ class BaseAligner(BaseService):
             "docker_client": docker_client,
             "destination": destination,
             "genome_index_path": genome_index_path,
-            "dataset": dataset
+            "dataset": dataset,
+            "reference_id": parameters["reference_id"],
+            "reference_base_path": data_handler.reference_directory,
+            "annotation_base_path": parameters["annotation_base_path"]
         }
         self.align(alignment_parameters, sam_file_path)
 
@@ -73,10 +72,7 @@ class BaseAligner(BaseService):
             "docker_image": "gatk",
             "destination": destination,
             "data_handler": data_handler,
-            "experiment": experiment,
-            "reference_id": parameters["reference_id"],
-            "reference_base_path": data_handler.reference_directory,
-            "annotation_base_path": parameters["annotation_base_path"]
+            "experiment": experiment
         }
         self.post_process(post_processing_parameters, sam_file_path, bam_file_path)
 
@@ -97,9 +93,9 @@ class BaseAligner(BaseService):
             output_parameters
         )
         self.conclude_alignment(parameters, sam_file_path)
+        file_utils.validate_file_content(sam_file_path)
 
     def post_process(self, parameters, sam_file_path, bam_file_path):
-        file_utils.validate_file_content(sam_file_path)
         destination = parameters["destination"]
 
         # Convert to BAM, add read groups and sort
@@ -140,6 +136,3 @@ class BaseAligner(BaseService):
             )
             output_parameters = { "log_file_path": destination + "Dict.log" }
             self.run_docker(command, parameters, output_parameters)
-
-        parameters.pop("docker_image", None) # set from gatk to default
-        self.conclude_post_processing(parameters, bam_file_path)

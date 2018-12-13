@@ -34,6 +34,7 @@ ServiceClasses = {
 if environment == "test":
     ServiceClasses["test_aligner_writes_file"] = TestAlignerWritesFile
     ServiceClasses["test_aligner_writes_log"] = TestAlignerWritesLog
+    ServiceClasses["novoalign"] = NovoAlign # for testing
 
 if environment == "production":
     ServiceClasses["star"] = Star
