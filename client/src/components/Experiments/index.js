@@ -74,8 +74,10 @@ class Experiments extends Component {
   renderListItem(experiment) {
     const { deleteExperiment, retryExperiment } = this.props;
     const retryEnabled =
-      constants.retryDoneExperiment ||
-      experiment.status === constants.experiment.ERROR;
+      (constants.retryDoneExperiment ||
+        experiment.status === constants.experiment.ERROR) &&
+      experiment.status !== constants.experiment.WAITING &&
+      experiment.status !== constants.experiment.RUNNING;
     return (
       <StyledListItem
         key={experiment.id}

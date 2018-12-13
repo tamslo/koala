@@ -9,6 +9,19 @@ class GiabEvaluator(BaseService):
         destination = parameters["destination"]
         vcf_file_path = destination + "Out.vcf"
 
+        # Intersect confidence regions with coding regions if not already done
+        confidence_regions_path = "data/giab/{}/confidence_calls_coding.bed".format(reference_id)
+        if not os.path.exists(confidence_regions_path):
+            command = "bedtools intersect " \
+                "-a /data/giab/{0}/confidence_calls.bed " \
+                "-b /data/annotations/{0}_coding_exons.bed".format(reference_id)
+            output_parameters = {
+                "log_is_output": True,
+                "out_file_path": confidence_regions_path,
+                "log_file_path": destination + "Intersect.log"
+            }
+            self.run_docker(command, parameters, output_parameters)
+
         # Filter data if necessary
         action_handler = parameters["action_handler"]
         additional_commands = ""
@@ -21,12 +34,13 @@ class GiabEvaluator(BaseService):
             )
 
         command = "./hap.py /data/giab/{0}/confidence_calls.vcf /{1}Out.vcf " \
-            "-f /data/giab/{0}/confidence_calls.bed " \
+            "-f /{2} " \
             "-o /{1}Evaluation " \
             "-r /data/references/{0}.fa " \
-            "--location {2}".format(
+            "--location {3}".format(
                 reference_id,
                 destination,
+                confidence_regions_path,
                 ",".join(action_handler.chromosomes)
             )
         output_parameters = { "log_file_path": destination + "Evaluation.log" }
