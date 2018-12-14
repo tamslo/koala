@@ -14,7 +14,7 @@ class GiabEvaluator(BaseService):
         if not os.path.exists(confidence_regions_path):
             command = "bedtools intersect " \
                 "-a /data/giab/{0}/confidence_calls.bed " \
-                "-b /data/annotations/{0}_exons_overhang_10.bed".format(reference_id)
+                "-b /data/annotations/{0}_exons.bed".format(reference_id)
             output_parameters = {
                 "log_is_output": True,
                 "out_file_path": confidence_regions_path,
