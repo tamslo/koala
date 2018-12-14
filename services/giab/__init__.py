@@ -6,13 +6,14 @@ class GiabEvaluator(BaseService):
     def transcriptome_regions_path(self, alignment_path, parameters):
         bam_path = alignment_path + "Out.bam"
         transcriptome_regions_path = alignment_path + "aligned_regions.bed"
-        command = "bedtools bamtobed -i {}".format(bam_path)
+        command = "bedtools bamtobed -i /{}".format(bam_path)
         output_parameters = {
             "log_is_output": True,
             "out_file_path": transcriptome_regions_path,
             "log_file_path": parameters["destination"] + "BamToBed.log"
         }
         self.run_docker(command, parameters, output_parameters)
+        file_utils.validate_file_content(transcriptome_regions_path)
         return transcriptome_regions_path
 
     def bedtools(self, function, a_file_path, b_file_path, out_file_path, parameters):
@@ -62,6 +63,7 @@ class GiabEvaluator(BaseService):
                 confidence_regions_path,
                 parameters
             )
+            file_utils.validate_file_content(confidence_regions_path)
 
 
         # Filter data if necessary
