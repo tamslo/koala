@@ -87,9 +87,7 @@ class NovoAlign(BaseAligner):
                 "log_file_path": destination + "IntermediateConversion.log",
                 "out_file_path": intermediate_bam_path
             }
-            parameters["docker_image"] = "gatk"
             self.run_docker(command, parameters, output_parameters)
-            parameters.pop("docker_image", None)
             file_utils.validate_file_content(intermediate_bam_path)
 
             # Fix coordinates
@@ -109,9 +107,7 @@ class NovoAlign(BaseAligner):
                 "log_file_path": destination + "IntermediateReconversion.log",
                 "out_file_path": out_file_path
             }
-            parameters["docker_image"] = "gatk"
             self.run_docker(command, parameters, output_parameters)
-            parameters.pop("docker_image", None)
 
             file_utils.validate_file_content(out_file_path)
             file_utils.delete(intermediate_sam_path)
