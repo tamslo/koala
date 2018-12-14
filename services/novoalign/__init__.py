@@ -84,6 +84,7 @@ class NovoAlign(BaseAligner):
             parameters["docker_image"] = "gatk"
             self.run_docker(command, parameters, output_parameters)
             parameters.pop("docker_image", None)
+            file_utils.validate_file_content(intermediate_bam_path)
 
             # Fix coordinates
             command = "rsem-tbam2gbam {} {} {} -p {}".format(
@@ -93,6 +94,7 @@ class NovoAlign(BaseAligner):
                 num_threads
             )
             self.run_docker(command, parameters, log_file_name="FixCoordinates.log")
+            file_utils.validate_file_content(fixed_bam_path)
 
             # BAM to SAM again
             command = "samtools view -h {}".format(fixed_bam_path)
