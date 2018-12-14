@@ -81,13 +81,11 @@ class NovoAlign(BaseAligner):
             os.rename(out_file_path, intermediate_sam_path)
 
             # SAM to BAM and filter paired reads for RSEM
-            command = "samtools view -b /{}".format(intermediate_sam_path)
-            output_parameters = {
-                "log_is_output": True,
-                "log_file_path": destination + "IntermediateConversion.log",
-                "out_file_path": intermediate_bam_path
-            }
-            self.run_docker(command, parameters, output_parameters)
+            command = "samtools view -b -f 2 /{} -o /{}".format(
+                intermediate_sam_path,
+                intermediate_bam_path
+            )
+            self.run_docker(command, parameters, log_file_name="IntermediateConversion.log")
             file_utils.validate_file_content(intermediate_bam_path)
 
             # Fix coordinates
@@ -101,13 +99,8 @@ class NovoAlign(BaseAligner):
             file_utils.validate_file_content(fixed_bam_path)
 
             # BAM to SAM again
-            command = "samtools view -h /{}".format(fixed_bam_path)
-            output_parameters = {
-                "log_is_output": True,
-                "log_file_path": destination + "IntermediateReconversion.log",
-                "out_file_path": out_file_path
-            }
-            self.run_docker(command, parameters, output_parameters)
+            command = "samtools view -h /{} -o /{}".format(fixed_bam_path, out_file_path)
+            self.run_docker(command, parameters, log_file_name="IntermediateReconversion.log")
 
             file_utils.validate_file_content(out_file_path)
             file_utils.delete(intermediate_sam_path)
