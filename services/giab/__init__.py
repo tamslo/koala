@@ -3,24 +3,50 @@ import modules.file_utils as file_utils
 from ..base_service import BaseService
 
 class GiabEvaluator(BaseService):
+    # Intersect confidence regions with coding regions if not already done
+    def bedtools(self, function, a_file_path, b_file_path, out_file_path, parameters):
+        destination = parameters["destination"]
+        log_file_path = destination + function.capitalize() + ".log"
+        command = "bedtools {} " \
+            "-a /{} " \
+            "-b /{}".format(function, a_file_path, b_file_path)
+        output_parameters = {
+            "log_is_output": True,
+            "out_file_path": out_file_path,
+            "log_file_path": log_file_path
+        }
+        self.run_docker(command, parameters, output_parameters)
+
     def run(self, parameters):
         experiment = parameters["experiment"]
         reference_id = experiment.get("reference")
         destination = parameters["destination"]
         vcf_file_path = destination + "Out.vcf"
 
-        # Intersect confidence regions with coding regions if not already done
         confidence_regions_path = "data/giab/{}/confidence_calls_exons.bed".format(reference_id)
         if not os.path.exists(confidence_regions_path):
-            command = "bedtools intersect " \
-                "-a /data/giab/{0}/confidence_calls.bed " \
-                "-b /data/annotations/{0}_exons.bed".format(reference_id)
-            output_parameters = {
-                "log_is_output": True,
-                "out_file_path": confidence_regions_path,
-                "log_file_path": destination + "Intersect.log"
-            }
-            self.run_docker(command, parameters, output_parameters)
+            confidence_genome_regions_path = "data/giab/{}/confidence_calls.bed".format(reference_id)
+            transcriptome_regions_path = "data/annotations/{}_exons.bed".format(reference_id)
+            editing_sites_path = "data/annotations/{}_editing_sites.bed".format(reference_id)
+            if os.path.exists(editing_sites_path):
+                confidence_genome_regions_without_editing_sites_path = "data/" \
+                    "giab/{}/confidence_calls_no_editing_sites.bed".format(reference_id)
+                self.bedtools(
+                    "subtract",
+                    confidence_genome_regions_path,
+                    editing_sites_path,
+                    confidence_genome_regions_without_editing_sites_path,
+                    parameters
+                )
+                confidence_genome_regions_path = confidence_genome_regions_without_editing_sites_path
+            self.bedtools(
+                "intersect",
+                confidence_genome_regions_path,
+                transcriptome_regions_path,
+                confidence_regions_path,
+                parameters
+            )
+
 
         # Filter data if necessary
         action_handler = parameters["action_handler"]

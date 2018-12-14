@@ -2,6 +2,20 @@ mkdir -p data/annotations
 current_dir=$pwd
 cd data/annotations
 
+function minimize_bed() {
+  echo "Getting first three columns"
+  local in_file=$1
+  local out_file=$2
+  awk -v OFS='\t' '{print $1,$2,$3}' $in_file > $out_file
+}
+
+function fix_hg19_chromosomes() {
+  echo "Fixing chromosome names"
+  local in_file=$1
+  local out_file=$2
+  cat $in_file | sed 's/^chr//' > $out_file
+}
+
 # Get annotations
 if [ ! -f hg19.gtf ]; then
   echo "Getting annotations for hg19..."
@@ -22,6 +36,17 @@ else
   echo "Annotations for hg38 already present"
 fi
 
+# Get RNA editing sites for hg19 (none available so far for hg38)
+if [ ! -f hg19_editing_sites.bed ]; then
+  echo "Getting RNA editing sites for hg19..."
+  wget -q http://lilab.stanford.edu/GokulR/database/Human_AG_all_hg19.bed
+  fix_hg19_chromosomes Human_AG_all_hg19.bed hg19_editing_sites.bed
+  rm Human_AG_all_hg19.bed
+  echo "Done."
+else
+  echo "RNA editing sites for hg19 already present"
+fi
+
 # Extract present BED files from UCSC Table Browser
 for zipped_file in *.gz; do
   unzipped_file=${zipped_file:0:${#zipped_file}-3}
@@ -29,16 +54,14 @@ for zipped_file in *.gz; do
     echo "Extracting $unzipped_file"
     gunzip -c $zipped_file > $unzipped_file
     if [[ $unzipped_file == *.bed ]]; then
-      echo "Getting first three columns"
       tmp_file="bed.tmp"
       mv $unzipped_file $tmp_file
-      awk -v OFS='\t' '{print $1,$2,$3}' $tmp_file > $unzipped_file
+      minimize_bed $tmp_file $unzipped_file
       rm $tmp_file
       if [[ $unzipped_file == hg19_* ]]; then
-        echo "Fixing chromosome names"
         tmp_file="hg19_coding_exons.tmp"
         mv $unzipped_file $tmp_file
-        cat $tmp_file | sed 's/^chr//' > $unzipped_file
+        fix_hg19_chromosomes $tmp_file $unzipped_file
         rm $tmp_file
       fi
     fi
