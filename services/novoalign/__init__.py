@@ -80,8 +80,8 @@ class NovoAlign(BaseAligner):
             fixed_bam_path = destination + "Fixed.bam"
             os.rename(out_file_path, intermediate_sam_path)
 
-            # SAM to BAM
-            command = "samtools view -b -f 2 /{}".format(intermediate_sam_path)
+            # SAM to BAM and filter paired reads for RSEM
+            command = "samtools view -b /{}".format(intermediate_sam_path)
             output_parameters = {
                 "log_is_output": True,
                 "log_file_path": destination + "IntermediateConversion.log",
