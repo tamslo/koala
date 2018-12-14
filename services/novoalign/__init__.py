@@ -50,8 +50,8 @@ class NovoAlign(BaseAligner):
 
     def alignment_command(self, parameters):
         # Testing
-        command = "cp data/errored/novoalign-20181213T223754/Out.sam.tmp " \
-            "{}Out.sam".format(parameters["destination"])
+        command = "cp /data/errored/novoalign-20181213T223754/Out.sam.tmp " \
+            "/{}Out.sam".format(parameters["destination"])
         return command
 
         # Actual code
@@ -81,7 +81,7 @@ class NovoAlign(BaseAligner):
             os.rename(out_file_path, intermediate_sam_path)
 
             # SAM to BAM
-            command = "samtools view -bS -f 2 {}".format(intermediate_sam_path)
+            command = "samtools view -bS -f 2 /{}".format(intermediate_sam_path)
             output_parameters = {
                 "log_is_output": True,
                 "log_file_path": destination + "IntermediateConversion.log",
@@ -93,7 +93,7 @@ class NovoAlign(BaseAligner):
             file_utils.validate_file_content(intermediate_bam_path)
 
             # Fix coordinates
-            command = "rsem-tbam2gbam {} {} {} -p {}".format(
+            command = "rsem-tbam2gbam /{} /{} /{} -p {}".format(
                 self.__annotated_index_path(parameters, file_ending=""),
                 intermediate_bam_path,
                 fixed_bam_path,
@@ -103,7 +103,7 @@ class NovoAlign(BaseAligner):
             file_utils.validate_file_content(fixed_bam_path)
 
             # BAM to SAM again
-            command = "samtools view -h {}".format(fixed_bam_path)
+            command = "samtools view -h /{}".format(fixed_bam_path)
             output_parameters = {
                 "log_is_output": True,
                 "log_file_path": destination + "IntermediateReconversion.log",
