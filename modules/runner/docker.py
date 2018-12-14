@@ -83,6 +83,7 @@ class Docker:
                 ))
 
         write_stats("Command: {}".format(command))
+        write_stats("Image: {}".format(container_name))
         start_time = time.time()
         write_stats("Start time: {}".format(
             time.strftime("%d %b %Y %H:%M:%S", time.localtime(start_time))

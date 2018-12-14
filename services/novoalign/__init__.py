@@ -76,12 +76,12 @@ class NovoAlign(BaseAligner):
                 config = yaml.load(config_file)
                 num_threads = int(config["cores"])
             intermediate_sam_path = out_file_path + ".tmp"
-            intermediate_bam_path = destination + "Tmp.bam"
+            intermediate_bam_path = destination + "Paired.bam"
             fixed_bam_path = destination + "Fixed.bam"
             os.rename(out_file_path, intermediate_sam_path)
 
             # SAM to BAM
-            command = "samtools view -bS -f 2 /{}".format(intermediate_sam_path)
+            command = "samtools view -b -f 2 /{}".format(intermediate_sam_path)
             output_parameters = {
                 "log_is_output": True,
                 "log_file_path": destination + "IntermediateConversion.log",
