@@ -10,11 +10,11 @@ class GiabEvaluator(BaseService):
         vcf_file_path = destination + "Out.vcf"
 
         # Intersect confidence regions with coding regions if not already done
-        confidence_regions_path = "data/giab/{}/confidence_calls_coding.bed".format(reference_id)
+        confidence_regions_path = "data/giab/{}/confidence_calls_exons.bed".format(reference_id)
         if not os.path.exists(confidence_regions_path):
             command = "bedtools intersect " \
                 "-a /data/giab/{0}/confidence_calls.bed " \
-                "-b /data/annotations/{0}_coding_exons.bed".format(reference_id)
+                "-b /data/annotations/{0}_exons_overhang_10.bed".format(reference_id)
             output_parameters = {
                 "log_is_output": True,
                 "out_file_path": confidence_regions_path,

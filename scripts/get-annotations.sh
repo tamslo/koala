@@ -28,19 +28,19 @@ for zipped_file in *.gz; do
   if [ ! -f $unzipped_file ]; then
     echo "Extracting $unzipped_file"
     gunzip -c $zipped_file > $unzipped_file
-    if [[ $unzipped_file == *_coding_exons.bed ]]; then
+    if [[ $unzipped_file == *.bed ]]; then
       echo "Getting first three columns"
       tmp_file="bed.tmp"
       mv $unzipped_file $tmp_file
       awk -v OFS='\t' '{print $1,$2,$3}' $tmp_file > $unzipped_file
       rm $tmp_file
-    fi
-    if [[ $unzipped_file == "hg19_coding_exons.bed" ]]; then
-      echo "Fixing chromosome names"
-      tmp_file="hg19_coding_exons.tmp"
-      mv $unzipped_file $tmp_file
-      cat $tmp_file | sed 's/^chr//' > $unzipped_file
-      rm $tmp_file
+      if [[ $unzipped_file == hg19_* ]]; then
+        echo "Fixing chromosome names"
+        tmp_file="hg19_coding_exons.tmp"
+        mv $unzipped_file $tmp_file
+        cat $tmp_file | sed 's/^chr//' > $unzipped_file
+        rm $tmp_file
+      fi
     fi
     echo "Done."
   else

@@ -10,5 +10,5 @@ bash scripts/build-docker.sh
 
 # Download data
 python scripts/download-data.py
-bash scripts/download-data.sh
+bash scripts/get-annotations.sh
 python scripts/download-calls.py
