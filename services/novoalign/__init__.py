@@ -50,7 +50,7 @@ class NovoAlign(BaseAligner):
 
     def alignment_command(self, parameters):
         # Testing
-        command = "cp /data/errored/novoalign-20181213T223754/Out.sam.tmp " \
+        command = "cp /data/errored/test_novoalign/Out.sam.tmp " \
             "/{}Out.sam".format(parameters["destination"])
         return command
 
@@ -69,7 +69,7 @@ class NovoAlign(BaseAligner):
         return command
 
     def conclude_alignment(self, parameters, out_file_path):
-        # file_utils.validate_file_content(out_file_path)
+        file_utils.validate_file_content(out_file_path)
         if self.__annotation_path(parameters):
             destination = parameters["destination"]
             with open("config.yml", "r") as config_file:
