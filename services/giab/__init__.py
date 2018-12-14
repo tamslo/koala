@@ -3,7 +3,18 @@ import modules.file_utils as file_utils
 from ..base_service import BaseService
 
 class GiabEvaluator(BaseService):
-    # Intersect confidence regions with coding regions if not already done
+    def transcriptome_regions_path(self, alignment_path, parameters):
+        bam_path = alignment_path + "Out.bam"
+        transcriptome_regions_path = alignment_path + "aligned_regions.bed"
+        command = "bedtools bamtobed -i {}".format(bam_path)
+        output_parameters = {
+            "log_is_output": True,
+            "out_file_path": transcriptome_regions_path,
+            "log_file_path": parameters["destination"] + "BamToBed.log"
+        }
+        self.run_docker(command, parameters, output_parameters)
+        return transcriptome_regions_path
+
     def bedtools(self, function, a_file_path, b_file_path, out_file_path, parameters):
         destination = parameters["destination"]
         log_file_path = destination + function.capitalize() + ".log"
@@ -22,12 +33,16 @@ class GiabEvaluator(BaseService):
         reference_id = experiment.get("reference")
         destination = parameters["destination"]
         vcf_file_path = destination + "Out.vcf"
+        alignment_path = experiment.get("pipeline")["alignment"]["directory"]
+        confidence_regions_path = alignment_path + "confidence_calls.bed".format(reference_id)
 
-        confidence_regions_path = "data/giab/{}/confidence_calls_exons.bed".format(reference_id)
+        # Intersect confidence regions with transcriptome regions if not already done
         if not os.path.exists(confidence_regions_path):
             confidence_genome_regions_path = "data/giab/{}/confidence_calls.bed".format(reference_id)
-            transcriptome_regions_path = "data/annotations/{}_exons.bed".format(reference_id)
+            transcriptome_regions_path = self.transcriptome_regions_path(alignment_path, parameters)
             editing_sites_path = "data/annotations/{}_editing_sites.bed".format(reference_id)
+
+            # If possible, remove editing sites from GIAB confidece regions first
             if os.path.exists(editing_sites_path):
                 confidence_genome_regions_without_editing_sites_path = "data/" \
                     "giab/{}/confidence_calls_no_editing_sites.bed".format(reference_id)
@@ -39,6 +54,7 @@ class GiabEvaluator(BaseService):
                     parameters
                 )
                 confidence_genome_regions_path = confidence_genome_regions_without_editing_sites_path
+
             self.bedtools(
                 "intersect",
                 confidence_genome_regions_path,
