@@ -4,24 +4,25 @@ from ..base_service import BaseService
 
 class GiabEvaluator(BaseService):
     def transcriptome_regions_path(self, alignment_path, parameters):
-        bam_path = alignment_path + "Out.bam"
         transcriptome_regions_path = alignment_path + "aligned_regions.bed"
-        command = "bedtools bamtobed -i /{}".format(bam_path)
-        output_parameters = {
-            "log_is_output": True,
-            "out_file_path": transcriptome_regions_path,
-            "log_file_path": parameters["destination"] + "BamToBed.log"
-        }
-        self.run_docker(command, parameters, output_parameters)
-        file_utils.validate_file_content(transcriptome_regions_path)
+        if not os.path.exists(transcriptome_regions_path):
+            bam_path = alignment_path + "Out.bam"
+            command = "bedtools bamtobed -i /{}".format(bam_path)
+            output_parameters = {
+                "log_is_output": True,
+                "out_file_path": transcriptome_regions_path,
+                "log_file_path": parameters["destination"] + "BamToBed.log"
+            }
+            self.run_docker(command, parameters, output_parameters)
+            file_utils.validate_file_content(transcriptome_regions_path)
         return transcriptome_regions_path
 
-    def bedtools(self, function, a_file_path, b_file_path, out_file_path, parameters):
+    def bedtools(self, function, a_file_path, b_file_path, out_file_path, parameters, options=""):
         destination = parameters["destination"]
         log_file_path = destination + function.capitalize() + ".log"
         command = "bedtools {} " \
             "-a /{} " \
-            "-b /{}".format(function, a_file_path, b_file_path)
+            "-b /{} {}".format(function, a_file_path, b_file_path, options)
         output_parameters = {
             "log_is_output": True,
             "out_file_path": out_file_path,
@@ -61,7 +62,8 @@ class GiabEvaluator(BaseService):
                 confidence_genome_regions_path,
                 transcriptome_regions_path,
                 confidence_regions_path,
-                parameters
+                parameters,
+                options="-sorted"
             )
             file_utils.validate_file_content(confidence_regions_path)
 
