@@ -49,12 +49,6 @@ class NovoAlign(BaseAligner):
         return command
 
     def alignment_command(self, parameters):
-        # Testing
-        command = "cp /data/errored/test_novoalign/Out.sam.tmp " \
-            "/{}Out.sam".format(parameters["destination"])
-        return command
-
-        # Actual code
         dataset = parameters["dataset"]
         genome_index_path = parameters["genome_index_path"]
         command = "novoalign -o SAM -f"
