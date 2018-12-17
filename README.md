@@ -12,7 +12,7 @@ Make sure you have the following programs installed, versions given are those us
 - npm (5.6.0)
 - python (3.5.2)
 - pip (8.1.1)
-- docker (17.12.1-ce)
+- docker (18.09.0)
 
 Install requirements by running `./scripts/install.sh`, rename the `config.example.yml` to `config.yml`, and adapt the absolute path to the repository (keep the trailing dash).
 
