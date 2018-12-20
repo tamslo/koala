@@ -16,14 +16,3 @@ WORKDIR /
 
 # Add to PATH
 ENV PATH $NOVO_PATH:$PATH
-
-# Install RSEM and dependencies in order to get annotations
-RUN apt-get update
-RUN apt-get install -y wget bzip2 libswitch-perl
-
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-4.5.11-Linux-x86_64.sh
-RUN bash Miniconda3-4.5.11-Linux-x86_64.sh -b -p /opt/miniconda
-ENV PATH /opt/miniconda/bin:$PATH
-
-RUN conda install -c bioconda rsem htseq
-RUN cpan Pod::Usage
