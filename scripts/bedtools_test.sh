@@ -18,7 +18,7 @@ function evaluate() {
   do
     local query_calls_path=StarOpossumChr$chromosome.vcf
     /opt/hap.py/bin/hap.py $confidence_calls_path $query_calls_path \
-        -f $confidence_regions_path -o $test_directory/Evaluation \
+        -f $confidence_regions_path -o $test_directory/Evaluation_chr$chromosome \
         -r hg38.fa --location chr$chromosome
   done
 }
@@ -95,7 +95,7 @@ run_intersection_task "Intersection with BAM regions (from merged BED)" \
 echo -e "\nConcatenating evaluation summaries\n"
 concatenated_file="Evaluation.summary.all.csv"
 first_file=true
-for evaluation_file in $tests_directory/*/Evaluation.summary.csv; do
+for evaluation_file in $tests_directory/*/Evaluation_chr*.summary.csv; do
     if [ $first_file = true ]; then
       head -1 $evaluation_file > $concatenated_file
       first_file=false
