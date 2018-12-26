@@ -95,11 +95,11 @@ run_intersection_task "Intersection with BAM regions (from merged BED)" \
 echo -e "\nConcatenating evaluation summaries\n"
 concatenated_file="Evaluation.summary.all.csv"
 first_file=true
-for evaluation_file in $tests_directory/*/Evaluation_chr*.summary.csv; do
+for evaluation_file in $tests_directory/*/Evaluation_*.summary.csv; do
     if [ $first_file = true ]; then
-      head -1 $evaluation_file > $concatenated_file
+      head -1 $evaluation_file | sed -e 's/^/File,/' > $concatenated_file
       first_file=false
     fi
-    echo $evaluation_file >> $concatenated_file
-    tail --lines=+2 $evaluation_file >> $concatenated_file
+
+    tail --lines=+2 $evaluation_file | awk -v file="$evaluation_file", '{print file $0}' >> $concatenated_file
 done
