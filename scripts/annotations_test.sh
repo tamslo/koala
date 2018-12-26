@@ -13,7 +13,7 @@ function build_annotations() {
   local useq_num=$5
   local transcripts_file=$6
   local splices_file=$7
-  local deduplicate=$9
+  local deduplicate=$8
   local radius="96" # read length is 100, minus 4
   java -Xmx48G -jar /opt/$useq_folder/Apps/MakeTranscriptome -f $genome_path \
     -u $annotation_path -n $useq_num -r $radius $deduplicate
