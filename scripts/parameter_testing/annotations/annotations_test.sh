@@ -1,4 +1,11 @@
 # Script to create different annotations with USeq and run novoindex on them
+# Required tree:
+# /annotations-playground
+# ├── annotations_test.sh
+# ├── baruzzo.hg19.txt
+# ├── Dockerfile (make sure right NovoAlign image with multiple USeq versions is present)
+# ├── hg19 (folder with FASTA files per chromosome)
+# └── refFlat.hg19.txt
 
 root_directory=$pwd
 

@@ -3,6 +3,30 @@
 # Script to be run in GIAB container to create different BED intersections
 # and run evaluations on them
 # To run in background and write logfile, run ./bedtools_test.sh > logfile 2>&1 &
+# Required tree:
+# giab-playground/
+# ├── annotations
+# │   ├── hg38_coding_exons.bed
+# │   ├── hg38_editing_sites.bed
+# │   ├── hg38_exons.bed
+# │   └── hg38_exons_overhang_10.bed
+# ├── base_coverage_to_bed.py
+# ├── bedtools_test.sh
+# ├── giab
+# │   ├── confidence_calls.bed
+# │   └── confidence_calls.vcf
+# ├── hg38.fa
+# ├── hg38.fa.fai
+# ├── hg38.sizes
+# ├── Star.bam
+# ├── Star.bam.bed
+# ├── Star.bam.bed.merged
+# ├── Star.bam.coverage
+# ├── Star.bam.coverage.10-filtered.bed
+# ├── Star.bam.coverage.2-filtered.bed
+# ├── StarOpossumChr3.vcf
+# ├── StarOpossumChr4.vcf
+# └── StarOpossumChr5.vcf
 
 giab_confidence_regions_path=giab/confidence_calls.bed
 editing_sites_path=annotations/hg38_editing_sites.bed
