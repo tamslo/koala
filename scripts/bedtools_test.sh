@@ -92,6 +92,13 @@ run_intersection_task "Intersection with BAM regions (from BED)" \
 run_intersection_task "Intersection with BAM regions (from merged BED)" \
   bam_bed_merged Star.bam.bed.merged
 
+run_intersection_task "Intersection with BAM regions with coverage (2) (from merged BED)" \
+  bam_bed_merged_coverage_2 Star.bam.coverage.2-filtered.bed
+
+run_intersection_task "Intersection with BAM regions with coverage (10) (from merged BED)" \
+  bam_bed_merged_coverage_10 Star.bam.coverage.10-filtered.bed
+
+
 echo -e "\nConcatenating evaluation summaries\n"
 concatenated_file="Evaluation.summary.all.csv"
 first_file=true
