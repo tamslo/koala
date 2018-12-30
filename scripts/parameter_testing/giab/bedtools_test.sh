@@ -17,16 +17,15 @@
 # │   └── confidence_calls.vcf
 # ├── hg38.fa
 # ├── hg38.fa.fai
-# ├── hg38.sizes
-# ├── Star.bam
+# ├── Star.bam (alignment the BED files are based on)
 # ├── Star.bam.bed
 # ├── Star.bam.bed.merged
 # ├── Star.bam.coverage
 # ├── Star.bam.coverage.10-filtered.bed
 # ├── Star.bam.coverage.2-filtered.bed
-# ├── StarOpossumChr3.vcf
-# ├── StarOpossumChr4.vcf
-# └── StarOpossumChr5.vcf
+# ├── StarOpossumChr3.vcf (output of pipeline)
+# ├── StarOpossumChr4.vcf (output of pipeline)
+# └── StarOpossumChr5.vcf (output of pipeline)
 
 giab_confidence_regions_path=giab/confidence_calls.bed
 editing_sites_path=annotations/hg38_editing_sites.bed
