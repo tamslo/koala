@@ -64,3 +64,6 @@ WORKDIR /opt/hap.py
 RUN bin/test_haplotypes
 
 WORKDIR /opt/hap.py/bin
+
+# Copy script for coverage BED
+COPY ./assets/base_coverage_to_bed.py .

@@ -4,17 +4,31 @@ from ..base_service import BaseService
 
 class GiabEvaluator(BaseService):
     def transcriptome_regions_path(self, alignment_path, parameters):
-        transcriptome_regions_path = alignment_path + "aligned_regions.bed"
+        transcriptome_regions_path = alignment_path + "aligned_coverage_regions.bed"
         if not os.path.exists(transcriptome_regions_path):
             bam_path = alignment_path + "Out.bam"
-            command = "bedtools bamtobed -i /{}".format(bam_path)
+            coverage_path = alignment_path + "Out.base_coverage"
+            min_coverage = 2
+
+            # Create coverage file
+            command = "genomecov -d -ibam /{}".format(bam_path)
             output_parameters = {
                 "log_is_output": True,
-                "out_file_path": transcriptome_regions_path,
-                "log_file_path": parameters["destination"] + "BamToBed.log"
+                "out_file_path": coverage_path,
+                "log_file_path": parameters["destination"] + "Coverage.log"
             }
             self.run_docker(command, parameters, output_parameters)
+            file_utils.validate_file_content(coverage_path)
+
+            # Create BED from coverage file
+            command = "python base_coverage_to_bed.py /{} {} /{}".format(
+                coverage_path,
+                str(min_coverage),
+                transcriptome_regions_path
+            )
+            self.run_docker(command, parameters, log_file_name="CoverageToBed.log")
             file_utils.validate_file_content(transcriptome_regions_path)
+
         return transcriptome_regions_path
 
     def bedtools(self, function, a_file_path, b_file_path, out_file_path, parameters, options=""):
@@ -62,8 +76,7 @@ class GiabEvaluator(BaseService):
                 confidence_genome_regions_path,
                 transcriptome_regions_path,
                 confidence_regions_path,
-                parameters,
-                options="-sorted"
+                parameters
             )
             file_utils.validate_file_content(confidence_regions_path)
 
