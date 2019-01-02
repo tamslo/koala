@@ -11,7 +11,7 @@ class GiabEvaluator(BaseService):
             min_coverage = 2
 
             # Create coverage file
-            command = "genomecov -d -ibam /{}".format(bam_path)
+            command = "bedtools genomecov -d -ibam /{}".format(bam_path)
             output_parameters = {
                 "log_is_output": True,
                 "out_file_path": coverage_path,
