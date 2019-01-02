@@ -45,12 +45,28 @@ RUN rm $DST_PATH/$USEQ_ZIP_NAME
 RUN mv $DST_PATH/USeq_$USEQ_VESION/* $DST_PATH
 RUN rm -r $DST_PATH/USeq_$USEQ_VESION
 
-# Download older USeq version for testing
+# Download older USeq versions for testing
+
 ENV DST_PATH /opt/useq_old
 ENV USEQ_VESION 8.8.6
 ENV USEQ_ZIP_NAME USeq_$USEQ_VESION.zip
-RUN wget https://github.com/HuntsmanCancerInstitute/USeq/releases/download/USeq_$USEQ_VESION/$USEQ_ZIP_NAME -P $DST_PATH
-RUN unzip $DST_PATH/$USEQ_ZIP_NAME -d $DST_PATH
-RUN rm $DST_PATH/$USEQ_ZIP_NAME
+RUN wget https://sourceforge.net/projects/useq/files/$USEQ_ZIP_NAME/download -P $DST_PATH
+RUN unzip $DST_PATH/download -d $DST_PATH
+RUN rm $DST_PATH/download
 RUN mv $DST_PATH/USeq_$USEQ_VESION/* $DST_PATH
 RUN rm -r $DST_PATH/USeq_$USEQ_VESION
+
+ENV DST_PATH /opt/useq_baruzzo
+ENV USEQ_VESION 8.9.5
+ENV USEQ_ZIP_NAME USeq_$USEQ_VESION.zip
+RUN wget https://sourceforge.net/projects/useq/files/$USEQ_ZIP_NAME/download -P $DST_PATH
+RUN unzip $DST_PATH/download -d $DST_PATH
+RUN rm $DST_PATH/download
+RUN mv $DST_PATH/USeq_$USEQ_VESION/* $DST_PATH
+RUN rm -r $DST_PATH/USeq_$USEQ_VESION
+
+# Install Perl dependencies
+RUN wget -O - https://install.perlbrew.pl | bash
+ENV PATH=${PATH}:/root/perl5/perlbrew/bin/
+RUN perlbrew install-cpanm
+RUN cpanm Bio::SeqIO

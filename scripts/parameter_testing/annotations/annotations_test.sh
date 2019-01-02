@@ -88,13 +88,13 @@ function run_tasks() {
     splices_file="$useq_annotation_prefix"Splices.fasta
     transcripts_file="$useq_annotation_prefix"Transcripts.fasta
 
-    run_task "Current verison, no -s" "useq" $genome_path $annotation_path \
-      $task_directory $useq_num $transcripts_file $splices_file $masked_genome_path
-
-    subtask_directory="$task_directory"_with_s
-    mkdir $subtask_directory
-    run_task "Current verison, with -s" "useq" $genome_path $annotation_path \
-      $subtask_directory $useq_num $transcripts_file $splices_file "-s" $masked_genome_path
+    # run_task "Current verison, no -s" "useq" $genome_path $annotation_path \
+    #   $task_directory $useq_num $transcripts_file $splices_file $masked_genome_path
+    #
+    # subtask_directory="$task_directory"_with_s
+    # mkdir $subtask_directory
+    # run_task "Current verison, with -s" "useq" $genome_path $annotation_path \
+    #   $subtask_directory $useq_num $transcripts_file $splices_file "-s" $masked_genome_path
 
     subtask_directory="$task_directory"_baruzzo_useq_version
     mkdir $subtask_directory
@@ -102,10 +102,10 @@ function run_tasks() {
       $subtask_directory $useq_num $transcripts_file $splices_file $masked_genome_path
 
 
-    subtask_directory="$task_directory"_baruzzo_useq_version_with_s
-    mkdir $subtask_directory
-    run_task "Baruzzo verison, with -s" "useq_baruzzo" $genome_path $annotation_path \
-      $subtask_directory $useq_num $transcripts_file $splices_file "-s" $masked_genome_path
+    # subtask_directory="$task_directory"_baruzzo_useq_version_with_s
+    # mkdir $subtask_directory
+    # run_task "Baruzzo verison, with -s" "useq_baruzzo" $genome_path $annotation_path \
+    #   $subtask_directory $useq_num $transcripts_file $splices_file "-s" $masked_genome_path
 
 
     subtask_directory="$task_directory"_old_useq_version
@@ -114,10 +114,10 @@ function run_tasks() {
       $subtask_directory $useq_num $transcripts_file $splices_file $masked_genome_path
 
 
-    subtask_directory="$task_directory"_old_useq_version_with_s
-    mkdir $subtask_directory
-    run_task "Old verison, with -s" "useq_old" $genome_path $annotation_path \
-      $subtask_directory $useq_num $transcripts_file $splices_file "-s" $masked_genome_path
+    # subtask_directory="$task_directory"_old_useq_version_with_s
+    # mkdir $subtask_directory
+    # run_task "Old verison, with -s" "useq_old" $genome_path $annotation_path \
+    #   $subtask_directory $useq_num $transcripts_file $splices_file "-s" $masked_genome_path
 
   else
     echo -e "$1 already present"
