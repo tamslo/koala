@@ -23,6 +23,7 @@
 # ├── Star.bam.coverage
 # ├── Star.bam.coverage.10-filtered.bed
 # ├── Star.bam.coverage.2-filtered.bed
+# ├── Star.bam.coverage.5-filtered.bed
 # ├── StarOpossumChr3.vcf (output of pipeline)
 # ├── StarOpossumChr4.vcf (output of pipeline)
 # └── StarOpossumChr5.vcf (output of pipeline)
@@ -115,10 +116,13 @@ run_intersection_task "Intersection with BAM regions (from BED)" \
 run_intersection_task "Intersection with BAM regions (from merged BED)" \
   bam_bed_merged Star.bam.bed.merged
 
-run_intersection_task "Intersection with BAM regions with coverage (2) (from merged BED)" \
+run_intersection_task "Intersection with BAM regions with coverage >= 2" \
   bam_bed_merged_coverage_2 Star.bam.coverage.2-filtered.bed
 
-run_intersection_task "Intersection with BAM regions with coverage (10) (from merged BED)" \
+run_intersection_task "Intersection with BAM regions with coverage >= 5" \
+  bam_bed_merged_coverage_5 Star.bam.coverage.5-filtered.bed
+
+run_intersection_task "Intersection with BAM regions with coverage >= 10" \
   bam_bed_merged_coverage_10 Star.bam.coverage.10-filtered.bed
 
 
