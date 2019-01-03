@@ -3,8 +3,11 @@ import os
 
 coverage_path = sys.argv[1]
 min_coverage = int(sys.argv[2])
-bed_path = sys.argv[3]
 intermediate_path = coverage_path + ".{}-filtered".format(str(min_coverage))
+if len(sys.argv) == 4:
+    bed_path = sys.argv[3]
+else:
+    bed_path = intermediate_path + ".bed"
 
 if os.path.exists(intermediate_path):
     print("Filtered coverage file already present")
