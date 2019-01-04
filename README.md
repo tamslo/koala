@@ -8,7 +8,7 @@ RNA editing sites for hg38 were translated from those for [hg19](http://lilab.st
 
 ## Setup
 
-Make sure you have the following programs installed, versions given are those used for development:
+Make sure you have the following programs installed, versions given are those used for development (you can run the `scripts/setup.sh` script):
 
 - node (10.2.1)
 - npm (5.6.0)
