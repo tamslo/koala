@@ -25,9 +25,12 @@ ServiceClasses = {
     "opossum": Opossum,
     "beers": BeersEvaluator,
     "gatk_haplotypecaller": HaplotypeCaller,
+    "gatk_haplotypecaller_chr1": HaplotypeCallerFiltered,
     "gatk_haplotypecaller_chr3": HaplotypeCallerFiltered,
     "gatk_haplotypecaller_chr4": HaplotypeCallerFiltered,
     "gatk_haplotypecaller_chr5": HaplotypeCallerFiltered,
+    "gatk_haplotypecaller_chr17": HaplotypeCallerFiltered,
+    "gatk_haplotypecaller_chr21": HaplotypeCallerFiltered,
     "giab": GiabEvaluator
 }
 
