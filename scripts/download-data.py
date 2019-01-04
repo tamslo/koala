@@ -3,8 +3,8 @@
 import sys, os, shutil, json, yaml
 from time import localtime
 
-ONLY_SIMULATED = True
-ONLY_GIAB = False
+ONLY_SIMULATED = False
+ONLY_GIAB = True
 
 # Make import from parent directory possible
 sys.path.append(
