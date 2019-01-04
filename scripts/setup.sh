@@ -1,20 +1,15 @@
 #!/bin/bash
 
+# Install node version manager manually with deploy user after this script
+# with the install_nvm.sh script
+
 sudo apt update
 sudo apt install -y git
 sudo apt install -y python3
 sudo apt install -y virtualenv
 
-# Install node version manager
+# For node version manager
 sudo apt install -y build-essential libssl-dev
-curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-nvm install node
-nvm use node
-nvm alias default node
-source ~/.bashrc
 
 # Install docker
 sudo apt install -y \
