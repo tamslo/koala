@@ -3,6 +3,9 @@
 import sys, os, shutil, json, yaml
 from time import localtime
 
+ONLY_SIMULATED = True
+ONLY_GIAB = False
+
 # Make import from parent directory possible
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
@@ -116,6 +119,12 @@ def get_genomes():
             genome_infos = json.load(genome_infos_file)
 
     for genome_id, genome_specification in genomes.items():
+        if ONLY_SIMULATED and genome_id not in ["hg19", "pfal"]:
+            print("Skipping {} (only simulated)".format(genome_specification["name"]))
+            continue
+        if ONLY_GIAB and genome_id not in ["hg38"]:
+            print("Skipping {} (only giab)".format(genome_specification["name"]))
+            continue
         file_path = genome_path(genome_id)
         info_path = file_path.split(fasta_file_ending)[0] + ".yml"
         genome_getter = genome_specification["getter"]
@@ -369,6 +378,12 @@ rna_seq_data = [
 
 def get_datasets():
     for dataset in rna_seq_data:
+        if ONLY_SIMULATED and not dataset["id"].startswith("simulated"):
+            print("Skipping {} (only simulated)".format(dataset["name"]))
+            continue
+        if ONLY_GIAB and dataset["id"] != "GM12878":
+            print("Skipping {} (only giab)".format(dataset["name"]))
+            continue
         dataset_directory = datasets_directory + dataset["id"]
         dataset_getter = dataset["getter"]
         if not os.path.isdir(dataset_directory):
