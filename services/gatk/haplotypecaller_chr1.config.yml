@@ -1,0 +1,4 @@
+name: HaplotypeCaller (only chr1)
+type: variant_caller
+chromosomes:
+  - chr1

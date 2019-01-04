@@ -1,0 +1,4 @@
+name: HaplotypeCaller (only chr17)
+type: variant_caller
+chromosomes:
+  - chr17
