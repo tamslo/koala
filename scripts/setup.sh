@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Install node version manager manually with deploy user after this script
-# with the install_nvm.sh script
+# Run setup_deploy.sh script after this one
+# Make sure, deploy user exists on the machine (create otherwise)
 
 sudo apt update
 sudo apt install -y git
@@ -24,13 +24,8 @@ sudo add-apt-repository \
    stable"
 sudo apt update
 sudo apt install -y docker-ce
-
-# Add code folder and virtualenv
-sudo mkdir /home/deploy/code
-sudo virtualenv /home/deploy/code/venv -p python3
-
-# Init empty git repository for deployment
-sudo git init --bare /home/deploy/git
+sudo groupadd docker
+sudo usermod -aG docker deploy
 
 # Make app accessible at default port
 sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 5000
