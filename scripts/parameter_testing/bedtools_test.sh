@@ -24,13 +24,14 @@
 # ├── Star.bam.coverage.10-filtered.bed
 # ├── Star.bam.coverage.2-filtered.bed
 # ├── Star.bam.coverage.5-filtered.bed
+# ├── StarGatkChr1.vcf (output of pipeline)
 # ├── StarOpossumChr3.vcf (output of pipeline)
 # ├── StarOpossumChr4.vcf (output of pipeline)
 # └── StarOpossumChr5.vcf (output of pipeline)
 
 giab_confidence_regions_path=giab/confidence_calls.bed
 editing_sites_path=annotations/hg38_editing_sites.bed
-declare -a chromosomes=("3" "4" "5")
+# declare -a chromosomes=("3" "4" "5")
 tests_directory=tests
 mkdir -p $tests_directory
 
@@ -38,13 +39,17 @@ function evaluate() {
   local confidence_calls_path=giab/confidence_calls.vcf
   local confidence_regions_path=$1
   local test_directory=$2
-  for chromosome in "${chromosomes[@]}"
-  do
-    local query_calls_path=StarOpossumChr$chromosome.vcf
+  # for chromosome in "${chromosomes[@]}"
+  # do
+  #   local query_calls_path=StarOpossumChr$chromosome.vcf
+  #   /opt/hap.py/bin/hap.py $confidence_calls_path $query_calls_path \
+  #       -f $confidence_regions_path -o $test_directory/Evaluation_chr$chromosome \
+  #       -r hg38.fa --location chr$chromosome
+  # done
+  local query_calls_path=StarGatkChr1.vcf
     /opt/hap.py/bin/hap.py $confidence_calls_path $query_calls_path \
         -f $confidence_regions_path -o $test_directory/Evaluation_chr$chromosome \
         -r hg38.fa --location chr$chromosome
-  done
 }
 
 function intersect() {
