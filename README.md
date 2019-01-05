@@ -54,3 +54,11 @@ For services of type `evaluation`, a list of steps needs to be given that can be
 
 - Run docker on VM: `docker run -v ~/code/data:/data -it <container_name>`
 - Build image manually: `docker build -t <image_name> services/<image_name>`
+
+## Troubleshooting
+
+If the app is not available...
+
+- check if config.yml was created
+- check that port forwarding works
+- restart
