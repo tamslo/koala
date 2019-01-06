@@ -56,21 +56,6 @@ class GiabEvaluator(BaseService):
         if not os.path.exists(confidence_regions_path):
             confidence_genome_regions_path = "data/giab/{}/confidence_calls.bed".format(reference_id)
             transcriptome_regions_path = self.transcriptome_regions_path(alignment_path, parameters)
-            editing_sites_path = "data/annotations/{}_editing_sites.bed".format(reference_id)
-
-            # If possible, remove editing sites from GIAB confidece regions first
-            if os.path.exists(editing_sites_path):
-                confidence_genome_regions_without_editing_sites_path = "data/" \
-                    "giab/{}/confidence_calls_no_editing_sites.bed".format(reference_id)
-                self.bedtools(
-                    "subtract",
-                    confidence_genome_regions_path,
-                    editing_sites_path,
-                    confidence_genome_regions_without_editing_sites_path,
-                    parameters
-                )
-                confidence_genome_regions_path = confidence_genome_regions_without_editing_sites_path
-
             self.bedtools(
                 "intersect",
                 confidence_genome_regions_path,
