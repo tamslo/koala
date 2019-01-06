@@ -49,7 +49,7 @@ function evaluate() {
   local query_calls_path=StarGatkChr1.vcf
     /opt/hap.py/bin/hap.py $confidence_calls_path $query_calls_path \
         -f $confidence_regions_path -o $test_directory/Evaluation_chr$chromosome \
-        -r hg38.fa --location chr$chromosome
+        -r hg38.fa --location chr1
 }
 
 function intersect() {
