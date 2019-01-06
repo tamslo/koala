@@ -1,17 +1,19 @@
 {
-  "retryDoneExperiment": true,
-  "dataset": {
-    "FORWARD": "forward",
-    "REVERSE": "reverse",
-    "PAIRED": "paired",
-    "SINGLE": "single",
-    "URL": "url",
-    "FILE": "file"
-  },
-  "experiment": {
-    "WAITING": "waiting",
-    "RUNNING": "running",
-    "DONE": "done",
-    "ERROR": "error"
-  }
+  "retryDoneExperiment": false,
+  "dataset":
+    {
+      "FORWARD": "forward",
+      "REVERSE": "reverse",
+      "PAIRED": "paired",
+      "SINGLE": "single",
+      "URL": "url",
+      "FILE": "file",
+    },
+  "experiment":
+    {
+      "WAITING": "waiting",
+      "RUNNING": "running",
+      "DONE": "done",
+      "ERROR": "error",
+    },
 }
