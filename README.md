@@ -2,10 +2,6 @@
 
 An extensible platform to run and evaluate RNA-Seq analysis pipelines. The current version is accessible under https://vm-slosarek-01.eaalab.hpi.uni-potsdam.de.
 
-RefFlat annotations and BED files were downloaded from UCSC Genome Table Browser ([hg19](http://genome.ucsc.edu/cgi-bin/hgTables?hgsid=212485719&clade=mammal&org=Human&db=hg19&hgta_group=genes&hgta_track=refGene&hgta_table=refFlat&hgta_regionType=genome&position=chr21%3A33031597-33041570&hgta_outputType=all&hgta_outFileName=refFlat.txt.gz)|[hg38](http://genome.ucsc.edu/cgi-bin/hgTables?hgsid=212485719&clade=mammal&org=Human&db=hg38&hgta_group=genes&hgta_track=refGene&hgta_table=refFlat&hgta_regionType=genome&position=chr21%3A33031597-33041570&hgta_outputType=all&hgta_outFileName=refFlat.txt.gz)).
-
-RNA editing sites for hg38 were translated from those for [hg19](http://lilab.stanford.edu/GokulR/database/Human_AG_all_hg19.bed) with [UCSC hgLiftOver](http://genome.ucsc.edu/cgi-bin/hgLiftOver).
-
 ## Setup
 
 Make sure you have the following programs installed, versions given are those used for development (you can run the `scripts/setup.sh` script):

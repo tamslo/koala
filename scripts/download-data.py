@@ -18,7 +18,6 @@ with open("constants.yml", "r") as constants_file:
 # Directory Paths
 reference_directory = "data/references/"
 datasets_directory = "data/datasets/"
-annotation_directory = "data/annotations/"
 
 def log_task_start(item, path):
     started_tasks.append(path)
@@ -69,7 +68,6 @@ def get_p_falciparum(genome_id, file_path):
     print("Unzipping {}...".format(genome_id), flush=True)
     unzipped_directory = file_utils.unzip(download_path)
     os.rename(unzipped_directory + "/genome_sequence_pfal.fa", file_path)
-    os.rename(unzipped_directory + "/simulator_config_geneinfo_pfal_GTF", annotation_directory + "pfal.gtf")
     file_utils.delete(download_path)
     file_utils.delete(unzipped_directory)
 

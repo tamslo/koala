@@ -30,7 +30,6 @@ class BaseAligner(BaseService):
         bam_file_path = destination + "Out.bam"
 
         # Define genome index path and temp path (will be renamed if successful)
-        parameters["annotation_base_path"] = data_handler.annotation_directory
         parameters["reference_id"] = experiment.get("reference")
         genome_index_path = data_handler.genome_index_path(experiment, self.id)
         temp_genome_index_path = genome_index_path + ".running"
@@ -45,8 +44,7 @@ class BaseAligner(BaseService):
                     "reference_path": data_handler.reference_path(experiment),
                     "dataset": dataset,
                     "reference_base_path": data_handler.reference_directory,
-                    "reference_id": parameters["reference_id"],
-                    "annotation_base_path": parameters["annotation_base_path"]
+                    "reference_id": parameters["reference_id"]
                 }
                 self.build_genome_index(index_parameters)
             except:
@@ -61,8 +59,7 @@ class BaseAligner(BaseService):
             "genome_index_path": genome_index_path,
             "dataset": dataset,
             "reference_id": parameters["reference_id"],
-            "reference_base_path": data_handler.reference_directory,
-            "annotation_base_path": parameters["annotation_base_path"]
+            "reference_base_path": data_handler.reference_directory
         }
         self.align(alignment_parameters, sam_file_path)
 
