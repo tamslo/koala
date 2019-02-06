@@ -10,7 +10,7 @@ RUN cpan Math::Random
 
 # Install simulator
 ENV DST=/opt/beers_simulator
-RUN git clone https://github.com/tamslo/beers_simulator.git $DST
+RUN git clone https://github.com/itmat/beers_simulator.git $DST
 COPY ./assets/make_config_files_for_subset_of_gene_ids.pl $DST
 RUN chmod a+x $DST/reads_simulator.pl
 ENV PATH $DST:$PATH
