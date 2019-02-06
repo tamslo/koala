@@ -61,11 +61,10 @@ class Experiment(BaseInstance):
             raise Exception("The first action does not have a preceding action")
         return step_ids[current_index - 1]
 
-    def get_preceding_service(self, action_id):
-        services = get_services()
-        preceding_step = self.__get_preceding_step_id(action_id)
-        action_id = self.content["pipeline"][preceding_step]["id"]
-        return next(service for service in services if service.id == action_id)
+    def get_aligner_soft_clips(self):
+        aligner_id = self.content["pipeline"]["alignment"]["id"]
+        aligner = next(service for service in get_services() if service.id == aligner_id)
+        return aligner.soft_clips_exist
 
     def get_input_directory(self, action_id):
         preceding_step = self.__get_preceding_step_id(action_id)
