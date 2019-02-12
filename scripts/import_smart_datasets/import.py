@@ -3,7 +3,7 @@ import json
 import yaml
 import sys
 from time import localtime
-from shutil import copyfile
+import shutil
 
 INTERMEDIATE_DIRECTORY = "data/intermediate"
 DATASET_DIRECTORY = "data/datasets"
@@ -40,8 +40,8 @@ def move_files(intermediate_folder, dataset_folder, dataset_id):
     intermediate_reverse_path = os.path.join(intermediate_folder, intermediate_reverse_name)
     reverse_file_path = os.path.join(dataset_folder, "reverse.fastq")
 
-    copyfile(intermediate_forward_path, forward_file_path)
-    copyfile(intermediate_reverse_path, reverse_file_path)
+    shutil.move(intermediate_forward_path, forward_file_path)
+    shutil.move(intermediate_reverse_path, reverse_file_path)
 
     data_info = {
         constants["dataset"]["FORWARD"]: {
@@ -70,7 +70,7 @@ def create_dataset_info(dataset_id, dataset_folder, data_info):
     }
 
     with open(dataset_info_path, "w") as dataset_info_file:
-        json.dump(dataset_info, dataset_info_file)
+        dataset_info_file.write(json.dumps(dataset_info))
 
 def create_dataset(dataset_id, intermediate_folder, dataset_folder):
     os.mkdir(dataset_folder)
@@ -85,4 +85,11 @@ for intermediate_path in os.listdir(INTERMEDIATE_DIRECTORY):
     dataset_id = intermediate_path
     intermediate_folder = os.path.join(INTERMEDIATE_DIRECTORY, dataset_id)
     dataset_folder = os.path.join(DATASET_DIRECTORY, "smart_{}".format(dataset_id))
-    create_dataset(dataset_id, intermediate_folder, dataset_folder)
+
+    if not os.path.isdir(dataset_folder):
+        print("Creating data set from {}".format(dataset_id))
+        create_dataset(dataset_id, intermediate_folder, dataset_folder)
+
+    shutil.rmtree(intermediate_path)
+
+shutil.rmtree(INTERMEDIATE_DIRECTORY)
