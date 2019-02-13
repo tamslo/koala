@@ -4,7 +4,7 @@ intermediate_directory=data/intermediate
 
 # Get files from Venerea (better do it manually to better select what should be there)
 # mkdir -p $intermediate_directory
-# rsync -r -P Tamara.Slosarek@192.168.31.56:/opt/hana/pool/user_files/89/RNA_afterTrimming/* $intermediate_directory
+# rsync -r -P --update Tamara.Slosarek@192.168.31.56:/opt/hana/pool/user_files/89/RNA_afterTrimming/* $intermediate_directory
 
 concat_file_path() {
   local directory=$1

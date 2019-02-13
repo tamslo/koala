@@ -90,6 +90,6 @@ for intermediate_path in os.listdir(INTERMEDIATE_DIRECTORY):
         print("Creating data set from {}".format(dataset_id))
         create_dataset(dataset_id, intermediate_folder, dataset_folder)
 
-    shutil.rmtree(intermediate_path)
+    shutil.rmtree(intermediate_folder)
 
 shutil.rmtree(INTERMEDIATE_DIRECTORY)
