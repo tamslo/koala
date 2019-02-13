@@ -4,14 +4,15 @@ from .base_service import BaseService
 
 # Register services
 
+from .beers import BeersEvaluator
 from .test import TestAlignerWritesFile
 from .test import TestAlignerWritesLog
 from .star import Star
 from .novoalign import NovoAlign
 from .novoalign import NovoAlignIndelSensitive
-from .gatk import GatkFilters
 from .opossum import Opossum
-from .beers import BeersEvaluator
+from .gatk import GatkFilters
+from .gatk import GatkVariantFiltration
 from .gatk import HaplotypeCaller
 from .gatk import HaplotypeCallerFiltered
 from .giab import GiabEvaluator
@@ -22,6 +23,7 @@ with open("config.yml") as config_file:
 
 ServiceClasses = {
     "gatk_filters": GatkFilters,
+    "gatk_variantfiltration": GatkVariantFiltration,
     "opossum": Opossum,
     "beers": BeersEvaluator,
     "gatk_haplotypecaller": HaplotypeCaller,

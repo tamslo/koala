@@ -2,6 +2,25 @@ import os
 import modules.file_utils as file_utils
 from ..base_service import BaseService
 
+class GatkVariantFiltration(BaseService):
+    def run(self, parameters):
+        destination = parameters["destination"]
+        experiment = parameters["experiment"]
+        data_handler = parameters["data_handler"]
+
+        in_file_path = experiment.get_input_directory(self.id) + "Out.vcf"
+        reference_path = data_handler.reference_path(experiment)
+        out_file_path = destination + "Out.vcf"
+
+        command = "gatk VariantFiltration -R /{} -V /{} -o /{}" \
+            "-window 35 -cluster 3 -filterName FS -filter 'FS > 30.0' " \
+            " -filterName QD -filter 'QD < 2.0'".format(
+                reference_path,
+                in_file_path,
+                out_file_path
+            )
+        self.run_docker(command, parameters)
+
 class GatkFilters(BaseService):
     def run(self, parameters):
         destination = parameters["destination"]

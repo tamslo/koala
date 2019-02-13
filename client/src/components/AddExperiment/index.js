@@ -10,6 +10,7 @@ import {
   ALIGNMENT,
   ALIGNMENT_FILTERING,
   VARIANT_CALLING,
+  VARIANT_FILTERING,
   serviceTypes,
   displayNames
 } from "../experimentConstants";
@@ -29,7 +30,8 @@ export default class extends Component {
       pipeline: {
         [ALIGNMENT]: "",
         [ALIGNMENT_FILTERING]: [],
-        [VARIANT_CALLING]: ""
+        [VARIANT_CALLING]: "",
+        [VARIANT_FILTERING]: ""
       }
     };
   }
@@ -120,6 +122,23 @@ export default class extends Component {
             .map(caller => (
               <MenuItem key={caller.id} value={caller.id}>
                 {caller.name}
+              </MenuItem>
+            ))}
+        </Select>
+
+        <Select
+          label={handlerName(VARIANT_FILTERING)}
+          value={this.state.pipeline[VARIANT_FILTERING]}
+          onChange={this.handlePipelineChange(VARIANT_FILTERING)}
+        >
+          <MenuItem key="no-filter" value="">
+            <em>None</em>
+          </MenuItem>
+          {this.props.services
+            .filter(service => service.type === serviceTypes[VARIANT_FILTERING])
+            .map(filter => (
+              <MenuItem key={filter.id} value={filter.id}>
+                {filter.name}
               </MenuItem>
             ))}
         </Select>
