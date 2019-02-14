@@ -69,7 +69,8 @@ class BaseAligner(BaseService):
             "docker_image": "gatk",
             "destination": destination,
             "data_handler": data_handler,
-            "experiment": experiment
+            "experiment": experiment,
+            "dataset": dataset
         }
         self.post_process(post_processing_parameters, sam_file_path, bam_file_path)
 
@@ -94,6 +95,7 @@ class BaseAligner(BaseService):
 
     def post_process(self, parameters, sam_file_path, bam_file_path):
         destination = parameters["destination"]
+        dataset = parameters["dataset"]
 
         # Convert to BAM, add read groups and sort
         command = "gatk AddOrReplaceReadGroups -I /{} -O /{} -SO coordinate " \
@@ -105,6 +107,11 @@ class BaseAligner(BaseService):
         output_parameters = { "log_file_path": destination + "Conversion.log" }
         self.run_docker(command, parameters, output_parameters)
         file_utils.validate_file_content(bam_file_path)
+
+        # Delete SAM file if not needed in evaluation (which is for BEERS sets)
+        evaluation = dataset.get("evaluation")
+        if evaluation == None or evaluation["type"] != "beers":
+            file_utils.delete(sam_file_path)
 
         # Create reference indices
         data_handler = parameters["data_handler"]

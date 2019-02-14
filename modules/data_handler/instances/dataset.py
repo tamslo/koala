@@ -47,7 +47,6 @@ class Dataset(BaseInstance):
                 file = self.files[file_key]
                 name = file.filename
                 file_path = maybe_zipped_path(name, unzipped_file_path)
-                print(file_path, flush=True)
                 file.save(file_path)
                 maybe_unzip(file_path)
                 self.content["data"][file_key]["name"] = name
