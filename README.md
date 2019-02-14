@@ -46,6 +46,24 @@ For services of type `aligner`, it needs to be defined whether the service creat
 
 For services of type `evaluation`, a list of steps needs to be given that can be evaluated. Possible values are `alignment`, `alignment_filtering`, and `variant_calling` (as defined in `client/src/components/experimentConstants.js`).
 
+## Manual tasks
+
+Some tasks need to or can be executed manually.
+
+### NovoAlign and BEDTools genomecov
+
+We suppose Docker for Python cannot cope with the large log output, so these tasks need to be executed manually as explained [here](scripts/manual_execution/README.md).
+
+### Import Data Sets
+
+There are scripts in `scripts/import_smart_datasets` that potentially extract FASTQ files, move them to the right location, and create a JSON file holding the data set information.
+
+Files are expected to be located in `data/intermediate`, with one folder per data set. The folder name is used for the data set's `id` and `name` that are prefixed with `smart_` or `SMART`. The folder is expected to contain paired FASTQ files (potentially gzipped), with the naming scheme `<folder name>_[1|2].fq`.
+
+### Alignment Restriction with Coverage
+
+_TODO_
+
 ## Useful Commands for Testing
 
 - Run docker on VM: `docker run -v ~/code/data:/data -it <container_name>`
