@@ -70,3 +70,4 @@ COPY ./assets/base_coverage_to_bed.py .
 
 # Copy script for BAM coverage restriction
 COPY ./assets/restrict_bam.sh .
+RUN chmod +x restrict_bam.sh

@@ -46,13 +46,17 @@ function create_coverage_bed() {
     coverage_path=${alignment_path}/Out.base_coverage
 
     if [ ! -f $coverage_path ]; then
-      echo "  Creating base coverage file" >&2
+      echo "Creating base coverage file" >&2
       bedtools genomecov -d -ibam $bam_path > $coverage_path
+    else
+      echo "Base coverage file already present" >&2
     fi
 
-    echo "  Creating BED file from base coverage" >&2
-    $python base_coverage_to_bed.py $coverage_path $minimum_coverage $bed_path > /dev/null
+    echo "Creating BED file from base coverage" >&2
+    $python base_coverage_to_bed.py $coverage_path $minimum_coverage $bed_path >&2
     rm ${coverage_path}.${minimum_coverage}-filtered
+  else
+    echo "Coverage BED file already present" >&2
   fi
 
   echo $bed_path
@@ -78,10 +82,13 @@ function process_alignment() {
     original_bam_path=$(get_original_bam_path $out_bam_path $full_bam_path)
     coverage_bed_path=$(create_coverage_bed $alignment_path $original_bam_path)
     create_coverage_bam $original_bam_path $coverage_bed_path $coverage_bam_path
+  else
+    echo "Coverage BAM file already present"
   fi
 
   # Rename original BAM if necessary
   if [ ! -f $full_bam_path ]; then
+    echo "Archiving original BAM file"
     mv $out_bam_path $full_bam_path
   fi
 
@@ -99,19 +106,26 @@ if ! [[ $minimum_coverage =~ $re ]] ; then
    exit 1
 fi
 
+dataset_counter=0
+directory=${dataset_folder}/${folder_prefix}*
+echo -e "\n[INFO] Starting BAM restriction with minimum_coverage $minimum_coverage for $directory"
+
 # Traverse data sets
-for dataset in ${dataset_folder}/${folder_prefix}*; do
+for dataset in $directory; do
   if [ -d $dataset ]; then
-    echo -e "Processing data set $(basename $dataset)"
+    ((dataset_counter++))
+    echo -e "\n[PROGRESS] Processing data set $(basename $dataset)"
     for reference_genome in ${dataset}/*; do
       for alignment in ${reference_genome}/*; do
         if [ -d $alignment ]; then
           info_text="Processing $(basename $alignment) alignment "
           info_text+="($(basename $reference_genome))"
-          echo "  $info_text"
+          echo -e "\n$info_text"
           process_alignment $alignment
         fi
       done
     done
   fi
 done
+
+echo -e "\n[INFO] Done. Processed $dataset_counter data set(s)\n"
