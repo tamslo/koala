@@ -12,14 +12,15 @@ class GatkVariantFiltration(BaseService):
         reference_path = data_handler.reference_path(experiment)
         out_file_path = destination + "Out.vcf"
 
-        command = "gatk VariantFiltration -R /{} -V /{} -o /{}" \
-            "-window 35 -cluster 3 -filterName FS -filter 'FS > 30.0' " \
-            " -filterName QD -filter 'QD < 2.0'".format(
+        command = "gatk VariantFiltration -R /{} -V /{} -O /{} " \
+            "-window 35 -cluster 3 --filter-name FS -filter 'FS > 30.0' " \
+            " --filter-name QD -filter 'QD < 2.0'".format(
                 reference_path,
                 in_file_path,
                 out_file_path
             )
         self.run_docker(command, parameters)
+        file_utils.validate_file_content(out_file_path)
 
 class GatkFilters(BaseService):
     def run(self, parameters):
