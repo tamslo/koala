@@ -53,7 +53,7 @@ function create_coverage_bed() {
     fi
 
     echo "Creating BED file from base coverage" >&2
-    $python base_coverage_to_bed.py $coverage_path $minimum_coverage $bed_path >&2
+    $python base_coverage_to_bed.py $coverage_path $minimum_coverage $bed_path
     rm ${coverage_path}.${minimum_coverage}-filtered
   else
     echo "Coverage BED file already present" >&2
