@@ -1,4 +1,5 @@
-dataset_folder=/data
+dataset_folder=/data/datasets
+host_prefix=~/code
 
 minimum_coverage=$1
 folder_prefix=${2:-""}
@@ -91,7 +92,7 @@ function process_alignment() {
   fi
 
   # Create link to coverage BAM named Out.bam
-  ln -s -f $coverage_bam_path $out_bam_path
+  ln -s -f $host_prefix$coverage_bam_path $out_bam_path
 }
 
 # Script execution
