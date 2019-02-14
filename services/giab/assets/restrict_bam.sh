@@ -39,27 +39,24 @@ function get_original_bam_path() {
 function create_coverage_bed() {
   alignment_path=$1
   bam_path=$2
-
-  bed_path=${alignment_path}/Out.coverage_${minimum_coverage}.bed
+  bed_path=$3
 
   if [ ! -f $bed_path ]; then
     coverage_path=${alignment_path}/Out.base_coverage
 
     if [ ! -f $coverage_path ]; then
-      echo "Creating base coverage file" >&2
+      echo "Creating base coverage file"
       bedtools genomecov -d -ibam $bam_path > $coverage_path
     else
-      echo "Base coverage file already present" >&2
+      echo "Base coverage file already present"
     fi
 
-    echo "Creating BED file from base coverage" >&2
+    echo "Creating BED file from base coverage"
     $python base_coverage_to_bed.py $coverage_path $minimum_coverage $bed_path
     rm ${coverage_path}.${minimum_coverage}-filtered
   else
-    echo "Coverage BED file already present" >&2
+    echo "Coverage BED file already present"
   fi
-
-  echo $bed_path
 }
 
 # Intersect full BAM with coverage BED
@@ -80,7 +77,8 @@ function process_alignment() {
 
   if [ ! -f $coverage_bam_path ]; then
     original_bam_path=$(get_original_bam_path $out_bam_path $full_bam_path)
-    coverage_bed_path=$(create_coverage_bed $alignment_path $original_bam_path)
+    coverage_bed_path=${alignment_path}/Out.coverage_${minimum_coverage}.bed
+    create_coverage_bed $alignment_path $original_bam_path $coverage_bed_path
     create_coverage_bam $original_bam_path $coverage_bed_path $coverage_bam_path
   else
     echo "Coverage BAM file already present"
