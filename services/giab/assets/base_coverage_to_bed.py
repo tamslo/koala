@@ -64,7 +64,8 @@ for line in intermediate_file:
         start_position = next_position
         end_position = next_position
 
-write_bed(bed_file, chromosome, start_position, next_position)
+if end_position != None:
+    write_bed(bed_file, chromosome, start_position, end_position)
 
 intermediate_file.close()
 bed_file.close()

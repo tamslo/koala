@@ -62,7 +62,10 @@ Files are expected to be located in `data/intermediate`, with one folder per dat
 
 ### Alignment Restriction with Coverage
 
-_TODO_
+This can be accomplished using BAMTools that are installed in the GIAB service. It creates a new BAM file, copies it to the default BAM location (Out.bam), and renames the old BAM for further use. Commands are defined in `services/giab/assets/restrict_bam.sh` that can be executed in a GIAB Docker container. It expects the `data/datasets` folder to be mounted as a volume under `data`. It takes the following parameters:
+
+- Minimum coverage (number)
+- Prefix for datasets (optional, if not given, all datasets are included)
 
 ## Useful Commands for Testing
 
