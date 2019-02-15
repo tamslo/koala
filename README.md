@@ -55,7 +55,7 @@ For services of type `evaluation`, a list of steps needs to be given that can be
 
 ## Manual tasks
 
-Some tasks need to or can be executed manually.
+Some tasks need to or can be executed manually. Also see the [README](scripts/import_smart_datasets/README.md) for SMART data processing.
 
 ### NovoAlign and BEDTools genomecov
 
