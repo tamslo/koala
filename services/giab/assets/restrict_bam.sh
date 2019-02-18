@@ -1,5 +1,5 @@
 dataset_folder=/data/datasets
-host_prefix=~/code
+host_prefix=/home/deploy/code
 
 minimum_coverage=$1
 folder_prefix=${2:-""}
