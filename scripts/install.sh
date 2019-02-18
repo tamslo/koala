@@ -8,6 +8,6 @@ cd ..
 
 bash scripts/build-docker.sh
 
-# Download data
-python scripts/download-data.py
-python scripts/download-calls.py
+# Download data (skip data download for now, comment back in when needed)
+# python scripts/download-data.py
+# python scripts/download-calls.py
