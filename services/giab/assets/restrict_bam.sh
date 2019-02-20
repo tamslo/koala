@@ -1,5 +1,4 @@
 dataset_folder=/data/datasets
-host_prefix=/home/deploy/code
 
 minimum_coverage=$1
 folder_prefix=${2:-""}
@@ -91,8 +90,8 @@ function process_alignment() {
     mv $out_bam_path $full_bam_path
   fi
 
-  # Create link to coverage BAM named Out.bam
-  ln -s -f $host_prefix$coverage_bam_path $out_bam_path
+  # Create link to coverage BAM named Out.bam (path valid for Docker containers)
+  ln -s -f $coverage_bam_path $out_bam_path
 }
 
 # Script execution
