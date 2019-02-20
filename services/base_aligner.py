@@ -100,9 +100,11 @@ class BaseAligner(BaseService):
         # Convert to BAM, add read groups and sort
         command = "gatk AddOrReplaceReadGroups -I /{} -O /{} -SO coordinate " \
             "-ID foo -LB bar -PL illumina -SM Sample1 -PU foo.bar " \
+            "--TMP_DIR {} " \
             "--CREATE_INDEX".format(
                 sam_file_path,
-                bam_file_path
+                bam_file_path,
+                destination
         )
         output_parameters = { "log_file_path": destination + "Conversion.log" }
         self.run_docker(command, parameters, output_parameters)
