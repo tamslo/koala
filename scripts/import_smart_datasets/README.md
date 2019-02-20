@@ -47,3 +47,16 @@ To reduce run time for succeeding steps and obtain high-quality variants, the re
 # Run Whole Pipeline
 
 The whole pipeline can be executed with the Koala platform again, automatically using the Koala platform (you can select multiple data sets again). We ran STAR (it takes the restricted file from cache), GATK Best Practices (runs MarkDuplicates and SplitNCigarReads), GATK HaplotypeCaller (all chromosomes), and GATK VariantFiltration. The resulting VCF files can be downloaded or transferred and used in further experiments.
+
+# Move files back to Venerea
+
+Backup files on Venerea after a step finished. Replace user `Tamara.Slosarek` in the example below with your user.
+
+```
+# Move alignment
+ssh Tamara.Slosarek@192.168.31.56 mkdir -p /opt/hana/pool/user_files/89/star_out/001
+rsync -P --update ~/code/data/datasets/smart_001/hg38/star/Out.full.bam smart_001/hg38/star/Out.coverage_10.bam Tamara.Slosarek@192.168.31.56:/opt/hana/pool/user_files/89/star_out/001/
+
+# Move pipeline result
+echo "TODO"
+```
