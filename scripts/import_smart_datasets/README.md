@@ -50,13 +50,32 @@ The whole pipeline can be executed with the Koala platform again, automatically 
 
 # Move files back to Venerea
 
-Backup files on Venerea after a step finished. Replace user `Tamara.Slosarek` in the example below with your user.
+Backup files on Venerea after a step finished. Expects `star_out` and `variants_out` to exist in `smart_results` directory. Replace user `Tamara.Slosarek` in the example below with your user.
 
 ```
-# Move alignment
-ssh Tamara.Slosarek@192.168.31.56 mkdir -p /opt/hana/pool/user_files/89/star_out/001
-rsync -P --update ~/code/data/datasets/smart_001/hg38/star/Out.full.bam smart_001/hg38/star/Out.coverage_10.bam Tamara.Slosarek@192.168.31.56:/opt/hana/pool/user_files/89/star_out/001/
+user=Tamara.Slosarek
+venerea=192.168.31.56
+smart_results=/opt/hana/pool/user_files/89
 
-# Move pipeline result
-echo "TODO"
+for sample in ~/code/data/datasets/smart_*; do
+  # Only handle each sample once, the directory and the JSON file exist per sample_id
+  if [[ -d $sample ]]; then
+    sample_id=${sample:(-3)}
+
+    alignment_path=$sample/hg38/star/Out.full.bam
+    filtered_alignment_path=$sample/hg38/star/Out.coverage_10.bam
+    vcf_path=$sample/hg38/star/gatk_filters/gatk_haplotypecaller/gatk_variantfiltration/Out.vcf
+
+    if [[ -f $alignment_path ]] && [[ -f $filtered_alignment_path ]]; then
+      echo -e "\nTransferring alignment for sample $sample_id"
+      ssh $user@$venerea mkdir -p $smart_results/star_out/$sample_id
+      rsync -P --update $alignment_path $filtered_alignment_path $user@$venerea:$smart_results/star_out/$sample_id/
+    fi
+
+    if [[ -f $vcf_path ]]; then
+      echo -e "\nTransferring variants for sample $sample_id"
+      rsync -P --update $vcf_path $user@$venerea:$smart_results/variants_out/$sample_id.vcf
+    fi
+  fi
+done
 ```
