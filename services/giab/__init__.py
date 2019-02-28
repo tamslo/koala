@@ -85,7 +85,7 @@ class GiabEvaluator(BaseService):
                 reference_id,
                 destination,
                 confidence_regions_path,
-                ",".join(action_handler.chromosomes)
+                additional_commands
             )
         output_parameters = { "log_file_path": destination + "Evaluation.log" }
         self.run_docker(command, parameters, output_parameters)
