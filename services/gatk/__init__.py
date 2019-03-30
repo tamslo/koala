@@ -46,10 +46,11 @@ class GatkFilters(BaseService):
 
         # Remove introns
         out_file_path = destination + "Out.bam"
-        command = "gatk SplitNCigarReads -R /{} -I /{} -O /{}".format(
+        command = "gatk SplitNCigarReads -R /{} -I /{} -O /{} --tmp-dir {}".format(
                 reference_path,
                 deduplicated_path,
-                out_file_path
+                out_file_path,
+                destination
             )
         output_parameters = { "log_file_path": destination + "SplitN.log" }
         self.run_docker(command, parameters, output_parameters)
