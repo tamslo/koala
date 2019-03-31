@@ -46,7 +46,7 @@ class GatkFilters(BaseService):
 
         # Remove introns
         out_file_path = destination + "Out.bam"
-        command = "gatk SplitNCigarReads -R /{} -I /{} -O /{} --tmp-dir {}".format(
+        command = "gatk SplitNCigarReads -R /{} -I /{} -O /{} --tmp-dir /{}".format(
                 reference_path,
                 deduplicated_path,
                 out_file_path,
